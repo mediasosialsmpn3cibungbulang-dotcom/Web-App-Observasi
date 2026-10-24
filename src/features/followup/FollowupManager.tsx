@@ -51,13 +51,23 @@ export function FollowupManager() {
   const [formJenisDukungan, setFormJenisDukungan] = useState<FollowupItem["jenis_dukungan"]>("Sarana dan Prasarana");
   const [formTarget, setFormTarget] = useState("");
 
-  const refreshData = () => {
+  const refreshData = async () => {
     const list = FollowupService.getFollowups();
     setFollowups(list);
     const tList = TeacherService.getTeachers();
     setTeachers(tList);
     if (tList.length > 0 && !formTeacherId) {
       setFormTeacherId(tList[0].id);
+    }
+
+    // Sinkronkan data guru dari Supabase Cloud di latar belakang
+    try {
+      const cloudTeachers = await TeacherService.syncWithSupabase();
+      if (cloudTeachers && cloudTeachers.length > 0) {
+        setTeachers(cloudTeachers);
+      }
+    } catch (e) {
+      console.warn("Gagal sinkronisasi data guru di RTL:", e);
     }
   };
 

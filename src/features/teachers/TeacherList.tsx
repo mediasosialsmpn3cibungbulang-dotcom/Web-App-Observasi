@@ -24,8 +24,18 @@ export const TeacherList: React.FC = () => {
   const [selectedTeacherForProfile, setSelectedTeacherForProfile] = useState<Teacher | null>(null);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
 
-  const loadData = () => {
+  const loadData = async () => {
+    // Muat data lokal segera
     setTeachers(TeacherService.getTeachers().filter((t) => t.aktif));
+    // Sinkronkan dengan Supabase Cloud secara asinkron
+    try {
+      const cloudTeachers = await TeacherService.syncWithSupabase();
+      if (cloudTeachers && cloudTeachers.length > 0) {
+        setTeachers(cloudTeachers.filter((t) => t.aktif));
+      }
+    } catch (e) {
+      console.warn("Gagal menyinkronkan data guru dari cloud:", e);
+    }
   };
 
   useEffect(() => {
