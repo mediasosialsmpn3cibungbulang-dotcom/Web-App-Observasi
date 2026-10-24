@@ -261,21 +261,21 @@ export function FollowupManager() {
           <div className="w-full overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
             <table className="w-full table-fixed text-left text-sm border-collapse">
               <colgroup>
-                <col className="w-[22%]" />
-                <col className="w-[26%]" />
-                <col className="w-[18%]" />
-                <col className="w-[11%]" />
+                <col className="w-[21%]" />
+                <col className="w-[25%]" />
+                <col className="w-[16%]" />
+                <col className="w-[13%]" />
                 <col className="w-[12%]" />
-                <col className="w-[11%]" />
+                <col className="w-[13%]" />
               </colgroup>
-              <thead className="bg-muted/30 border-b border-border text-[11px] uppercase font-bold text-muted tracking-wider">
+              <thead className="bg-slate-50/80 dark:bg-zinc-800/80 border-b border-border text-[11px] uppercase font-bold text-muted tracking-wider">
                 <tr>
-                  <th className="py-3 px-3.5">Guru & Masalah</th>
-                  <th className="py-3 px-3">Aksi Konkret & Target</th>
-                  <th className="py-3 px-3">Dukungan Kepala Sekolah</th>
-                  <th className="py-3 px-2 text-center">Tenggat Target</th>
-                  <th className="py-3 px-2 text-center">Status & Progres</th>
-                  <th className="py-3 px-2 text-center">Tindakan</th>
+                  <th className="py-3 px-3.5 text-left">Guru & Masalah</th>
+                  <th className="py-3 px-3 text-left">Aksi & Target Capaian</th>
+                  <th className="py-3 px-3 text-left">Dukungan Sekolah</th>
+                  <th className="py-3 px-2 text-center whitespace-nowrap">Tenggat Target</th>
+                  <th className="py-3 px-2 text-center whitespace-nowrap">Status & Progres</th>
+                  <th className="py-3 px-2 text-center whitespace-nowrap">Tindakan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border text-xs">
@@ -296,18 +296,18 @@ export function FollowupManager() {
                         <p className="font-bold text-foreground text-sm leading-snug truncate" title={teacher?.nama_lengkap}>
                           {teacher?.nama_lengkap || "Guru"}
                         </p>
-                        <p className="text-[11px] font-mono text-muted">
-                          {teacher?.nip_nuptk ? `NIP/NUPTK: ${teacher.nip_nuptk}` : "Guru Mata Pelajaran"}
+                        <p className="text-[11px] font-mono text-muted whitespace-nowrap">
+                          {teacher?.nip_nuptk ? `NIP. ${teacher.nip_nuptk}` : "Guru Mata Pelajaran"}
                         </p>
                         <p className="text-xs text-muted/90 mt-1.5 leading-relaxed line-clamp-2 break-words" title={item.masalah_utama}>
                           {item.masalah_utama}
                         </p>
-                        <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted/10 text-muted border border-border">
+                        <div className="flex items-center gap-1.5 mt-2">
+                          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-muted/10 text-muted border border-border whitespace-nowrap">
                             {item.semester}
                           </span>
                           {item.kode_pertanyaan_pemicu && (
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-pine-50 dark:bg-pine-950/40 text-pine-700 dark:text-pine-300 border border-pine-200 dark:border-pine-800">
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-pine-50 dark:bg-pine-950/40 text-pine-700 dark:text-pine-300 border border-pine-200 dark:border-pine-800 whitespace-nowrap">
                               Ref {item.kode_pertanyaan_pemicu}
                             </span>
                           )}
@@ -319,12 +319,12 @@ export function FollowupManager() {
                         <p className="font-semibold text-foreground text-xs leading-relaxed line-clamp-2 break-words" title={item.aksi_konkret_guru}>
                           {item.aksi_konkret_guru}
                         </p>
-                        <div className="mt-1.5 p-2 rounded-lg bg-muted/10 border border-border/50">
+                        <div className="mt-1.5 pl-2.5 border-l-2 border-pine-500 py-0.5">
                           <span className="text-[10px] font-bold text-pine-700 dark:text-pine-400 block uppercase tracking-wider">
-                            Target Indikator:
+                            Target Capaian:
                           </span>
                           <p className="text-[11px] text-muted italic leading-snug line-clamp-2 break-words" title={item.target_indikator_sukses}>
-                            {item.target_indikator_sukses || "Meningkatnya hasil belajar dan keaktifan siswa"}
+                            {item.target_indikator_sukses || "Meningkatnya hasil belajar siswa"}
                           </p>
                         </div>
                         {item.bukti_tindak_lanjut && (
@@ -337,10 +337,10 @@ export function FollowupManager() {
 
                       {/* Dukungan Kepsek */}
                       <td className="py-3.5 px-3 align-top">
-                        <p className="text-xs text-muted leading-relaxed line-clamp-3 break-words" title={item.dukungan_kepala_sekolah}>
+                        <p className="text-xs text-muted leading-relaxed line-clamp-2 break-words" title={item.dukungan_kepala_sekolah}>
                           {item.dukungan_kepala_sekolah || "Pendampingan dan pemantauan berkala."}
                         </p>
-                        <div className="mt-2">
+                        <div className="mt-1.5">
                           <span className="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 truncate max-w-full">
                             {item.jenis_dukungan || "Sarana dan Prasarana"}
                           </span>
@@ -348,28 +348,30 @@ export function FollowupManager() {
                       </td>
 
                       {/* Tenggat Waktu */}
-                      <td className="py-3.5 px-2 align-top text-center">
-                        <div className="flex items-center justify-center gap-1 font-mono text-xs font-semibold">
-                          <Clock className={`w-3.5 h-3.5 shrink-0 ${isOverdue ? "text-red-600 dark:text-red-400" : "text-muted"}`} />
+                      <td className="py-3.5 px-2 align-middle text-center whitespace-nowrap">
+                        <div className="inline-flex items-center justify-center gap-1.5 font-mono text-xs font-semibold whitespace-nowrap">
+                          <Clock className={`w-3.5 h-3.5 shrink-0 ${isOverdue ? "text-red-500" : "text-muted"}`} />
                           <span className={isOverdue ? "text-red-600 dark:text-red-400 font-bold" : "text-foreground"}>
                             {item.deadline}
                           </span>
                         </div>
                         {isOverdue && (
-                          <div className="mt-1.5 inline-flex items-center justify-center gap-1 text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-1.5 py-0.5 rounded border border-red-200 dark:border-red-800/50">
-                            <AlertCircle className="w-3 h-3 shrink-0" />
-                            <span>Lewat batas</span>
+                          <div className="mt-1.5 flex items-center justify-center">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800/50 whitespace-nowrap">
+                              <AlertCircle className="w-3 h-3 shrink-0" />
+                              <span>Lewat batas</span>
+                            </span>
                           </div>
                         )}
                       </td>
 
                       {/* Status & Kontrol */}
-                      <td className="py-3.5 px-2 align-top text-center">
-                        <div className="flex flex-col items-center gap-1">
+                      <td className="py-3.5 px-2 align-middle text-center">
+                        <div className="flex flex-col items-center justify-center gap-1">
                           <select
                             value={item.status}
                             onChange={(e) => handleStatusChange(item, e.target.value as FollowupItem["status"])}
-                            className={`w-full text-xs font-semibold px-2 py-1.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-pine-500 transition-colors ${
+                            className={`w-full max-w-[125px] text-xs font-semibold px-2 py-1.5 rounded-lg border focus:outline-none focus:ring-1 focus:ring-pine-500 transition-colors text-center cursor-pointer ${
                               item.status === "Selesai"
                                 ? "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700"
                                 : item.status === "Berjalan"
@@ -386,7 +388,7 @@ export function FollowupManager() {
                           </select>
 
                           {checks.length > 0 && (
-                            <span className="text-[10px] text-muted font-medium">
+                            <span className="text-[10px] text-muted font-medium whitespace-nowrap">
                               {checks.length}x cek-in tercatat
                             </span>
                           )}
@@ -394,22 +396,22 @@ export function FollowupManager() {
                       </td>
 
                       {/* Aksi */}
-                      <td className="py-3.5 px-2 align-top text-center">
-                        <div className="flex items-center justify-center gap-1.5">
+                      <td className="py-3.5 px-2 align-middle text-center whitespace-nowrap">
+                        <div className="inline-flex items-center justify-center gap-1.5 whitespace-nowrap">
                           <button
                             type="button"
                             title="Lakukan Cek-in Berkala (Pekan 2/4/8/9)"
                             onClick={() => setSelectedFollowupForCheck(item)}
-                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-foreground transition-colors shadow-2xs cursor-pointer"
+                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-foreground transition-all shadow-2xs cursor-pointer whitespace-nowrap shrink-0"
                           >
                             <CalendarCheck2 className="w-3.5 h-3.5 text-pine-600 shrink-0" />
-                            <span>Cek-in</span>
+                            <span className="whitespace-nowrap">Cek-in</span>
                           </button>
                           <button
                             type="button"
                             title="Cetak Format Dokumen 7 RTL"
                             onClick={() => setSelectedFollowupForPrint(item)}
-                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-muted hover:text-foreground transition-colors shadow-2xs cursor-pointer"
+                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-muted hover:text-foreground transition-all shadow-2xs cursor-pointer shrink-0"
                           >
                             <Printer className="w-3.5 h-3.5" />
                           </button>
