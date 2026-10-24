@@ -2,6 +2,7 @@ import { Teacher, TeacherSchema } from "@/contracts/schemas";
 import { SEED_MOCK_TEACHERS } from "@/contracts/seed-data";
 import { calculateMinimumSupervisionFrequency } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const STORAGE_KEY_TEACHERS = "smart_supervisi_teachers_db";
 let _cachedTeachers: Teacher[] | null = null;
@@ -86,6 +87,16 @@ export const TeacherService = {
         actor_email: "admin@sekolah.sch.id",
         nilai_sesudah: validated as unknown as Record<string, unknown>,
       });
+
+      // Sinkronisasi asinkron ke Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("teachers")
+          .upsert(validated)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase teachers insert warning:", error.message);
+          });
+      }
     }
 
     return validated;
@@ -129,6 +140,16 @@ export const TeacherService = {
         nilai_sebelum: prev as unknown as Record<string, unknown>,
         nilai_sesudah: validated as unknown as Record<string, unknown>,
       });
+
+      // Sinkronisasi asinkron ke Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("teachers")
+          .upsert(validated)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase teachers update warning:", error.message);
+          });
+      }
     }
 
     return validated;
@@ -152,7 +173,43 @@ export const TeacherService = {
         entitas_id: id,
         actor_email: "admin@sekolah.sch.id",
       });
+
+      // Sinkronisasi status nonaktif ke Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("teachers")
+          .update({ aktif: false })
+          .eq("id", id)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase teachers deactivate warning:", error.message);
+          });
+      }
     }
+  },
+
+  /**
+   * Menyinkronkan daftar guru dengan database Supabase Cloud
+   */
+  async syncWithSupabase(): Promise<Teacher[]> {
+    if (!supabase || !isSupabaseConfigured()) return this.getTeachers();
+    try {
+      const { data, error } = await supabase
+        .from("teachers")
+        .select("*")
+        .eq("aktif", true)
+        .order("nama_lengkap", { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        _cachedTeachers = data as Teacher[];
+        if (typeof window !== "undefined") {
+          localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(data));
+        }
+        return data as Teacher[];
+      }
+    } catch (err) {
+      console.warn("Gagal sinkronisasi Supabase teachers:", err);
+    }
+    return this.getTeachers();
   },
 
   /**

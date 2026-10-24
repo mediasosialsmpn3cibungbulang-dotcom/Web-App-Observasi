@@ -6,6 +6,7 @@ import {
 } from "@/contracts/schemas";
 import { isFollowupOverdue } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const STORAGE_KEY_FOLLOWUPS = "smart_supervisi_followups_db";
 const STORAGE_KEY_CHECKS = "smart_supervisi_followup_checks_db";
@@ -105,6 +106,16 @@ export const FollowupService = {
         actor_email: "admin@sekolah.sch.id",
         nilai_sesudah: validated as unknown as Record<string, unknown>,
       });
+
+      // Sinkronisasi asinkron ke Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("followup_items")
+          .upsert(validated)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase followup_items upsert warning:", error.message);
+          });
+      }
     }
 
     return validated;
@@ -121,6 +132,17 @@ export const FollowupService = {
         entitas_id: id,
         actor_email: "admin@sekolah.sch.id",
       });
+
+      // Hapus data di Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("followup_items")
+          .delete()
+          .eq("id", id)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase followup_items delete warning:", error.message);
+          });
+      }
     }
   },
 
@@ -177,6 +199,16 @@ export const FollowupService = {
       all.push(validated);
       _cachedChecks = all;
       localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(all));
+
+      // Sinkronisasi asinkron cek-in ke Supabase Cloud
+      if (supabase && isSupabaseConfigured()) {
+        supabase
+          .from("followup_checks")
+          .upsert(validated)
+          .then(({ error }) => {
+            if (error) console.warn("Supabase followup_checks upsert warning:", error.message);
+          });
+      }
     }
 
     return validated;
