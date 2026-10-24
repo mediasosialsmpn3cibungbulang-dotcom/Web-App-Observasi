@@ -150,8 +150,12 @@ export const TeacherService = {
 
   /**
    * Menghitung frekuensi supervisi minimum per semester (BR-13)
+   * Memprioritaskan target sesi kustom yang ditentukan supervisor jika ada
    */
   getRequiredFrequency(teacher: Teacher, latestScore: number | null = null): number {
+    if (typeof teacher.target_sesi === "number" && teacher.target_sesi > 0) {
+      return teacher.target_sesi;
+    }
     const currentYear = new Date().getFullYear();
     return calculateMinimumSupervisionFrequency({
       tahunMasuk: teacher.tahun_masuk,

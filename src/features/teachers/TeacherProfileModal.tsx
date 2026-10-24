@@ -56,7 +56,9 @@ export const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
               <div>
                 <p className="font-bold text-xs">Target Frekuensi Supervisi Semester Ini</p>
                 <p className="text-[11px] opacity-80">
-                  {isGuruBaru
+                  {teacher.target_sesi
+                    ? "Kustom Supervisor: Ditentukan secara khusus oleh Kepala Sekolah/Pengawas"
+                    : isGuruBaru
                     ? "Kategori Guru Baru: Pembinaan intensif adaptasi pembelajaran"
                     : teacher.is_senior_mentor
                     ? "Kategori Senior/Mentor: Observasi reflektif & keteladanan"
@@ -64,9 +66,16 @@ export const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
                 </p>
               </div>
             </div>
-            <span className="text-xl font-bold font-mono px-2 py-1 rounded bg-surface border border-primary/30">
-              Min. {minFrequency}x
-            </span>
+            <div className="flex flex-col items-end">
+              <span className="text-xl font-bold font-mono px-2 py-1 rounded bg-surface border border-primary/30">
+                {minFrequency}x Sesi
+              </span>
+              {teacher.target_sesi && (
+                <span className="text-[10px] text-primary/80 font-semibold mt-0.5">
+                  (Kustom)
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Rincian Data Pokok */}

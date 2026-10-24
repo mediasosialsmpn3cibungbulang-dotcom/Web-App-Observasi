@@ -25,13 +25,14 @@ export const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
     mata_pelajaran: "",
     kelas_diampu: "",
     status_kepegawaian: "ASN" as EmploymentStatus,
-    fase: "E" as LearningPhase,
+    fase: "D" as LearningPhase,
     jabatan_tambahan: "",
     wali_kelas: "",
     nomor_hp: "",
     email: "",
     tahun_masuk: 2020,
     is_senior_mentor: false,
+    target_sesi: null as number | null,
     catatan_khusus: "",
     aktif: true,
   });
@@ -53,6 +54,7 @@ export const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
         email: initialData.email,
         tahun_masuk: initialData.tahun_masuk,
         is_senior_mentor: initialData.is_senior_mentor,
+        target_sesi: initialData.target_sesi ?? null,
         catatan_khusus: initialData.catatan_khusus || "",
         aktif: initialData.aktif,
       });
@@ -63,13 +65,14 @@ export const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
         mata_pelajaran: "",
         kelas_diampu: "",
         status_kepegawaian: "ASN",
-        fase: "E",
+        fase: "D",
         jabatan_tambahan: "",
         wali_kelas: "",
         nomor_hp: "",
         email: "",
         tahun_masuk: 2024,
         is_senior_mentor: false,
+        target_sesi: null,
         catatan_khusus: "",
         aktif: true,
       });
@@ -274,7 +277,87 @@ export const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
               />
             </div>
 
-            <div className="md:col-span-2 flex items-center gap-2 pt-2">
+            {/* Pengaturan Kustom Target Sesi Supervisi */}
+            <div className="md:col-span-2 p-3.5 rounded-xl bg-surface/70 border border-border space-y-2">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <label className="block text-xs font-bold text-foreground">
+                    Target Sesi Supervisi (Semester Ini)
+                  </label>
+                  <p className="text-[11px] text-muted">
+                    Tentukan jumlah sesi supervisi yang wajib dijalani guru ini secara kustom.
+                  </p>
+                </div>
+
+                {/* Tombol Pilihan Cepat (Preset) */}
+                <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                  <span className="text-[11px] text-muted mr-0.5">Pilihan:</span>
+                  {[1, 2, 3, 4].map((num) => (
+                    <button
+                      key={num}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, target_sesi: num })}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                        formData.target_sesi === num
+                          ? "bg-primary text-primary-foreground shadow-xs"
+                          : "bg-surface border border-border hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
+                      }`}
+                    >
+                      {num}x
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, target_sesi: null })}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      formData.target_sesi === null
+                        ? "bg-zinc-700 text-white"
+                        : "bg-surface border border-border text-muted hover:text-foreground"
+                    }`}
+                    title="Gunakan perhitungan otomatis berdasarkan masa kerja"
+                  >
+                    Otomatis
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <div className="relative w-28 shrink-0">
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={formData.target_sesi ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value ? parseInt(e.target.value, 10) : null;
+                      setFormData({ ...formData, target_sesi: val });
+                    }}
+                    placeholder="Auto"
+                    className="w-full px-3 py-1.5 text-sm rounded-control border border-border bg-surface text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+                <div className="text-xs text-muted">
+                  {formData.target_sesi !== null ? (
+                    <span className="font-semibold text-primary">
+                      ✓ Ditentukan kustom: <strong>{formData.target_sesi} Sesi per semester</strong>
+                    </span>
+                  ) : (
+                    <span>
+                      Otomatis sistem:{" "}
+                      <strong className="text-foreground">
+                        {2026 - formData.tahun_masuk < 3
+                          ? "3x (Guru Baru)"
+                          : formData.is_senior_mentor
+                          ? "1x (Senior/Mentor)"
+                          : "2x (Reguler)"}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="md:col-span-2 flex items-center gap-2 pt-1">
               <input
                 type="checkbox"
                 id="is_senior_mentor"

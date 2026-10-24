@@ -201,9 +201,16 @@ export const TeacherList: React.FC = () => {
                       </td>
                       <td className="py-3.5 px-4 text-xs text-muted">{teacher.kelas_diampu}</td>
                       <td className="py-3.5 px-4 text-center">
-                        <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-primary-subtle text-primary border border-primary/20">
-                          {reqFreq}x
-                        </span>
+                        <div className="flex flex-col items-center">
+                          <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-primary-subtle text-primary border border-primary/20">
+                            {reqFreq}x Sesi
+                          </span>
+                          {teacher.target_sesi && (
+                            <span className="text-[10px] text-pine-700 dark:text-pine-300 font-semibold mt-0.5">
+                              (Kustom)
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">

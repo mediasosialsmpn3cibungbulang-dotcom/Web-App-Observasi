@@ -84,6 +84,7 @@ export const TeacherSchema = z.object({
   email: z.string().email(),
   tahun_masuk: z.number().int().min(1970).max(2100),
   is_senior_mentor: z.boolean().default(false),
+  target_sesi: z.number().int().min(1).max(10).nullable().optional(),
   catatan_khusus: z.string().nullable().optional(),
   aktif: z.boolean().default(true),
   created_at: z.string().datetime(),
