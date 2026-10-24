@@ -14,6 +14,9 @@ import {
   Eye,
   CalendarCheck2,
   Sparkles,
+  LayoutGrid,
+  Table as TableIcon,
+  Target,
 } from "lucide-react";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -31,6 +34,7 @@ export function FollowupManager() {
   const [selectedTeacherId, setSelectedTeacherId] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"card" | "table">("card");
 
   // Modal State
   const [selectedFollowupForCheck, setSelectedFollowupForCheck] = useState<FollowupItem | null>(null);
@@ -247,8 +251,38 @@ export function FollowupManager() {
         </p>
       </div>
 
-      {/* Tabel Utama Rencana Tindak Lanjut */}
-      <Panel title="Daftar Komitmen & Kesepakatan Tindak Lanjut Guru">
+      {/* Daftar Utama Rencana Tindak Lanjut */}
+      <Panel
+        title="Daftar Komitmen & Kesepakatan Tindak Lanjut Guru"
+        action={
+          <div className="flex items-center gap-1 bg-muted/20 p-1 rounded-xl border border-border">
+            <button
+              type="button"
+              onClick={() => setViewMode("card")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                viewMode === "card"
+                  ? "bg-card text-foreground shadow-2xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>Kartu Potret</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("table")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                viewMode === "table"
+                  ? "bg-card text-foreground shadow-2xs"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>Tabel</span>
+            </button>
+          </div>
+        }
+      >
         {filteredList.length === 0 ? (
           <div className="text-center py-12 text-muted">
             <ListTodo className="w-12 h-12 mx-auto stroke-1 text-muted mb-3 opacity-50" />
@@ -256,6 +290,183 @@ export function FollowupManager() {
             <p className="text-xs mt-1 max-w-sm mx-auto">
               Tidak ada data RTL yang cocok dengan filter. Tambahkan kesepakatan baru setelah sesi coaching selesai.
             </p>
+          </div>
+        ) : viewMode === "card" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredList.map((item) => {
+              const teacher = teachers.find((t) => t.id === item.teacher_id);
+              const isOverdue = FollowupService.isOverdue(item);
+              const checks = FollowupService.getFollowupChecks(item.id);
+
+              return (
+                <div
+                  key={item.id}
+                  className={`flex flex-col justify-between rounded-2xl border transition-all duration-200 bg-card p-5 ${
+                    isOverdue
+                      ? "border-red-300 dark:border-red-900/60 shadow-xs ring-1 ring-red-400/20"
+                      : "border-border shadow-2xs hover:shadow-md hover:border-pine-400/40"
+                  }`}
+                >
+                  {/* Bagian Atas: Profil Guru & Status */}
+                  <div className="flex items-start justify-between gap-3 pb-3.5 border-b border-border/60">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-pine-100 dark:bg-pine-950/60 text-pine-700 dark:text-pine-300 flex items-center justify-center font-bold text-sm shrink-0 border border-pine-200 dark:border-pine-800">
+                        {teacher?.nama_lengkap ? teacher.nama_lengkap.charAt(0).toUpperCase() : "G"}
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="font-bold text-sm text-foreground truncate" title={teacher?.nama_lengkap}>
+                          {teacher?.nama_lengkap || "Guru"}
+                        </h4>
+                        <p className="text-[11px] font-mono text-muted truncate">
+                          {teacher?.nip_nuptk ? `NIP. ${teacher.nip_nuptk}` : "Guru Mata Pelajaran"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Status Select */}
+                    <div className="shrink-0 text-right">
+                      <select
+                        value={item.status}
+                        onChange={(e) => handleStatusChange(item, e.target.value as FollowupItem["status"])}
+                        className={`text-xs font-bold px-2.5 py-1 rounded-lg border focus:outline-none focus:ring-1 focus:ring-pine-500 cursor-pointer ${
+                          item.status === "Selesai"
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700"
+                            : item.status === "Berjalan"
+                            ? "bg-pine-50 text-pine-800 border-pine-300 dark:bg-pine-950/40 dark:text-pine-300 dark:border-pine-700"
+                            : item.status === "Pending"
+                            ? "bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700"
+                            : "bg-zinc-100 text-zinc-700 border-zinc-300 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-700"
+                        }`}
+                      >
+                        <option value="Belum Dimulai">Belum Dimulai</option>
+                        <option value="Berjalan">Berjalan</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Selesai">Selesai</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Badan Kartu Potret (Vertikal Terstruktur) */}
+                  <div className="py-3.5 space-y-3.5 flex-1">
+                    {/* Masalah Pembelajaran */}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-1">
+                        Fokus Masalah Pembelajaran
+                      </span>
+                      <p className="text-xs text-foreground leading-relaxed line-clamp-3" title={item.masalah_utama}>
+                        {item.masalah_utama}
+                      </p>
+                    </div>
+
+                    {/* Aksi Konkret Guru */}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-pine-700 dark:text-pine-400 block mb-1">
+                        Aksi Konkret Guru
+                      </span>
+                      <p className="text-xs font-semibold text-foreground leading-relaxed line-clamp-3" title={item.aksi_konkret_guru}>
+                        {item.aksi_konkret_guru}
+                      </p>
+                    </div>
+
+                    {/* Target Capaian (Kotak Aksen Rapi) */}
+                    <div className="p-2.5 rounded-xl bg-muted/15 border border-border/50 text-xs">
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold text-pine-700 dark:text-pine-400 uppercase tracking-wide mb-1">
+                        <Target className="w-3.5 h-3.5 text-pine-600 shrink-0" />
+                        <span>Target Indikator Keberhasilan</span>
+                      </div>
+                      <p className="text-muted text-[11px] italic leading-relaxed line-clamp-2" title={item.target_indikator_sukses}>
+                        {item.target_indikator_sukses || "Meningkatnya hasil belajar dan keaktifan siswa"}
+                      </p>
+                    </div>
+
+                    {/* Dukungan Kepala Sekolah */}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-1">
+                        Dukungan Sekolah
+                      </span>
+                      <p className="text-xs text-muted leading-relaxed line-clamp-2" title={item.dukungan_kepala_sekolah}>
+                        {item.dukungan_kepala_sekolah || "Pendampingan dan pemantauan berkala."}
+                      </p>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                          {item.jenis_dukungan || "Sarana dan Prasarana"}
+                        </span>
+                        {item.kode_pertanyaan_pemicu && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-pine-50 dark:bg-pine-950/40 text-pine-700 dark:text-pine-300 border border-pine-200 dark:border-pine-800">
+                            Ref {item.kode_pertanyaan_pemicu}
+                          </span>
+                        )}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted/10 text-muted border border-border">
+                          {item.semester}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Bukti Tindak Lanjut jika ada */}
+                    {item.bukti_tindak_lanjut && (
+                      <div className="flex items-center gap-1.5 text-xs text-pine-700 dark:text-pine-300 bg-pine-50/50 dark:bg-pine-950/30 p-2 rounded-lg border border-pine-200/50 dark:border-pine-800/50">
+                        <FileCheck className="w-4 h-4 shrink-0 text-pine-600" />
+                        <span className="truncate text-[11px] font-medium" title={item.bukti_tindak_lanjut}>
+                          {item.bukti_tindak_lanjut}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Tenggat Target & Riwayat Cek-in */}
+                    <div className="pt-2.5 border-t border-border/50 flex items-center justify-between text-xs">
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
+                          Tenggat Target
+                        </span>
+                        <div className="flex items-center gap-1.5 font-mono text-xs font-bold mt-0.5">
+                          <Clock className={`w-3.5 h-3.5 ${isOverdue ? "text-red-500" : "text-muted"}`} />
+                          <span className={isOverdue ? "text-red-600 dark:text-red-400 font-bold" : "text-foreground"}>
+                            {item.deadline}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted block">
+                          Cek-in Berkala
+                        </span>
+                        <span className="text-xs font-semibold text-foreground mt-0.5 block">
+                          {checks.length > 0 ? `${checks.length}x tercatat` : "Belum ada"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Notifikasi Overdue */}
+                    {isOverdue && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 text-xs font-semibold">
+                        <AlertCircle className="w-3.5 h-3.5 text-red-600 shrink-0" />
+                        <span>Melewati batas tenggat target</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tombol Aksi Bawah */}
+                  <div className="pt-3 border-t border-border flex items-center gap-2 mt-auto">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedFollowupForCheck(item)}
+                      className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-pine-600 hover:bg-pine-700 text-white font-semibold text-xs shadow-xs transition-colors cursor-pointer"
+                    >
+                      <CalendarCheck2 className="w-4 h-4 shrink-0" />
+                      <span>Catat Cek-in</span>
+                    </button>
+                    <button
+                      type="button"
+                      title="Cetak Format Dokumen 7 RTL"
+                      onClick={() => setSelectedFollowupForPrint(item)}
+                      className="inline-flex items-center justify-center p-2 rounded-xl border border-border bg-card hover:bg-muted/10 text-muted hover:text-foreground transition-colors shadow-2xs cursor-pointer"
+                    >
+                      <Printer className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="w-full overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
