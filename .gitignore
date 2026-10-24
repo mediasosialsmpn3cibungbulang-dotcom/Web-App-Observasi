@@ -1,0 +1,40 @@
+# 1. Kredensial & Lingkungan
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+
+# 2. Direktori & Metadata AI (Internal Shield)
+.agents/
+.gemini/
+.brain/
+.system_generated/
+AGENTS.md
+GEMINI.md
+SoftwareEngineer.md
+implementation_plan.md
+walkthrough.md
+VIDEO_DEMO.md
+*.md
+!README.md
+!readme.md
+
+# 3. Dependencies & Build Output
+node_modules/
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+next-env.d.ts
+
+# 4. OS & Editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
