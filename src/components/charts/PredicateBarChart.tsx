@@ -3,15 +3,15 @@
 import React from "react";
 
 export interface PredicateData {
-  label: string; // e.g. "Amat Baik (≥90%)" or "Amat Baik"
-  range?: string; // e.g. "≥90%"
+  label: string; // Misal: "Amat Baik (≥ 90%)" atau nama predikat
+  name?: string; // "Amat Baik", "Baik", dll
+  range?: string; // "≥ 90%", "75 - 89%", dll
   count: number;
   color: string;
 }
 
 interface PredicateBarChartProps {
   data: PredicateData[];
-  height?: number;
 }
 
 export const PredicateBarChart: React.FC<PredicateBarChartProps> = ({
@@ -20,25 +20,37 @@ export const PredicateBarChart: React.FC<PredicateBarChartProps> = ({
   const totalEvaluated = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="w-full space-y-3 py-1">
+    <div className="w-full space-y-2.5 py-1">
       {data.map((item, idx) => {
         const percent = totalEvaluated > 0 ? Math.round((item.count / totalEvaluated) * 100) : 0;
+        
+        // Ekstrak nama dan rentang nilai secara aman
+        const displayName = item.name || item.label.split("(")[0].trim();
+        const displayRange = item.range || (item.label.includes("(") ? item.label.slice(item.label.indexOf("(")) : "");
+
         return (
           <div
             key={idx}
-            className="p-2.5 rounded-xl bg-surface/70 border border-border/60 hover:border-border transition-colors space-y-1.5"
+            className="p-2 sm:p-2.5 rounded-xl bg-surface/80 border border-border/60 hover:border-border transition-colors space-y-1.5"
           >
-            <div className="flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5 min-w-0">
                 <span
-                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
                   style={{ backgroundColor: item.color }}
                 />
-                <span className="font-bold text-foreground text-xs">{item.label}</span>
+                <span className="font-bold text-foreground text-xs truncate">
+                  {displayName}
+                </span>
+                {displayRange && (
+                  <span className="text-[10px] text-muted font-mono shrink-0">
+                    {displayRange}
+                  </span>
+                )}
               </div>
-              <div className="flex items-center gap-1.5 font-mono text-xs">
-                <span className="font-extrabold text-foreground">{item.count} Guru</span>
-                <span className="text-muted">({percent}%)</span>
+              <div className="flex items-center gap-1 font-mono text-xs shrink-0">
+                <span className="font-extrabold text-foreground">{item.count}</span>
+                <span className="text-muted text-[11px]">({percent}%)</span>
               </div>
             </div>
 
@@ -56,10 +68,15 @@ export const PredicateBarChart: React.FC<PredicateBarChartProps> = ({
         );
       })}
 
-      {/* Ringkasan Bawah yang Informatif */}
-      <div className="pt-1 text-[11px] text-muted flex items-center justify-between">
-        <span>Total Dinilai: <strong className="text-foreground">{totalEvaluated} Guru</strong></span>
-        <span>Standar Minimal Kelulusan: <strong className="text-emerald-700 dark:text-emerald-400">≥ 75%</strong></span>
+      {/* Ringkasan Bawah yang Rapi dan Tidak Memaksa Baris Baru */}
+      <div className="pt-2 flex flex-wrap items-center justify-between gap-1 text-[11px] text-muted border-t border-border/60">
+        <span>
+          Total Dinilai: <strong className="text-foreground">{totalEvaluated} Guru</strong>
+        </span>
+        <span>
+          Batas Kelulusan:{" "}
+          <strong className="text-emerald-700 dark:text-emerald-400 font-bold">≥ 75%</strong>
+        </span>
       </div>
     </div>
   );

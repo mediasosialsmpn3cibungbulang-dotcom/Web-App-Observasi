@@ -97,10 +97,10 @@ export default function BerandaPage() {
   const countPerlu = summaries.filter((s) => s.predikat_terbaru === "Perlu Pembinaan").length;
 
   const predicateData = [
-    { label: "Amat Baik (≥ 90%)", count: countAmatBaik, color: "#166534" },
-    { label: "Baik (75 - 89%)", count: countBaik, color: "#1D4ED8" },
-    { label: "Cukup (60 - 74%)", count: countCukup, color: "#D97706" },
-    { label: "Perlu Bimbingan (< 60%)", count: countPerlu, color: "#DC2626" },
+    { label: "Amat Baik", range: "≥ 90%", count: countAmatBaik, color: "#166534" },
+    { label: "Baik", range: "75 - 89%", count: countBaik, color: "#1D4ED8" },
+    { label: "Cukup", range: "60 - 74%", count: countCukup, color: "#D97706" },
+    { label: "Perlu Bimbingan", range: "< 60%", count: countPerlu, color: "#DC2626" },
   ];
 
   // Data Grafik 3: Rata-rata 7 Aspek Rubrik Baku (Aspek A s.d. G)
@@ -382,7 +382,7 @@ export default function BerandaPage() {
       )}
 
       {/* Grid 5 Visualisasi Grafik Ringan & Responsif */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
         {/* Grafik 1: Status Supervisi Donut */}
         <Panel
           title="Status Supervisi Seluruh Guru"
@@ -415,9 +415,9 @@ export default function BerandaPage() {
           />
         </Panel>
 
-        {/* Grafik 3: Rata-Rata 7 Aspek Rubrik (Span 2 kolom pada desktop) */}
+        {/* Grafik 3: Rata-Rata 7 Aspek Rubrik (Span 2 kolom pada md & xl) */}
         <Panel
-          className="lg:col-span-2"
+          className="md:col-span-2 xl:col-span-2"
           title="Nilai Rata-Rata 7 Aspek Observasi Kelas"
           subtitle="Skor skala 1.00 - 4.00. Garis merah tegak (3.00) adalah batas standar tuntas minimal"
         >
@@ -426,6 +426,7 @@ export default function BerandaPage() {
 
         {/* Grafik 4: Perbandingan Obs-1 vs Obs-Terbaru */}
         <Panel
+          className="md:col-span-2 xl:col-span-1"
           title="Perkembangan Nilai Antar Sesi"
           subtitle="Perbandingan kenaikan kompetensi guru antara Sesi 1 dan Sesi lanjutan"
         >

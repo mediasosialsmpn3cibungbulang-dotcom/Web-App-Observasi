@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 
 interface RtlGaugeChartProps {
   selesai: number;
@@ -20,11 +19,11 @@ export const RtlGaugeChart: React.FC<RtlGaugeChartProps> = ({
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className="flex flex-col items-center justify-center w-full py-2">
-      {/* Donut Progress Ring Responsive */}
-      <div className="relative w-36 h-36 md:w-40 md:h-40 flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center w-full py-1">
+      {/* Donut Progress Ring Responsif */}
+      <div className="relative w-32 h-32 sm:w-36 sm:h-36 flex items-center justify-center shrink-0">
         <svg viewBox="0 0 100 100" className="w-full h-full rotate-[-90deg]">
-          {/* Latar Belakang */}
+          {/* Latar Belakang Lingkaran */}
           <circle
             cx="50"
             cy="50"
@@ -50,40 +49,40 @@ export const RtlGaugeChart: React.FC<RtlGaugeChartProps> = ({
           />
         </svg>
 
-        {/* Teks Tengah */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-2 pointer-events-none">
-          <span className="text-2xl md:text-3xl font-extrabold font-mono text-foreground">
+        {/* Teks Tengah Lingkaran */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-1 pointer-events-none">
+          <span className="text-2xl sm:text-3xl font-extrabold font-mono text-foreground leading-none">
             {persentaseSelesai}%
           </span>
-          <span className="text-[10px] md:text-[11px] uppercase font-bold text-muted tracking-wider mt-0.5">
+          <span className="text-[10px] uppercase font-bold text-muted tracking-wider mt-1">
             RTL Tuntas
           </span>
         </div>
       </div>
 
-      {/* Rincian Status 3 Kolom */}
+      {/* Rincian Status 3 Kotak (Kompak & Anti-Wrap) */}
       <div className="grid grid-cols-3 gap-2 w-full mt-4 text-center">
         <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/60">
-          <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold uppercase tracking-wider">
+          <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold uppercase tracking-wider truncate">
             Tuntas
           </p>
-          <p className="text-base font-extrabold font-mono text-emerald-800 dark:text-emerald-200">
+          <p className="text-base font-extrabold font-mono text-emerald-800 dark:text-emerald-200 mt-0.5">
             {selesai}
           </p>
         </div>
         <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60">
-          <p className="text-[10px] text-amber-700 dark:text-amber-300 font-bold uppercase tracking-wider">
+          <p className="text-[10px] text-amber-700 dark:text-amber-300 font-bold uppercase tracking-wider truncate">
             Berjalan
           </p>
-          <p className="text-base font-extrabold font-mono text-amber-800 dark:text-amber-200">
+          <p className="text-base font-extrabold font-mono text-amber-800 dark:text-amber-200 mt-0.5">
             {berjalan}
           </p>
         </div>
         <div className="p-2 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200/60 dark:border-red-800/60">
-          <p className="text-[10px] text-red-700 dark:text-red-300 font-bold uppercase tracking-wider">
-            Lewat Batas
+          <p className="text-[10px] text-red-700 dark:text-red-300 font-bold uppercase tracking-wider truncate">
+            Terlambat
           </p>
-          <p className="text-base font-extrabold font-mono text-red-800 dark:text-red-200">
+          <p className="text-base font-extrabold font-mono text-red-800 dark:text-red-200 mt-0.5">
             {overdue}
           </p>
         </div>
