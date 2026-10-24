@@ -13,6 +13,7 @@ import {
   isScheduleMissed,
   calculateMinimumSupervisionFrequency,
   generateAutoRecommendation,
+  calculateChecklistProgress,
 } from "./scoring";
 
 console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)...");
@@ -215,6 +216,31 @@ console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)
   const recPerlu = generateAutoRecommendation("Perlu Pembinaan", "Pengelolaan Kelas");
   assert.match(recPerlu, /Pembinaan intensif/);
   assert.match(recPerlu, /Pengelolaan Kelas/);
+}
+
+// 10. Uji Persentase Progres Checklist Semesteran (BR-17)
+{
+  // 10 item: 5 Selesai, 2 Berjalan, 1 Belum, 2 Tidak Berlaku
+  // Effective: 10 - 2 = 8. Selesai = 5. Persen = (5 / 8) * 100 = 62.5%
+  const res1 = calculateChecklistProgress([
+    "Selesai",
+    "Selesai",
+    "Selesai",
+    "Selesai",
+    "Selesai",
+    "Berjalan",
+    "Berjalan",
+    "Belum",
+    "Tidak Berlaku",
+    "Tidak Berlaku",
+  ]);
+  assert.strictEqual(res1.percentage, 62.5);
+  assert.strictEqual(res1.effectiveTotal, 8);
+  assert.strictEqual(res1.selesai, 5);
+
+  // Seluruh item Tidak Berlaku
+  const res2 = calculateChecklistProgress(["Tidak Berlaku", "Tidak Berlaku"]);
+  assert.strictEqual(res2.percentage, 100);
 }
 
 console.log("✅ SELURUH SMOKE TEST ATURAN BISNIS DOMAIN LULUS 100%!");

@@ -243,3 +243,50 @@ export function generateAutoRecommendation(
       return `Pembinaan intensif berkala serta observasi ulang${aspectText}.`;
   }
 }
+
+/**
+ * BR-17 / Perhitungan Checklist Semester: Menghitung persentase ketercapaian checklist 29 kegiatan.
+ * Rumus: (selesai / (total - tidak_berlaku)) * 100 dibulatkan ke 1 desimal.
+ * Jika pembagi <= 0 (seluruh item Tidak Berlaku), kembalikan 100%.
+ */
+export function calculateChecklistProgress(
+  statuses: ("Belum" | "Berjalan" | "Selesai" | "Tidak Berlaku")[]
+): {
+  total: number;
+  selesai: number;
+  berjalan: number;
+  belum: number;
+  tidakBerlaku: number;
+  effectiveTotal: number;
+  percentage: number;
+} {
+  const total = statuses.length;
+  let selesai = 0;
+  let berjalan = 0;
+  let belum = 0;
+  let tidakBerlaku = 0;
+
+  for (const st of statuses) {
+    if (st === "Selesai") selesai++;
+    else if (st === "Berjalan") berjalan++;
+    else if (st === "Tidak Berlaku") tidakBerlaku++;
+    else belum++;
+  }
+
+  const effectiveTotal = total - tidakBerlaku;
+  const percentage =
+    effectiveTotal <= 0
+      ? 100
+      : Math.round((selesai / effectiveTotal) * 1000) / 10;
+
+  return {
+    total,
+    selesai,
+    berjalan,
+    belum,
+    tidakBerlaku,
+    effectiveTotal,
+    percentage,
+  };
+}
+
