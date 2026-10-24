@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Tema Terang: Kertas Hangat & Tinta Gelap */
+    --background: #FAF8F3;
+    --surface: #FFFFFF;
+    --foreground: #1B1F1D;
+    --muted: #565C58;
+    --border: #E5E2DA;
+
+    /* Aksen Hijau Pinus Utama */
+    --primary: #1F5C45;
+    --primary-hover: #184836;
+    --primary-subtle: #E8F2EC;
+    --primary-foreground: #FFFFFF;
+
+    /* Predikat Status */
+    --status-amat-baik: #1F5C45;
+    --status-baik: #1E5E8A;
+    --status-cukup: #B45309;
+    --status-pembinaan: #B91C1C;
+  }
+
+  .dark {
+    /* Tema Gelap: Arang Hangat */
+    --background: #16181A;
+    --surface: #1E2124;
+    --foreground: #ECEDEA;
+    --muted: #A9AFA9;
+    --border: #2E3338;
+
+    /* Aksen Hijau Pinus Mode Gelap */
+    --primary: #5BB38F;
+    --primary-hover: #4CA07D;
+    --primary-subtle: #1C3329;
+    --primary-foreground: #101F18;
+
+    /* Predikat Status Mode Gelap */
+    --status-amat-baik: #5BB38F;
+    --status-baik: #60A5FA;
+    --status-cukup: #FBBF24;
+    --status-pembinaan: #F87171;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Transisi halus GPU-accelerated */
+.transition-smooth {
+  transition-property: opacity, transform, background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Kepatuhan prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Gaya cetak dokumen resmi format A4 */
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: 11pt;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  @page {
+    size: A4;
+    margin: 1.5cm;
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "Smart Supervisi & Coaching Guru",
+  "short_name": "SmartSupervisi",
+  "description": "Aplikasi web terpadu untuk supervisi akademik dan coaching klinis guru sekolah.",
+  "start_url": "/beranda",
+  "display": "standalone",
+  "background_color": "#FAF8F3",
+  "theme_color": "#1F5C45",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
