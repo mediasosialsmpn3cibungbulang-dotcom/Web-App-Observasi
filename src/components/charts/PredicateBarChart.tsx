@@ -3,7 +3,8 @@
 import React from "react";
 
 export interface PredicateData {
-  label: string; // "Amat Baik", "Baik", "Cukup", "Perlu Pembinaan"
+  label: string; // e.g. "Amat Baik (≥90%)" or "Amat Baik"
+  range?: string; // e.g. "≥90%"
   count: number;
   color: string;
 }
@@ -15,46 +16,50 @@ interface PredicateBarChartProps {
 
 export const PredicateBarChart: React.FC<PredicateBarChartProps> = ({
   data,
-  height = 160,
 }) => {
-  const maxCount = Math.max(...data.map((d) => d.count), 1);
+  const totalEvaluated = data.reduce((sum, d) => sum + d.count, 0);
 
   return (
-    <div className="w-full flex flex-col justify-end">
-      <div className="flex items-end justify-between gap-3 pt-6 pb-2 border-b border-border" style={{ height }}>
-        {data.map((item, idx) => {
-          const heightPercent = (item.count / maxCount) * 100;
-          return (
-            <div key={idx} className="flex-1 flex flex-col items-center h-full justify-end group">
-              {/* Tooltip Nilai di atas batang */}
-              <span className="text-xs font-mono font-bold text-foreground mb-1.5 transition-transform group-hover:scale-110">
-                {item.count}
-              </span>
-
-              {/* Batang SVG/HTML */}
-              <div className="w-full max-w-[48px] bg-black/5 dark:bg-white/5 rounded-t-md overflow-hidden flex flex-col justify-end h-full">
-                <div
-                  className="w-full rounded-t-md transition-all duration-700 ease-out"
-                  style={{
-                    height: `${Math.max(heightPercent, item.count > 0 ? 12 : 0)}%`,
-                    backgroundColor: item.color,
-                  }}
+    <div className="w-full space-y-3 py-1">
+      {data.map((item, idx) => {
+        const percent = totalEvaluated > 0 ? Math.round((item.count / totalEvaluated) * 100) : 0;
+        return (
+          <div
+            key={idx}
+            className="p-2.5 rounded-xl bg-surface/70 border border-border/60 hover:border-border transition-colors space-y-1.5"
+          >
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: item.color }}
                 />
+                <span className="font-bold text-foreground text-xs">{item.label}</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-mono text-xs">
+                <span className="font-extrabold text-foreground">{item.count} Guru</span>
+                <span className="text-muted">({percent}%)</span>
               </div>
             </div>
-          );
-        })}
-      </div>
 
-      {/* Label Sumbu X */}
-      <div className="flex items-center justify-between gap-3 pt-2 text-center">
-        {data.map((item, idx) => (
-          <div key={idx} className="flex-1">
-            <span className="text-[11px] font-semibold text-muted block truncate" title={item.label}>
-              {item.label}
-            </span>
+            {/* Progress Bar Horizontal */}
+            <div className="w-full bg-black/5 dark:bg-white/5 h-2 rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all duration-700 ease-out"
+                style={{
+                  width: `${percent}%`,
+                  backgroundColor: item.color,
+                }}
+              />
+            </div>
           </div>
-        ))}
+        );
+      })}
+
+      {/* Ringkasan Bawah yang Informatif */}
+      <div className="pt-1 text-[11px] text-muted flex items-center justify-between">
+        <span>Total Dinilai: <strong className="text-foreground">{totalEvaluated} Guru</strong></span>
+        <span>Standar Minimal Kelulusan: <strong className="text-emerald-700 dark:text-emerald-400">≥ 75%</strong></span>
       </div>
     </div>
   );
