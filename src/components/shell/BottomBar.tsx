@@ -31,6 +31,7 @@ export const BottomBar: React.FC = () => {
           {/* 1. Beranda */}
           <Link
             href="/beranda"
+            prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
               pathname === "/beranda"
@@ -45,6 +46,7 @@ export const BottomBar: React.FC = () => {
           {/* 2. Jadwal */}
           <Link
             href="/jadwal"
+            prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
               pathname.startsWith("/jadwal")
@@ -59,6 +61,7 @@ export const BottomBar: React.FC = () => {
           {/* 3. Observasi Kelas (Aksi Utama / Center Hero Button) */}
           <Link
             href="/observasi"
+            prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center min-w-[60px] min-h-[52px] -mt-3 p-1.5 rounded-full shadow-md transition-smooth",
               pathname.startsWith("/observasi")
@@ -74,6 +77,7 @@ export const BottomBar: React.FC = () => {
           {/* 4. Tindak Lanjut */}
           <Link
             href="/tindak-lanjut"
+            prefetch={true}
             className={cn(
               "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
               pathname.startsWith("/tindak-lanjut")

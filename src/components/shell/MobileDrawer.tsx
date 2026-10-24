@@ -80,6 +80,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) =
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={true}
                 onClick={onClose}
                 className={cn(
                   "flex items-center gap-3 p-3 rounded-control border text-sm font-medium transition-smooth",

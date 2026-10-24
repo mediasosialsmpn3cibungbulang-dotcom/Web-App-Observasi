@@ -5,18 +5,27 @@ const STORAGE_KEY_SCHOOL_SETTINGS = "smart_supervisi_school_settings";
 const STORAGE_KEY_GRADING_SETTINGS = "smart_supervisi_grading_settings";
 const STORAGE_KEY_AUDIT_LOGS = "smart_supervisi_audit_logs";
 
+let _cachedSchoolSettings: SchoolSettings | null = null;
+let _cachedGradingSettings: GradingSettings | null = null;
+
 /**
  * Layanan manajemen pengaturan sekolah dan standar penilaian (SSOT)
  */
 export const SettingsService = {
   getSchoolSettings(): SchoolSettings {
     if (typeof window === "undefined") return SEED_SCHOOL_SETTINGS;
+    if (_cachedSchoolSettings) return _cachedSchoolSettings;
     try {
       const data = localStorage.getItem(STORAGE_KEY_SCHOOL_SETTINGS);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        _cachedSchoolSettings = parsed;
+        return parsed;
+      }
     } catch (e) {
       console.warn("Gagal membaca pengaturan sekolah dari storage:", e);
     }
+    _cachedSchoolSettings = SEED_SCHOOL_SETTINGS;
     return SEED_SCHOOL_SETTINGS;
   },
 
@@ -26,6 +35,8 @@ export const SettingsService = {
       ...settings,
       updated_at: new Date().toISOString(),
     };
+
+    _cachedSchoolSettings = updated;
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_SCHOOL_SETTINGS, JSON.stringify(updated));
@@ -44,12 +55,18 @@ export const SettingsService = {
 
   getGradingSettings(): GradingSettings {
     if (typeof window === "undefined") return SEED_GRADING_SETTINGS;
+    if (_cachedGradingSettings) return _cachedGradingSettings;
     try {
       const data = localStorage.getItem(STORAGE_KEY_GRADING_SETTINGS);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed = JSON.parse(data);
+        _cachedGradingSettings = parsed;
+        return parsed;
+      }
     } catch (e) {
       console.warn("Gagal membaca pengaturan skoring dari storage:", e);
     }
+    _cachedGradingSettings = SEED_GRADING_SETTINGS;
     return SEED_GRADING_SETTINGS;
   },
 
@@ -67,6 +84,8 @@ export const SettingsService = {
       ...settings,
       updated_at: new Date().toISOString(),
     };
+
+    _cachedGradingSettings = updated;
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_GRADING_SETTINGS, JSON.stringify(updated));

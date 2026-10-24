@@ -4,6 +4,7 @@ import { calculateMinimumSupervisionFrequency } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
 
 const STORAGE_KEY_TEACHERS = "smart_supervisi_teachers_db";
+let _cachedTeachers: Teacher[] | null = null;
 
 export interface ImportPreviewResult {
   valid: Teacher[];
@@ -21,6 +22,7 @@ export interface ImportPreviewResult {
 export const TeacherService = {
   getTeachers(): Teacher[] {
     if (typeof window === "undefined") return SEED_MOCK_TEACHERS;
+    if (_cachedTeachers) return _cachedTeachers;
     try {
       const data = localStorage.getItem(STORAGE_KEY_TEACHERS);
       if (data) {
@@ -31,6 +33,7 @@ export const TeacherService = {
           parsed.length >= 25 &&
           parsed.some((t) => t.nama_lengkap.includes("Aini Supiyah"))
         ) {
+          _cachedTeachers = parsed;
           return parsed;
         }
       }
@@ -43,6 +46,7 @@ export const TeacherService = {
     } catch (e) {
       console.warn("Gagal memperbarui database guru ke storage:", e);
     }
+    _cachedTeachers = SEED_MOCK_TEACHERS;
     return SEED_MOCK_TEACHERS;
   },
 
@@ -73,6 +77,7 @@ export const TeacherService = {
     if (typeof window !== "undefined") {
       const updatedList = [validated, ...teachers];
       localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(updatedList));
+      _cachedTeachers = updatedList;
 
       SettingsService.recordAuditLog({
         aksi: "TAMBAH_GURU",
@@ -114,6 +119,7 @@ export const TeacherService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(teachers));
+      _cachedTeachers = teachers;
 
       SettingsService.recordAuditLog({
         aksi: "UPDATE_GURU",
@@ -138,6 +144,7 @@ export const TeacherService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(teachers));
+      _cachedTeachers = teachers;
 
       SettingsService.recordAuditLog({
         aksi: "NONAKTIFKAN_GURU",
@@ -261,6 +268,7 @@ export const TeacherService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(merged));
+      _cachedTeachers = merged;
 
       SettingsService.recordAuditLog({
         aksi: "IMPOR_EXCEL_GURU",

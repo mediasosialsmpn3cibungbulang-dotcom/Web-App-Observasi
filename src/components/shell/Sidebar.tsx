@@ -103,6 +103,7 @@ export const Sidebar: React.FC = () => {
                   <li key={item.href}>
                     <Link
                       href={item.href}
+                      prefetch={true}
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-control text-sm font-medium transition-smooth",
                         isActive

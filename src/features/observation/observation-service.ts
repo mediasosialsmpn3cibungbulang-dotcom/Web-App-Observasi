@@ -23,6 +23,9 @@ const STORAGE_KEY_OBSERVATIONS = "smart_supervisi_observations_db";
 const STORAGE_KEY_SCORES = "smart_supervisi_observation_scores_db";
 const STORAGE_KEY_FACT_NOTES = "smart_supervisi_fact_notes_db";
 
+let _cachedObservations: Observation[] | null = null;
+let _cachedScores: ObservationScoreItem[] | null = null;
+
 export interface ObservationCalculationResult {
   completedCount: number;
   totalScore: number | null;
@@ -97,12 +100,18 @@ const SEED_FACT_NOTES_1: FactNote[] = [
 export const ObservationService = {
   getObservations(): Observation[] {
     if (typeof window === "undefined") return [SEED_OBSERVATION_1];
+    if (_cachedObservations) return _cachedObservations;
     try {
       const data = localStorage.getItem(STORAGE_KEY_OBSERVATIONS);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed: Observation[] = JSON.parse(data);
+        _cachedObservations = parsed;
+        return parsed;
+      }
     } catch (e) {
       console.warn("Gagal membaca observasi dari storage:", e);
     }
+    _cachedObservations = [SEED_OBSERVATION_1];
     return [SEED_OBSERVATION_1];
   },
 
@@ -175,15 +184,20 @@ export const ObservationService = {
     if (typeof window === "undefined") {
       return observationId === SEED_OBSERVATION_1.id ? SEED_SCORES_1 : [];
     }
+    if (_cachedScores) {
+      return _cachedScores.filter((s) => s.observation_id === observationId);
+    }
     try {
       const data = localStorage.getItem(STORAGE_KEY_SCORES);
       if (data) {
         const all: ObservationScoreItem[] = JSON.parse(data);
+        _cachedScores = all;
         return all.filter((s) => s.observation_id === observationId);
       }
     } catch (e) {
       console.warn("Gagal membaca skor dari storage:", e);
     }
+    _cachedScores = [...SEED_SCORES_1];
     return observationId === SEED_OBSERVATION_1.id ? SEED_SCORES_1 : [];
   },
 
@@ -259,6 +273,8 @@ export const ObservationService = {
       list.unshift(validated);
     }
 
+    _cachedObservations = list;
+
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_OBSERVATIONS, JSON.stringify(list));
       SettingsService.recordAuditLog({
@@ -290,6 +306,8 @@ export const ObservationService = {
       } else {
         all.push(validated);
       }
+
+      _cachedScores = all;
 
       localStorage.setItem(STORAGE_KEY_SCORES, JSON.stringify(all));
     } catch (e) {

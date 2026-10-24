@@ -10,6 +10,9 @@ import { SettingsService } from "../settings/settings-service";
 const STORAGE_KEY_FOLLOWUPS = "smart_supervisi_followups_db";
 const STORAGE_KEY_CHECKS = "smart_supervisi_followup_checks_db";
 
+let _cachedFollowups: FollowupItem[] | null = null;
+let _cachedChecks: FollowupCheck[] | null = null;
+
 const SEED_FOLLOWUP_1: FollowupItem = {
   id: "f1111111-1111-1111-1111-111111111111",
   coaching_session_id: "c1111111-1111-1111-1111-111111111111",
@@ -46,12 +49,18 @@ const SEED_CHECK_1: FollowupCheck = {
 export const FollowupService = {
   getFollowups(): FollowupItem[] {
     if (typeof window === "undefined") return [SEED_FOLLOWUP_1];
+    if (_cachedFollowups) return _cachedFollowups;
     try {
       const data = localStorage.getItem(STORAGE_KEY_FOLLOWUPS);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed: FollowupItem[] = JSON.parse(data);
+        _cachedFollowups = parsed;
+        return parsed;
+      }
     } catch (e) {
       console.warn("Gagal membaca followups:", e);
     }
+    _cachedFollowups = [SEED_FOLLOWUP_1];
     return [SEED_FOLLOWUP_1];
   },
 
@@ -68,7 +77,7 @@ export const FollowupService = {
   },
 
   saveFollowupItem(item: FollowupItem): FollowupItem {
-    const list = this.getFollowups();
+    const list = [...this.getFollowups()];
     const index = list.findIndex((f) => f.id === item.id);
 
     const updated: FollowupItem = {
@@ -85,6 +94,8 @@ export const FollowupService = {
       list.unshift(validated);
     }
 
+    _cachedFollowups = list;
+
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_FOLLOWUPS, JSON.stringify(list));
       SettingsService.recordAuditLog({
@@ -97,6 +108,20 @@ export const FollowupService = {
     }
 
     return validated;
+  },
+
+  deleteFollowupItem(id: string): void {
+    const list = this.getFollowups().filter((f) => f.id !== id);
+    _cachedFollowups = list;
+    if (typeof window !== "undefined") {
+      localStorage.setItem(STORAGE_KEY_FOLLOWUPS, JSON.stringify(list));
+      SettingsService.recordAuditLog({
+        aksi: "HAPUS_TINDAK_LANJUT",
+        entitas: "followup_items",
+        entitas_id: id,
+        actor_email: "admin@sekolah.sch.id",
+      });
+    }
   },
 
   updateStatus(
@@ -120,15 +145,20 @@ export const FollowupService = {
     if (typeof window === "undefined") {
       return followupId === SEED_FOLLOWUP_1.id ? [SEED_CHECK_1] : [];
     }
+    if (_cachedChecks) {
+      return _cachedChecks.filter((c) => c.followup_id === followupId);
+    }
     try {
       const data = localStorage.getItem(STORAGE_KEY_CHECKS);
       if (data) {
         const all: FollowupCheck[] = JSON.parse(data);
+        _cachedChecks = all;
         return all.filter((c) => c.followup_id === followupId);
       }
     } catch (e) {
       console.warn("Gagal membaca followup checks:", e);
     }
+    _cachedChecks = [SEED_CHECK_1];
     return followupId === SEED_FOLLOWUP_1.id ? [SEED_CHECK_1] : [];
   },
 
@@ -145,6 +175,7 @@ export const FollowupService = {
       const data = localStorage.getItem(STORAGE_KEY_CHECKS);
       const all: FollowupCheck[] = data ? JSON.parse(data) : [SEED_CHECK_1];
       all.push(validated);
+      _cachedChecks = all;
       localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(all));
     }
 
