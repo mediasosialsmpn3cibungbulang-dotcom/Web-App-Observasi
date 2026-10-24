@@ -348,7 +348,7 @@ export const PreObservationForm: React.FC = () => {
               type="button"
               variant="secondary"
               size="lg"
-              className="font-bold text-sm md:text-base h-12 px-5"
+              className="font-bold text-sm md:text-base h-12 px-5 whitespace-nowrap shrink-0"
               onClick={() => setIsPrintModalOpen(true)}
               title="Cetak lembar Berita Acara resmi untuk tanda tangan"
             >
@@ -360,7 +360,7 @@ export const PreObservationForm: React.FC = () => {
               type="button"
               variant="primary"
               size="lg"
-              className="font-bold text-sm md:text-base h-12 px-6 shadow-sm"
+              className="font-bold text-sm md:text-base h-12 px-6 shadow-sm whitespace-nowrap shrink-0"
               onClick={() => handleSave()}
             >
               <Save className="w-5 h-5 mr-2" />
@@ -835,27 +835,27 @@ export const PreObservationForm: React.FC = () => {
       </Panel>
 
       {/* BILAH TOMBOL AKSI BAWAH YANG SANGAT JELAS & MUDAH DIKLIK */}
-      <div className="p-5 md:p-6 rounded-2xl bg-surface border-2 border-primary/30 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="p-5 md:p-6 rounded-2xl bg-surface border-2 border-primary/30 shadow-lg flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <div>
-            <p className="font-bold text-base text-foreground">
+            <p className="font-bold text-base text-foreground leading-snug">
               Apakah seluruh kesepakatan sudah selesai dibahas?
             </p>
-            <p className="text-xs md:text-sm text-muted">
-              Klik tombol simpan di sebelah kanan agar hasil diskusi tersimpan dan siap dicetak sebagai Berita Acara A4.
+            <p className="text-xs md:text-sm text-muted mt-0.5">
+              Klik tombol simpan agar hasil diskusi tersimpan dan siap dicetak sebagai Berita Acara A4.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+        <div className="flex items-center gap-3 w-full lg:w-auto justify-end shrink-0 flex-wrap sm:flex-nowrap">
           <Button
             type="button"
             variant="secondary"
             size="lg"
-            className="h-12 px-5 font-bold text-sm md:text-base"
+            className="h-12 px-5 font-bold text-sm md:text-base whitespace-nowrap shrink-0 shadow-xs"
             onClick={() => setIsPrintModalOpen(true)}
           >
             <Printer className="w-5 h-5 mr-2 text-pine-600" />
@@ -866,7 +866,7 @@ export const PreObservationForm: React.FC = () => {
             type="button"
             variant="primary"
             size="lg"
-            className="h-12 px-7 font-bold text-sm md:text-base shadow-md"
+            className="h-12 px-6 font-bold text-sm md:text-base shadow-md whitespace-nowrap shrink-0"
             onClick={() => handleSave()}
           >
             <Save className="w-5 h-5 mr-2" />
