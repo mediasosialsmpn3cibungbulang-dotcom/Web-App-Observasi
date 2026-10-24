@@ -209,7 +209,7 @@ export const ObservationScoreItemSchema = z.object({
   observation_id: z.string().uuid(),
   kode_indikator: z.string().regex(/^[A-G][1-4]$/),
   skor: z.number().int().min(1).max(4),
-  bukti_nyata: z.string().min(1, "Bukti nyata observasi wajib diisi"),
+  bukti_nyata: z.string().default(""),
   catatan: z.string().optional(),
 });
 export type ObservationScoreItem = z.infer<typeof ObservationScoreItemSchema>;

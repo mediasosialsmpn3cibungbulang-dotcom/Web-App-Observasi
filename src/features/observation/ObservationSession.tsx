@@ -221,14 +221,26 @@ export const ObservationSession: React.FC = () => {
   const handleBuktiChange = (kode_indikator: string, bukti_nyata: string) => {
     if (!observation || observation.is_locked) return;
     const existingIndex = scoreItems.findIndex((s) => s.kode_indikator === kode_indikator);
+    const updated = [...scoreItems];
+
     if (existingIndex >= 0) {
-      const updated = [...scoreItems];
       updated[existingIndex] = {
         ...updated[existingIndex],
         bukti_nyata,
       };
       setScoreItems(updated);
       ObservationService.saveScoreItem(updated[existingIndex]);
+    } else {
+      const newItem: ObservationScoreItem = {
+        observation_id: observation.id,
+        kode_indikator,
+        skor: 3,
+        bukti_nyata,
+        catatan: "",
+      };
+      updated.push(newItem);
+      setScoreItems(updated);
+      ObservationService.saveScoreItem(newItem);
     }
   };
 

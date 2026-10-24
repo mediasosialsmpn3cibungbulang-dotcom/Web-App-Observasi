@@ -274,10 +274,10 @@ export const ObservationService = {
   },
 
   saveScoreItem(item: ObservationScoreItem): void {
-    const validated = ObservationScoreItemSchema.parse(item);
     if (typeof window === "undefined") return;
 
     try {
+      const validated = ObservationScoreItemSchema.parse(item);
       const data = localStorage.getItem(STORAGE_KEY_SCORES);
       let all: ObservationScoreItem[] = data ? JSON.parse(data) : [...SEED_SCORES_1];
 
@@ -337,6 +337,16 @@ export const ObservationService = {
     const scores = this.getAllScores(observationId);
     if (scores.length < 28) {
       throw new Error(`Observasi belum lengkap (${scores.length}/28 indikator terisi). Seluruh 28 indikator wajib dinilai sebelum finalisasi.`);
+    }
+
+    const missingBukti = scores.filter((s) => !s.bukti_nyata || s.bukti_nyata.trim().length === 0);
+    if (missingBukti.length > 0) {
+      throw new Error(
+        `Terdapat ${missingBukti.length} indikator yang belum diisi bukti nyatanya (${missingBukti
+          .map((m) => m.kode_indikator)
+          .slice(0, 4)
+          .join(", ")}${missingBukti.length > 4 ? "..." : ""}). Seluruh indikator wajib memiliki bukti nyata sebelum finalisasi.`
+      );
     }
 
     obs.status = "Final";
