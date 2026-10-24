@@ -69,10 +69,10 @@ export const MonitoringService = {
       const teacherFollowups = allFollowups.filter((f) => f.teacher_id === teacher.id);
       const minSesiWajib = TeacherService.getRequiredFrequency(teacher);
 
-      // Ambil hingga 3 sesi
-      const s1 = teacherObs[0] || null;
-      const s2 = teacherObs[1] || null;
-      const s3 = teacherObs[2] || null;
+      // Ambil hingga 3 sesi berdasarkan nomor sesi atau urutan tanggal
+      const s1 = teacherObs.find((o) => o.sesi_ke === 1) || teacherObs[0] || null;
+      const s2 = teacherObs.find((o) => o.sesi_ke === 2) || (teacherObs[1] && teacherObs[1] !== s1 ? teacherObs[1] : null);
+      const s3 = teacherObs.find((o) => o.sesi_ke === 3) || (teacherObs[2] && teacherObs[2] !== s1 && teacherObs[2] !== s2 ? teacherObs[2] : null);
 
       const formatSesi = (obs: Observation | null) => {
         if (!obs) return null;

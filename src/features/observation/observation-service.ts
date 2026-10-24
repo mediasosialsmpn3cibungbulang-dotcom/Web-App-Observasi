@@ -116,6 +116,61 @@ export const ObservationService = {
     );
   },
 
+  /**
+   * Mengambil sesi observasi spesifik berdasarkan guru, semester, dan nomor sesi
+   */
+  getObservationByTeacherSemesterAndSession(
+    teacherId: string,
+    semester: string,
+    sesiKe: number
+  ): Observation | undefined {
+    return this.getObservations().find(
+      (o) => o.teacher_id === teacherId && o.semester === semester && o.sesi_ke === sesiKe
+    );
+  },
+
+  /**
+   * Mengambil seluruh sesi observasi milik seorang guru di semester tertentu
+   */
+  getObservationsByTeacherAndSemester(teacherId: string, semester: string): Observation[] {
+    return this.getObservations()
+      .filter((o) => o.teacher_id === teacherId && o.semester === semester)
+      .sort((a, b) => a.sesi_ke - b.sesi_ke);
+  },
+
+  /**
+   * Membuat draf sesi observasi baru jika belum tersedia
+   */
+  createObservationSession(
+    teacherId: string,
+    semester: string,
+    sesiKe: number,
+    initialData?: Partial<Observation>
+  ): Observation {
+    const teacher = TeacherService.getTeacherById(teacherId);
+    const newObs: Observation = {
+      id: crypto.randomUUID(),
+      schedule_id: crypto.randomUUID(),
+      teacher_id: teacherId,
+      supervisor_id: "00000000-0000-0000-0000-000000000001",
+      semester,
+      sesi_ke: sesiKe,
+      tanggal_observasi: initialData?.tanggal_observasi || new Date().toISOString().split("T")[0],
+      jam_mulai: initialData?.jam_mulai || "08:00",
+      jam_selesai: initialData?.jam_selesai || "09:30",
+      kelas: initialData?.kelas || (teacher ? teacher.kelas_diampu : "X-A"),
+      jumlah_siswa_hadir: initialData?.jumlah_siswa_hadir ?? 32,
+      catatan_umum: initialData?.catatan_umum || "",
+      status: "Draf",
+      is_locked: false,
+      alasan_buka_kunci: null,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      version: 1,
+    };
+    return this.saveObservation(newObs);
+  },
+
   getAllScores(observationId: string): ObservationScoreItem[] {
     if (typeof window === "undefined") {
       return observationId === SEED_OBSERVATION_1.id ? SEED_SCORES_1 : [];
