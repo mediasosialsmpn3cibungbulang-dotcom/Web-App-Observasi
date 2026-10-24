@@ -707,43 +707,47 @@ export const PreObservationForm: React.FC = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
+          {/* 3 Isian Berbaris Vertikal Satu-Satu agar Lapang dan Tidak Sempit */}
+          <div className="space-y-3.5 pt-1">
+            {/* Baris 1: Tantangan */}
             <div className="space-y-1">
               <label className="block text-xs font-bold text-foreground">
-                Tantangan yang Dikhawatirkan:
+                1. Kendala / Tantangan yang Dikhawatirkan:
               </label>
               <textarea
                 rows={2}
                 value={formData.tantangan_dihadapi}
                 onChange={(e) => setFormData({ ...formData, tantangan_dihadapi: e.target.value })}
-                placeholder="Contoh: Siswa pasif saat kerja kelompok..."
-                className="w-full p-2 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground"
+                placeholder="Contoh: Sebagian siswa cenderung pasif dan mengandalkan teman kelompoknya yang lebih dominan..."
+                className="w-full p-2.5 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
               />
             </div>
 
+            {/* Baris 2: Rencana Diferensiasi */}
             <div className="space-y-1">
               <label className="block text-xs font-bold text-foreground">
-                Rencana Diferensiasi:
+                2. Bantuan untuk Siswa Tertinggal (Rencana Diferensiasi):
               </label>
               <textarea
                 rows={2}
                 value={formData.rencana_diferensiasi}
                 onChange={(e) => setFormData({ ...formData, rencana_diferensiasi: e.target.value })}
-                placeholder="Contoh: Menyiapkan tutor sebaya & LKPD bertingkat..."
-                className="w-full p-2 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground"
+                placeholder="Contoh: Menyediakan tugas berjenjang pada LKPD dan membentuk kelompok heterogen dengan tutor sebaya..."
+                className="w-full p-2.5 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
               />
             </div>
 
+            {/* Baris 3: Harapan Guru */}
             <div className="space-y-1">
               <label className="block text-xs font-bold text-foreground">
-                Harapan Guru Terhadap Supervisi:
+                3. Harapan Guru Terhadap Supervisi Ini:
               </label>
               <textarea
                 rows={2}
                 value={formData.harapan_guru}
                 onChange={(e) => setFormData({ ...formData, harapan_guru: e.target.value })}
-                placeholder="Contoh: Saran praktis manajemen waktu kelas..."
-                className="w-full p-2 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground"
+                placeholder="Contoh: Mendapatkan saran praktis tentang manajemen waktu kerja kelompok agar tidak molor..."
+                className="w-full p-2.5 text-xs md:text-sm rounded-lg border border-border bg-surface text-foreground focus:outline-none focus:ring-1 focus:ring-primary leading-relaxed"
               />
             </div>
           </div>
