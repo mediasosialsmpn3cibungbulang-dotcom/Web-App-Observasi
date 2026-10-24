@@ -23,9 +23,25 @@ export const TeacherService = {
     if (typeof window === "undefined") return SEED_MOCK_TEACHERS;
     try {
       const data = localStorage.getItem(STORAGE_KEY_TEACHERS);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed: Teacher[] = JSON.parse(data);
+        // Validasi jika data di penyimpanan lokal sudah berupa 25 guru terbaru (Fase D SMP)
+        if (
+          Array.isArray(parsed) &&
+          parsed.length >= 25 &&
+          parsed.some((t) => t.nama_lengkap.includes("Aini Supiyah"))
+        ) {
+          return parsed;
+        }
+      }
     } catch (e) {
       console.warn("Gagal membaca database guru dari storage:", e);
+    }
+    // Segarkan penyimpanan lokal secara otomatis dengan 25 guru terbaru
+    try {
+      localStorage.setItem(STORAGE_KEY_TEACHERS, JSON.stringify(SEED_MOCK_TEACHERS));
+    } catch (e) {
+      console.warn("Gagal memperbarui database guru ke storage:", e);
     }
     return SEED_MOCK_TEACHERS;
   },

@@ -18,7 +18,7 @@ export interface ScheduleWithDetails extends Schedule {
 const SEED_SCHEDULES: Schedule[] = [
   {
     id: "s1111111-1111-1111-1111-111111111111",
-    teacher_id: "a1111111-1111-1111-1111-111111111111", // Ahmad Fauzi (Senior)
+    teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM (Wakasek Humas)
     semester: "2026/2027 Ganjil",
     gelombang: "2 Reguler",
     rencana_pra_observasi: "2026-08-10",
@@ -30,7 +30,7 @@ const SEED_SCHEDULES: Schedule[] = [
   },
   {
     id: "s2222222-2222-2222-2222-222222222222",
-    teacher_id: "a2222222-2222-2222-2222-222222222222", // Siti Nurhaliza (Guru Baru)
+    teacher_id: "a2222222-2222-2222-2222-222222222222", // Lilis Yuliati, M.Pd (Wakasek Kesiswaan)
     semester: "2026/2027 Ganjil",
     gelombang: "1 Prioritas",
     rencana_pra_observasi: "2026-09-02",
@@ -42,7 +42,7 @@ const SEED_SCHEDULES: Schedule[] = [
   },
   {
     id: "s3333333-3333-3333-3333-333333333333",
-    teacher_id: "a3333333-3333-3333-3333-333333333333", // Budi Santoso (Reguler)
+    teacher_id: "a3333333-3333-3333-3333-333333333333", // Hj. Heny Susana, S.Pd (Wali Kelas 9C)
     semester: "2026/2027 Ganjil",
     gelombang: "2 Reguler",
     rencana_pra_observasi: "2026-10-15",

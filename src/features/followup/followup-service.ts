@@ -13,7 +13,7 @@ const STORAGE_KEY_CHECKS = "smart_supervisi_followup_checks_db";
 const SEED_FOLLOWUP_1: FollowupItem = {
   id: "f1111111-1111-1111-1111-111111111111",
   coaching_session_id: "c1111111-1111-1111-1111-111111111111",
-  teacher_id: "a1111111-1111-1111-1111-111111111111", // Ahmad Fauzi
+  teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM
   semester: "2026/2027 Ganjil",
   masalah_utama: "Siswa di kelompok 4 dan 5 pasif saat peralihan dari soal cerita ke formulasi simbolik SPLTV.",
   solusi_disepakati: "Mengembangkan LKPD berdiferensiasi dengan scaffolding visual bertingkat untuk membantu abstraksi aljabar.",

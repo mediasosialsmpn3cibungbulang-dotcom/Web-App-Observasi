@@ -8,19 +8,19 @@ const STORAGE_KEY_PRE_OBS = "smart_supervisi_pre_obs_db";
 const SEED_PRE_OBSERVATION: PreObservation = {
   id: "p1111111-1111-1111-1111-111111111111",
   schedule_id: "s1111111-1111-1111-1111-111111111111",
-  teacher_id: "a1111111-1111-1111-1111-111111111111", // Ahmad Fauzi
+  teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM
   supervisor_id: "00000000-0000-0000-0000-000000000001",
   semester: "2026/2027 Ganjil",
   tanggal_pelaksanaan: "2026-08-10",
-  topik_pembelajaran: "Sistem Persamaan Linear Tiga Variabel (SPLTV)",
-  tujuan_pembelajaran: "Siswa mampu memodelkan masalah kontekstual ke dalam SPLTV dan menyelesaikannya secara kolaboratif.",
+  topik_pembelajaran: "Keragaman Aktivitas Ekonomi & Interaksi Antarruang di Indonesia",
+  tujuan_pembelajaran: "Siswa mampu menganalisis peran perdagangan antarpulau dalam pengembangan ekonomi maritim dan agrikultur secara kritis.",
   metode_pembelajaran: "Problem-Based Learning (PBL) Berdiferensiasi",
-  media_alat: "Lembar Kerja Peserta Didik (LKPD), Aplikasi Geogebra, LCD Proyektor",
+  media_alat: "Lembar Kerja Peserta Didik (LKPD), Peta Tematik Ekonomi Indonesia, LCD Proyektor",
   teknik_asesmen: "Asesmen Formatif (Kuis Cepat Exit Ticket) & Rubrik Diskusi Kelompok",
-  alokasi_waktu: "2 JP (2 x 45 Menit)",
+  alokasi_waktu: "2 JP (2 x 40 Menit)",
   jumlah_siswa: 32,
-  karakteristik_siswa: "Kesiapan belajar beragam: 10 siswa mahir konsep dasar, 16 siswa sedang, 6 siswa butuh pendampingan khusus.",
-  tantangan_dihadapi: "Siswa cenderung pasif saat peralihan dari soal cerita kontekstual ke formulasi simbol aljabar abstrak.",
+  karakteristik_siswa: "Kesiapan belajar beragam: 10 siswa mahir literasi spasial, 16 siswa sedang, 6 siswa butuh pendampingan khusus.",
+  tantangan_dihadapi: "Siswa cenderung pasif saat peralihan dari membaca peta tematik ke analisis perbandingan komoditas.",
   rencana_diferensiasi: "Menyediakan LKPD berjenjang (scaffolding) dan membagi kelompok belajar berdasarkan profil minat.",
   harapan_guru: "Mendapatkan masukan konstruktif mengenai proporsi waktu saat membimbing kelompok yang tertinggal.",
   fokus_amatan: [

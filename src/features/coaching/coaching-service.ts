@@ -16,7 +16,7 @@ const STORAGE_KEY_SESSION_QUESTIONS = "smart_supervisi_coaching_session_question
 const SEED_COACHING_SESSION_1: CoachingSession = {
   id: "c1111111-1111-1111-1111-111111111111",
   observation_id: "o1111111-1111-1111-1111-111111111111",
-  teacher_id: "a1111111-1111-1111-1111-111111111111", // Ahmad Fauzi
+  teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM
   supervisor_id: "00000000-0000-0000-0000-000000000001",
   semester: "2026/2027 Ganjil",
   tanggal_coaching: "2026-08-18",

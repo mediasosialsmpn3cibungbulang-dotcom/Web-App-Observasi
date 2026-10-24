@@ -32,20 +32,20 @@ export interface ObservationCalculationResult {
   priorityAspect: AspectCode | null;
 }
 
-// Data awal contoh observasi selesai (Obs-1 Ahmad Fauzi)
+// Data awal contoh observasi selesai (Obs-1 Aini Supiyah, S.Pd, MM)
 const SEED_OBSERVATION_1: Observation = {
   id: "o1111111-1111-1111-1111-111111111111",
   schedule_id: "s1111111-1111-1111-1111-111111111111",
-  teacher_id: "a1111111-1111-1111-1111-111111111111", // Ahmad Fauzi
+  teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM
   supervisor_id: "00000000-0000-0000-0000-000000000001",
   semester: "2026/2027 Ganjil",
   sesi_ke: 1,
   tanggal_observasi: "2026-08-15",
   jam_mulai: "07:30",
-  jam_selesai: "09:00",
-  kelas: "X-A",
+  jam_selesai: "08:50",
+  kelas: "9-A",
   jumlah_siswa_hadir: 32,
-  catatan_umum: "Pembelajaran SPLTV berjalan aktif dengan metode PBL berdiferensiasi.",
+  catatan_umum: "Pembelajaran IPS materi interaksi antarruang berjalan aktif dengan metode PBL berdiferensiasi.",
   status: "Final",
   is_locked: true,
   alasan_buka_kunci: null,
@@ -54,7 +54,7 @@ const SEED_OBSERVATION_1: Observation = {
   version: 1,
 };
 
-// 28 skor awal untuk Obs-1 (Ahmad Fauzi) bernilai rata-rata 3.5 (Total skor 99 = 88.4% Baik)
+// 28 skor awal untuk Obs-1 (Aini Supiyah) bernilai rata-rata 3.5 (Total skor 99 = 88.4% Baik)
 const SEED_SCORES_1: ObservationScoreItem[] = SEED_INDICATORS.map((ind, idx) => ({
   observation_id: "o1111111-1111-1111-1111-111111111111",
   kode_indikator: ind.kode,
