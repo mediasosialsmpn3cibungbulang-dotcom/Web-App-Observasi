@@ -24,6 +24,31 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
 
   const { teacher } = summary;
 
+  // Sesuaikan jumlah baris sesi dengan target sesi guru atau jumlah sesi riil yang terlaksana (misal: jika target 1, hanya tampilkan 1 baris)
+  const targetSesiCount = Math.max(summary.min_sesi_wajib || 1, summary.total_sesi || 1);
+
+  // Keterangan kontekstual per nomor sesi
+  const getSesiKeterangan = (sesiNum: number, isDone: boolean) => {
+    if (!isDone) return "Menunggu pelaksanaan jadwal observasi";
+    if (sesiNum === 1) return "Observasi pembelajaran (diagnostik capaian awal)";
+    if (sesiNum === 2) return "Observasi implementasi rencana tindak lanjut (RTL)";
+    if (sesiNum === 3) return "Observasi pemantapan kompetensi pembelajaran";
+    return `Observasi siklus lanjutan ke-${sesiNum}`;
+  };
+
+  // Kumpulan data sesi yang tercatat
+  const allSesiData = [summary.sesi_1, summary.sesi_2, summary.sesi_3];
+
+  const renderedSessions = Array.from({ length: targetSesiCount }, (_, idx) => {
+    const sesiNum = idx + 1;
+    const sesiData = allSesiData[idx] || null;
+    return {
+      sesiNum,
+      sesiData,
+      keterangan: getSesiKeterangan(sesiNum, !!sesiData),
+    };
+  });
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
       <div className="bg-white text-black border border-border rounded-panel max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
@@ -31,7 +56,7 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
         <div className="no-print flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
             <Printer className="w-5 h-5 text-pine-600" />
-            <span className="font-bold font-serif text-sm">
+            <span className="font-bold text-sm">
               Lembar Rekap Capaian & Evaluasi Perkembangan Guru (A4 Siap Cetak)
             </span>
           </div>
@@ -98,22 +123,39 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
                 <td className="py-1 font-semibold">Mata Pelajaran</td>
                 <td className="py-1">:</td>
                 <td className="py-1">{teacher.mata_pelajaran}</td>
-                <td className="py-1 font-semibold">Target Skor Sekolah</td>
+                <td className="py-1 font-semibold">Target Sesi Supervisi</td>
+                <td className="py-1">:</td>
+                <td className="py-1 font-mono font-bold">
+                  {summary.min_sesi_wajib}x Sesi {teacher.target_sesi ? "(Kustom)" : ""}
+                </td>
+              </tr>
+              <tr>
+                <td className="py-1 font-semibold">Target Skor Minimal</td>
                 <td className="py-1">:</td>
                 <td className="py-1 font-mono font-bold">{summary.target_skor}% (Baik)</td>
+                <td className="py-1 font-semibold">Status Capaian</td>
+                <td className="py-1">:</td>
+                <td className="py-1 font-semibold">
+                  {summary.sesi_selesai ? "Tuntas Sesuai Target" : "Dalam Pelaksanaan"}
+                </td>
               </tr>
             </tbody>
           </table>
 
-          {/* TABEL PERKEMBANGAN SESI OBSERVASI */}
+          {/* TABEL PERKEMBANGAN SESI OBSERVASI (DINAMIS SESUAI TARGET SESI) */}
           <div className="space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider">
-              I. Rekapitulasi Sesi Observasi Kelas (Sheet 8)
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider">
+                I. Rekapitulasi Sesi Observasi Kelas (Sheet 8)
+              </h4>
+              <span className="text-[11px] font-mono text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded border border-gray-300">
+                Target: <strong>{targetSesiCount} Sesi</strong> {teacher.target_sesi ? "(Kustom)" : ""}
+              </span>
+            </div>
             <table className="w-full text-xs border border-black border-collapse text-center">
               <thead>
                 <tr className="bg-gray-100 border-b border-black font-bold">
-                  <th className="border border-black p-2">Sesi</th>
+                  <th className="border border-black p-2 w-16">Sesi</th>
                   <th className="border border-black p-2">Tanggal Pelaksanaan</th>
                   <th className="border border-black p-2">Total Skor (Max 112)</th>
                   <th className="border border-black p-2">Persentase (%)</th>
@@ -122,30 +164,26 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border border-black p-2 font-bold">Sesi 1</td>
-                  <td className="border border-black p-2">{summary.sesi_1 ? formatTanggalIndonesia(summary.sesi_1.tanggal) : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-semibold">{summary.sesi_1 ? summary.sesi_1.skor : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-bold">{summary.sesi_1 ? `${summary.sesi_1.persentase}%` : "-"}</td>
-                  <td className="border border-black p-2">{summary.sesi_1 ? summary.sesi_1.predikat : "Belum Dilaksanakan"}</td>
-                  <td className="border border-black p-2 text-left text-[11px]">Observasi diagnostik awal</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2 font-bold">Sesi 2</td>
-                  <td className="border border-black p-2">{summary.sesi_2 ? formatTanggalIndonesia(summary.sesi_2.tanggal) : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-semibold">{summary.sesi_2 ? summary.sesi_2.skor : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-bold">{summary.sesi_2 ? `${summary.sesi_2.persentase}%` : "-"}</td>
-                  <td className="border border-black p-2">{summary.sesi_2 ? summary.sesi_2.predikat : "Belum Dilaksanakan"}</td>
-                  <td className="border border-black p-2 text-left text-[11px]">Observasi implementasi tindak lanjut</td>
-                </tr>
-                <tr>
-                  <td className="border border-black p-2 font-bold">Sesi 3</td>
-                  <td className="border border-black p-2">{summary.sesi_3 ? formatTanggalIndonesia(summary.sesi_3.tanggal) : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-semibold">{summary.sesi_3 ? summary.sesi_3.skor : "-"}</td>
-                  <td className="border border-black p-2 font-mono font-bold">{summary.sesi_3 ? `${summary.sesi_3.persentase}%` : "-"}</td>
-                  <td className="border border-black p-2">{summary.sesi_3 ? summary.sesi_3.predikat : "Belum Dilaksanakan"}</td>
-                  <td className="border border-black p-2 text-left text-[11px]">Observasi pemantapan kompetensi</td>
-                </tr>
+                {renderedSessions.map((item) => (
+                  <tr key={item.sesiNum}>
+                    <td className="border border-black p-2 font-bold">Sesi {item.sesiNum}</td>
+                    <td className="border border-black p-2">
+                      {item.sesiData ? formatTanggalIndonesia(item.sesiData.tanggal) : "-"}
+                    </td>
+                    <td className="border border-black p-2 font-mono font-semibold">
+                      {item.sesiData ? item.sesiData.skor : "-"}
+                    </td>
+                    <td className="border border-black p-2 font-mono font-bold">
+                      {item.sesiData ? `${item.sesiData.persentase}%` : "-"}
+                    </td>
+                    <td className="border border-black p-2">
+                      {item.sesiData ? item.sesiData.predikat : "Belum Dilaksanakan"}
+                    </td>
+                    <td className="border border-black p-2 text-left text-[11px]">
+                      {item.keterangan}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -177,13 +215,13 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
             </div>
           </div>
 
-          {/* ANALISIS 5 ASPEK PEMBELAJARAN */}
+          {/* ANALISIS 7 ASPEK PEMBELAJARAN */}
           {summary.rata_aspek && (
             <div className="space-y-2">
               <h4 className="text-xs font-bold uppercase tracking-wider">
-                III. Analisis Rata-Rata Aspek Pembelajaran (Skala 1.00 - 4.00)
+                III. Analisis Rata-Rata 7 Aspek Pembelajaran (Skala 1.00 - 4.00)
               </h4>
-              <div className="grid grid-cols-5 gap-2 text-center text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2 text-center text-xs">
                 <div className="p-2 border border-black">
                   <p className="text-[10px] uppercase font-bold">A. Perencanaan</p>
                   <p className="font-mono font-bold text-sm mt-1">{summary.rata_aspek?.A != null ? summary.rata_aspek.A.toFixed(2) : "-"}</p>
@@ -203,6 +241,14 @@ export const TeacherMonitoringPrintModal: React.FC<TeacherMonitoringPrintModalPr
                 <div className="p-2 border border-black">
                   <p className="text-[10px] uppercase font-bold">E. Iklim Kelas</p>
                   <p className="font-mono font-bold text-sm mt-1">{summary.rata_aspek?.E != null ? summary.rata_aspek.E.toFixed(2) : "-"}</p>
+                </div>
+                <div className="p-2 border border-black">
+                  <p className="text-[10px] uppercase font-bold">F. Refleksi</p>
+                  <p className="font-mono font-bold text-sm mt-1">{summary.rata_aspek?.F != null ? summary.rata_aspek.F.toFixed(2) : "-"}</p>
+                </div>
+                <div className="p-2 border border-black">
+                  <p className="text-[10px] uppercase font-bold">G. RTL</p>
+                  <p className="font-mono font-bold text-sm mt-1">{summary.rata_aspek?.G != null ? summary.rata_aspek.G.toFixed(2) : "-"}</p>
                 </div>
               </div>
               <p className="text-xs text-gray-700 italic mt-1">

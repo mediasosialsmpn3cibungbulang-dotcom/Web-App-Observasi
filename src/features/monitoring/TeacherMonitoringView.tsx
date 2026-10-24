@@ -253,8 +253,8 @@ export function TeacherMonitoringView() {
 
       {/* Matriks Evaluasi & Capaian Guru */}
       <Panel
-        title="Daftar Evaluasi Nilai 3 Sesi Observasi & Rencana Tindak Lanjut Guru"
-        subtitle="Rincian nilai observasi tiap guru, perbandingan dengan target sekolah, serta perkembangan mutu mengajar"
+        title="Daftar Evaluasi Nilai Observasi & Rencana Tindak Lanjut Guru"
+        subtitle="Rincian nilai observasi tiap guru sesuai target sesi, perbandingan dengan target sekolah, serta perkembangan mutu mengajar"
       >
         <div className="overflow-x-auto -mx-4 md:-mx-6">
           <table className="w-full text-left text-sm border-collapse">
@@ -316,6 +316,10 @@ export function TeacherMonitoringView() {
                             <span className="font-bold">{item.sesi_2.persentase}%</span>
                             <span className="block text-[10px] text-muted">{item.sesi_2.predikat}</span>
                           </div>
+                        ) : item.min_sesi_wajib < 2 ? (
+                          <span className="text-muted/40 text-[11px]" title="Tidak ditargetkan untuk guru ini (Target: 1x)">
+                            -
+                          </span>
                         ) : (
                           <span className="text-muted text-xs">-</span>
                         )}
@@ -328,6 +332,10 @@ export function TeacherMonitoringView() {
                             <span className="font-bold">{item.sesi_3.persentase}%</span>
                             <span className="block text-[10px] text-muted">{item.sesi_3.predikat}</span>
                           </div>
+                        ) : item.min_sesi_wajib < 3 ? (
+                          <span className="text-muted/40 text-[11px]" title="Tidak ditargetkan untuk guru ini">
+                            -
+                          </span>
                         ) : (
                           <span className="text-muted text-xs">-</span>
                         )}
