@@ -37,10 +37,10 @@ export const Header: React.FC = () => {
       {/* Kiri: Identitas Aplikasi Mobile & Info Semester */}
       <div className="flex items-center gap-3">
         <div className="lg:hidden flex items-center gap-2">
-          <div className="w-8 h-8 rounded-control bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm font-serif">
-            S
+          <div className="w-8 h-8 rounded-lg bg-pine-600 text-white flex items-center justify-center font-extrabold text-xs">
+            SS
           </div>
-          <span className="font-serif font-bold text-sm text-foreground">Smart Supervisi</span>
+          <span className="font-bold text-sm text-foreground">Smart Supervisi</span>
         </div>
 
         {/* Badge Semester Aktif */}

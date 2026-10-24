@@ -34,7 +34,7 @@ export default function GlobalError({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold font-serif mb-2">Terjadi Gangguan Sistem</h2>
+          <h2 className="text-xl font-bold mb-2">Terjadi Gangguan Sistem</h2>
           <p className="text-sm text-[#565C58] dark:text-[#A9AFA9] mb-6">
             Aplikasi mengalami kendala yang tidak terduga. Data draf Anda yang tersimpan di perangkat tetap aman.
           </p>

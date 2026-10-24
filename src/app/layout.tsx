@@ -1,8 +1,17 @@
 import type { Metadata, Viewport } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { Header } from "@/components/shell/Header";
 import { BottomBar } from "@/components/shell/BottomBar";
+
+// Font sans-serif modern yang ramah, bersih, dan sangat mudah dibaca
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Smart Supervisi & Coaching Guru",
@@ -18,8 +27,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#FAF8F3" },
-    { media: "(prefers-color-scheme: dark)", color: "#16181A" },
+    { media: "(prefers-color-scheme: light)", color: "#F8FAF9" },
+    { media: "(prefers-color-scheme: dark)", color: "#131615" },
   ],
 };
 
@@ -29,8 +38,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" suppressHydrationWarning>
-      <body className="min-h-screen flex flex-col bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
+    <html lang="id" className={plusJakarta.variable} suppressHydrationWarning>
+      <body className="min-h-screen flex flex-col font-sans bg-background text-foreground antialiased selection:bg-pine-600/20 selection:text-pine-700">
         <div className="flex-1 flex w-full">
           {/* Sidebar Navigasi Desktop */}
           <Sidebar />

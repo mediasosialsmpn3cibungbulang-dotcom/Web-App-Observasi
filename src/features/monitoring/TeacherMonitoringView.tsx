@@ -144,19 +144,19 @@ export function TeacherMonitoringView() {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <Target className="w-7 h-7 text-pine-600 dark:text-pine-400" />
-            Target, Tren & Evaluasi Capaian Guru
+            Evaluasi Perkembangan Nilai & Target Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Evaluasi ketercapaian target sekolah (Sheet 8 & 9), analisis tren 3 sesi observasi, dan monitoring komitmen RTL.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Pantau kemajuan mengajar guru dari sesi ke sesi, pencapaian target kelulusan sekolah, dan realisasi perbaikan kelas.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <Button variant="secondary" size="md" onClick={handleExportCSV}>
             <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Ekspor Data (Sheet 8-9)
+            Download Data (Excel/CSV)
           </Button>
         </div>
       </div>
@@ -252,20 +252,23 @@ export function TeacherMonitoringView() {
       </div>
 
       {/* Matriks Evaluasi & Capaian Guru */}
-      <Panel title="Matriks Evaluasi Target, Tren 3 Sesi, dan Realisasi RTL (Sheet 8 & 9)">
+      <Panel
+        title="Daftar Evaluasi Nilai 3 Sesi Observasi & Rencana Tindak Lanjut Guru"
+        subtitle="Rincian nilai observasi tiap guru, perbandingan dengan target sekolah, serta perkembangan mutu mengajar"
+      >
         <div className="overflow-x-auto -mx-4 md:-mx-6">
           <table className="w-full text-left text-sm border-collapse">
             <thead className="bg-black/5 dark:bg-white/5 border-b border-border text-xs uppercase text-muted tracking-wider">
               <tr>
-                <th className="py-3 px-4 md:px-6">Guru & Mata Pelajaran</th>
-                <th className="py-3 px-3 text-center">Sesi 1</th>
-                <th className="py-3 px-3 text-center">Sesi 2</th>
-                <th className="py-3 px-3 text-center">Sesi 3</th>
-                <th className="py-3 px-4 text-center">Skor Akhir & Predikat</th>
-                <th className="py-3 px-4 text-center">Evaluasi Target</th>
-                <th className="py-3 px-4 text-center">Tren Progres</th>
-                <th className="py-3 px-4">Prioritas & RTL</th>
-                <th className="py-3 px-4 text-center">Aksi</th>
+                <th className="py-3 px-4 md:px-6">Nama Guru & Mapel</th>
+                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-1">Obs-1</th>
+                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-2">Obs-2</th>
+                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-3">Obs-3</th>
+                <th className="py-3 px-4 text-center">Nilai Terbaru</th>
+                <th className="py-3 px-4 text-center">Target Sekolah</th>
+                <th className="py-3 px-4 text-center">Kemajuan Nilai</th>
+                <th className="py-3 px-4">Fokus Bimbingan & Aksi</th>
+                <th className="py-3 px-4 text-center">Dokumen</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

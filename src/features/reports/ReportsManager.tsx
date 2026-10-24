@@ -116,12 +116,12 @@ export function ReportsManager() {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <FileBarChart2 className="w-7 h-7 text-pine-600 dark:text-pine-400" />
-            Rekapitulasi & Laporan Supervisi Akademik
+            Rekapitulasi & Laporan Supervisi Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Format resmi penjaminan mutu pembelajaran untuk Kepala Sekolah, Dewan Guru, dan Pengawas Pembina Dinas Pendidikan.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Format laporan resmi untuk Kepala Sekolah, Dewan Guru, dan Pengawas Pembina Dinas Pendidikan.
           </p>
         </div>
 

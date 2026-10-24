@@ -16,11 +16,14 @@ import {
   FileBarChart,
   Target,
   Sparkles,
+  ClipboardList,
+  Check,
+  ChevronRight,
+  Info,
 } from "lucide-react";
 import { Panel } from "@/components/ui/Panel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { TeacherService } from "@/features/teachers/teacher-service";
 import { MonitoringService, TeacherMonitoringSummary } from "@/features/monitoring/monitoring-service";
 import { ScheduleService } from "@/features/schedules/schedule-service";
 import { FollowupService } from "@/features/followup/followup-service";
@@ -72,9 +75,9 @@ export default function BerandaPage() {
 
   // Data Grafik 1: Donut Status Supervisi
   const donutData = [
-    { label: "Selesai", value: guruSelesai, color: "#1F5C45" },
-    { label: "Dalam Proses", value: guruDalamProses, color: "#D97706" },
-    { label: "Belum Mulai", value: guruBelumMulai, color: "#9CA3AF" },
+    { label: "Selesai Dinilai", value: guruSelesai, color: "#166534" },
+    { label: "Sedang Berjalan", value: guruDalamProses, color: "#D97706" },
+    { label: "Belum Dimulai", value: guruBelumMulai, color: "#9CA3AF" },
   ];
 
   // Data Grafik 2: Distribusi Predikat Guru
@@ -84,9 +87,9 @@ export default function BerandaPage() {
   const countPerlu = summaries.filter((s) => s.predikat_terbaru === "Perlu Pembinaan").length;
 
   const predicateData = [
-    { label: "Amat Baik", count: countAmatBaik, color: "#1F5C45" },
-    { label: "Baik", count: countBaik, color: "#2E7D5D" },
-    { label: "Cukup", count: countCukup, color: "#D97706" },
+    { label: "Amat Baik (≥90%)", count: countAmatBaik, color: "#166534" },
+    { label: "Baik (75-89%)", count: countBaik, color: "#1D4ED8" },
+    { label: "Cukup (60-74%)", count: countCukup, color: "#D97706" },
     { label: "Perlu Bimbingan", count: countPerlu, color: "#DC2626" },
   ];
 
@@ -100,10 +103,10 @@ export default function BerandaPage() {
   };
 
   const aspectData = [
-    { kode: "A", nama: "Perencanaan Pembelajaran", average: calcAspectAverage("A") },
-    { kode: "B", nama: "Pelaksanaan Pembelajaran", average: calcAspectAverage("B") },
-    { kode: "C", nama: "Penilaian Pembelajaran", average: calcAspectAverage("C") },
-    { kode: "D", nama: "Karakter & Interaksi", average: calcAspectAverage("D") },
+    { kode: "A", nama: "Perencanaan Pembelajaran (Modul Ajar)", average: calcAspectAverage("A") },
+    { kode: "B", nama: "Pelaksanaan Pembelajaran (Metode Kelas)", average: calcAspectAverage("B") },
+    { kode: "C", nama: "Penilaian & Asesmen Siswa", average: calcAspectAverage("C") },
+    { kode: "D", nama: "Interaksi & Karakter Siswa", average: calcAspectAverage("D") },
     { kode: "E", nama: "Iklim Kelas & Kolaborasi", average: calcAspectAverage("E") },
   ];
 
@@ -127,12 +130,12 @@ export default function BerandaPage() {
       {/* Sapaan Editorial & Action Bar */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <Sparkles className="w-7 h-7 text-pine-600 dark:text-pine-400" />
             Dashboard Supervisi & Coaching Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Pantauan komprehensif siklus observasi pembelajaran, evaluasi target capaian, dan aksi tindak lanjut guru.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Pantau kemajuan mengajar guru, hasil observasi kelas, dan rencana perbaikan pembelajaran semester ini dengan mudah.
           </p>
         </div>
 
@@ -146,94 +149,163 @@ export default function BerandaPage() {
           <Link href="/jadwal">
             <Button variant="secondary" size="md">
               <CalendarDays className="w-4 h-4 mr-2" />
-              Kelola Jadwal
+              Atur Jadwal Guru
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* Baris 4 Kartu Metrik Utama (KPI) */}
+      {/* PANDUAN CEPAT: 4 Langkah Alur Supervisi Sekolah (Mudah Dipahami) */}
+      <div className="p-4 md:p-5 rounded-2xl bg-surface border border-border shadow-subtle">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-pine-700 dark:text-pine-300 bg-pine-50 dark:bg-pine-950/40 px-2.5 py-0.5 rounded-full border border-pine-200 dark:border-pine-800">
+            Panduan Alur Kerja
+          </span>
+          <span className="text-xs text-muted">Ikuti 4 langkah berurutan untuk menyelesaikan supervisi setiap guru:</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Langkah 1 */}
+          <Link
+            href="/jadwal"
+            className="p-3.5 rounded-xl border border-border bg-card hover:border-pine-400 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between text-xs font-bold text-muted mb-1">
+              <span>Langkah 1</span>
+              <CalendarDays className="w-4 h-4 text-pine-600 group-hover:scale-110 transition-transform" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Atur Jadwal</p>
+            <p className="text-xs text-muted mt-1">Tentukan tanggal pra-observasi, observasi kelas, dan coaching.</p>
+          </Link>
+
+          {/* Langkah 2 */}
+          <Link
+            href="/pra-observasi"
+            className="p-3.5 rounded-xl border border-border bg-card hover:border-pine-400 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between text-xs font-bold text-muted mb-1">
+              <span>Langkah 2</span>
+              <ClipboardList className="w-4 h-4 text-pine-600 group-hover:scale-110 transition-transform" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Pra-Observasi (H-5)</p>
+            <p className="text-xs text-muted mt-1">Diskusi awal dengan guru untuk menyepakati fokus amatan kelas.</p>
+          </Link>
+
+          {/* Langkah 3 */}
+          <Link
+            href="/observasi"
+            className="p-3.5 rounded-xl border border-border bg-card hover:border-pine-400 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between text-xs font-bold text-muted mb-1">
+              <span>Langkah 3</span>
+              <GraduationCap className="w-4 h-4 text-pine-600 group-hover:scale-110 transition-transform" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Observasi di Kelas</p>
+            <p className="text-xs text-muted mt-1">Amati jalannya belajar dan nilai 28 butir rubrik secara objektif.</p>
+          </Link>
+
+          {/* Langkah 4 */}
+          <Link
+            href="/coaching"
+            className="p-3.5 rounded-xl border border-border bg-card hover:border-pine-400 hover:shadow-sm transition-all group"
+          >
+            <div className="flex items-center justify-between text-xs font-bold text-muted mb-1">
+              <span>Langkah 4</span>
+              <MessageSquare className="w-4 h-4 text-pine-600 group-hover:scale-110 transition-transform" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Coaching & Solusi</p>
+            <p className="text-xs text-muted mt-1">Ajak guru refleksi dan sepakati rencana aksi perbaikan (RTL).</p>
+          </Link>
+        </div>
+      </div>
+
+      {/* Baris 4 Kartu Metrik Angka (KPI Jernih & Mudah Dibaca) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Total Guru */}
-        <Panel className="p-4">
-          <div className="flex items-center justify-between text-muted mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Total Guru</span>
+        <Panel className="p-4 md:p-5">
+          <div className="flex items-center justify-between text-muted mb-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider">Total Guru</span>
             <Users className="w-4 h-4 text-pine-600 dark:text-pine-400" />
           </div>
-          <p className="text-2xl md:text-3xl font-bold font-serif text-foreground font-mono">
-            {totalGuru}
+          <p className="text-2xl md:text-3xl font-extrabold text-foreground">
+            {totalGuru} <span className="text-sm font-normal text-muted">Guru</span>
           </p>
-          <p className="text-xs text-muted mt-1">Terdaftar di database sekolah</p>
+          <p className="text-xs text-muted mt-1">Terdaftar di semester aktif</p>
         </Panel>
 
         {/* Supervisi Selesai */}
-        <Panel className="p-4">
-          <div className="flex items-center justify-between text-muted mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Supervisi Selesai</span>
+        <Panel className="p-4 md:p-5">
+          <div className="flex items-center justify-between text-muted mb-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider">Sudah Dinilai Lengkap</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
           </div>
-          <p className="text-2xl md:text-3xl font-bold font-serif text-foreground font-mono">
+          <p className="text-2xl md:text-3xl font-extrabold text-foreground">
             {guruSelesai}{" "}
             <span className="text-sm font-normal text-muted">
               ({totalGuru > 0 ? Math.round((guruSelesai / totalGuru) * 100) : 0}%)
             </span>
           </p>
-          <p className="text-xs text-muted mt-1">Tuntas siklus pra-obs s.d. RTL</p>
+          <p className="text-xs text-muted mt-1">Tuntas 3 tahap supervisi</p>
         </Panel>
 
         {/* Dalam Proses */}
-        <Panel className="p-4">
-          <div className="flex items-center justify-between text-muted mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Dalam Proses</span>
+        <Panel className="p-4 md:p-5">
+          <div className="flex items-center justify-between text-muted mb-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider">Sedang Berjalan</span>
             <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
           </div>
-          <p className="text-2xl md:text-3xl font-bold font-serif text-foreground font-mono">
-            {guruDalamProses}
+          <p className="text-2xl md:text-3xl font-extrabold text-foreground">
+            {guruDalamProses} <span className="text-sm font-normal text-muted">Guru</span>
           </p>
-          <p className="text-xs text-muted mt-1">Sesi observasi & coaching berjalan</p>
+          <p className="text-xs text-muted mt-1">Tahap pra-obs atau observasi</p>
         </Panel>
 
         {/* Rata-Rata Capaian Sekolah */}
-        <Panel className="p-4">
-          <div className="flex items-center justify-between text-muted mb-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">Rata-Rata Sekolah</span>
+        <Panel className="p-4 md:p-5">
+          <div className="flex items-center justify-between text-muted mb-1.5">
+            <span className="text-xs font-bold uppercase tracking-wider">Rata-Rata Nilai</span>
             <TrendingUp className="w-4 h-4 text-pine-600 dark:text-pine-400" />
           </div>
-          <p className="text-2xl md:text-3xl font-bold font-serif text-foreground font-mono">
+          <p className="text-2xl md:text-3xl font-extrabold text-foreground">
             {rataRataSekolah}%
           </p>
-          <div className="mt-1">
+          <div className="mt-1.5">
             <Badge predikat={rataRataSekolah >= 90 ? "Amat Baik" : rataRataSekolah >= 75 ? "Baik" : "Cukup"} />
           </div>
         </Panel>
       </div>
 
-      {/* Ringkasan Peringatan Segera (Alert Bar) */}
+      {/* Ringkasan Peringatan Segera (Alert Bar Ramah Pengguna) */}
       {(overdueCount > 0 || missedScheduleCount > 0) && (
-        <div className="flex items-center justify-between p-3.5 rounded-control bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 text-xs md:text-sm">
-          <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400" />
-            <span>
-              <strong>Perhatian Supervisor:</strong> Terdapat{" "}
-              {missedScheduleCount > 0 && `${missedScheduleCount} jadwal observasi terlewat`}
-              {missedScheduleCount > 0 && overdueCount > 0 && " serta "}
-              {overdueCount > 0 && `${overdueCount} kesepakatan tindak lanjut melewati tenggat (overdue)`}.
-            </span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-950 dark:text-amber-200 text-xs md:text-sm">
+          <div className="flex items-start sm:items-center gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5 sm:mt-0" />
+            <div>
+              <strong>Perhatian Kepala Sekolah / Supervisor:</strong>
+              <p className="text-xs text-amber-900/90 dark:text-amber-200/90 mt-0.5">
+                {missedScheduleCount > 0 && `Ada ${missedScheduleCount} jadwal observasi yang terlewat dari tanggal rencana.`}
+                {missedScheduleCount > 0 && overdueCount > 0 && " "}
+                {overdueCount > 0 && `Terdapat ${overdueCount} rencana aksi guru yang melewati batas tanggal penyelesaian.`}
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/tindak-lanjut" className="font-semibold underline hover:no-underline ml-2 shrink-0">
-              Periksa RTL
+          <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
+            <Link
+              href="/tindak-lanjut"
+              className="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-semibold text-xs hover:bg-amber-700 transition-colors"
+            >
+              Lihat Rencana Aksi
             </Link>
           </div>
         </div>
       )}
 
-      {/* Grid 5 Visualisasi Grafik Native SVG */}
+      {/* Grid 5 Visualisasi Grafik Ringan & Mudah Dibaca */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Grafik 1: Status Supervisi Donut */}
         <Panel
-          title="Status Supervisi Sekolah"
-          subtitle="Distribusi tahapan siklus supervisi guru semester ini"
+          title="Status Supervisi Seluruh Guru"
+          subtitle="Berapa persen guru yang sudah selesai dinilai lengkap semester ini?"
         >
           <DonutChart
             data={donutData}
@@ -244,16 +316,16 @@ export default function BerandaPage() {
 
         {/* Grafik 2: Sebaran Predikat Guru */}
         <Panel
-          title="Sebaran Predikat Nilai Guru"
-          subtitle="Klasifikasi mutu pembelajaran hasil observasi"
+          title="Sebaran Mutu Nilai Guru"
+          subtitle="Pengelompokan hasil observasi: Amat Baik, Baik, atau Cukup"
         >
           <PredicateBarChart data={predicateData} />
         </Panel>
 
         {/* Grafik 5: Realisasi Tindak Lanjut RTL */}
         <Panel
-          title="Realisasi Tindak Lanjut (RTL)"
-          subtitle="Persentase komitmen aksi konkret tuntas diverifikasi"
+          title="Realisasi Rencana Perbaikan Guru"
+          subtitle="Komitmen perbaikan yang sudah diselesaikan dan disahkan"
         >
           <RtlGaugeChart
             selesai={rtlSelesaiCount}
@@ -262,19 +334,19 @@ export default function BerandaPage() {
           />
         </Panel>
 
-        {/* Grafik 3: Rata-Rata 5 Aspek Rubrik (Span 2 kolom pada layar besar) */}
+        {/* Grafik 3: Rata-Rata 5 Aspek Rubrik (Span 2 kolom) */}
         <Panel
           className="lg:col-span-2"
-          title="Rata-Rata 5 Aspek Rubrik Pembelajaran"
-          subtitle="Garis merah putus-putus menunjukkan standar ambang kompetensi tuntas (3.00)"
+          title="Nilai Rata-Rata per Bidang Mengajar"
+          subtitle="Garis putus-putus merah pada angka 3.00 adalah batas standar kelulusan minimal"
         >
           <AspectHorizontalBarChart data={aspectData} threshold={3.0} />
         </Panel>
 
         {/* Grafik 4: Perbandingan Obs-1 vs Obs-Terbaru */}
         <Panel
-          title="Dinamika Progres Nilai Guru"
-          subtitle="Perbandingan Observasi Awal vs Observasi Terbaru"
+          title="Perkembangan Nilai Guru"
+          subtitle="Perbandingan nilai observasi pertama vs observasi terbaru"
         >
           {sampleComparison.length > 0 ? (
             <ComparisonBarChart data={sampleComparison} />
@@ -288,32 +360,32 @@ export default function BerandaPage() {
 
       {/* Tabel Progres Guru Terkini */}
       <Panel
-        title="Daftar Progres Supervisi Guru Terkini"
-        subtitle="Status ketercapaian siklus observasi, nilai terbaru, dan tren perkembangan"
+        title="Daftar Kemajuan Supervisi Tiap Guru"
+        subtitle="Lihat status observasi, nilai terbaru, dan hal yang perlu ditingkatkan oleh masing-masing guru"
         action={
-          <Link href="/guru" className="text-xs font-semibold text-primary hover:underline flex items-center">
-            Buka Direktori Lengkap <ArrowRight className="w-3.5 h-3.5 ml-1" />
+          <Link href="/guru" className="text-xs font-bold text-pine-700 dark:text-pine-300 hover:underline flex items-center">
+            Lihat Semua Guru <ArrowRight className="w-3.5 h-3.5 ml-1" />
           </Link>
         }
       >
-        <div className="overflow-x-auto -mx-4 md:-mx-6">
+        <div className="overflow-x-auto -mx-5 md:-mx-6">
           <table className="w-full text-left text-sm border-collapse">
-            <thead className="bg-black/5 dark:bg-white/5 border-b border-border text-xs uppercase text-muted tracking-wider">
+            <thead className="bg-black/5 dark:bg-white/5 border-b border-border text-xs uppercase text-muted font-bold tracking-wider">
               <tr>
-                <th className="py-3 px-4 md:px-6">Nama Guru & Mata Pelajaran</th>
-                <th className="py-3 px-4">Fase / Kelas</th>
-                <th className="py-3 px-4">Status Siklus</th>
+                <th className="py-3 px-4 md:px-6">Nama Guru & Mapel</th>
+                <th className="py-3 px-4">Kelas Diampu</th>
+                <th className="py-3 px-4">Status Penilaian</th>
                 <th className="py-3 px-4 text-right">Nilai Akhir</th>
                 <th className="py-3 px-4">Predikat</th>
-                <th className="py-3 px-4">Tren</th>
-                <th className="py-3 px-4">Aspek Prioritas</th>
+                <th className="py-3 px-4">Perkembangan</th>
+                <th className="py-3 px-4">Fokus Perbaikan</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {summaries.map((summary) => (
                 <tr key={summary.teacher.id} className="hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                   <td className="py-3.5 px-4 md:px-6">
-                    <p className="font-semibold text-foreground leading-tight">{summary.teacher.nama_lengkap}</p>
+                    <p className="font-bold text-foreground leading-tight">{summary.teacher.nama_lengkap}</p>
                     <p className="text-xs text-muted mt-0.5">{summary.teacher.mata_pelajaran}</p>
                   </td>
                   <td className="py-3.5 px-4 text-muted text-xs">
@@ -322,25 +394,25 @@ export default function BerandaPage() {
                   <td className="py-3.5 px-4">
                     <Badge statusSupervisi={summary.status_supervisi} />
                   </td>
-                  <td className="py-3.5 px-4 text-right font-semibold font-mono">
+                  <td className="py-3.5 px-4 text-right font-bold font-mono text-sm">
                     {summary.persentase_terbaru !== null ? `${summary.persentase_terbaru}%` : "-"}
                   </td>
                   <td className="py-3.5 px-4">
                     {summary.predikat_terbaru ? (
                       <Badge predikat={summary.predikat_terbaru as any} />
                     ) : (
-                      <span className="text-xs text-muted">-</span>
+                      <span className="text-xs text-muted">Belum Dinilai</span>
                     )}
                   </td>
                   <td className="py-3.5 px-4 text-xs font-semibold">
                     <span
                       className={
                         summary.tren === "Meningkat"
-                          ? "text-emerald-600 dark:text-emerald-400"
+                          ? "text-emerald-700 dark:text-emerald-400"
                           : summary.tren === "Menurun"
-                          ? "text-red-600 dark:text-red-400"
+                          ? "text-red-700 dark:text-red-400"
                           : summary.tren === "Stagnan"
-                          ? "text-amber-600 dark:text-amber-400"
+                          ? "text-amber-700 dark:text-amber-400"
                           : "text-muted"
                       }
                     >
@@ -349,11 +421,11 @@ export default function BerandaPage() {
                   </td>
                   <td className="py-3.5 px-4 text-xs text-muted">
                     {summary.aspek_prioritas.length > 0 ? (
-                      <span className="text-red-600 dark:text-red-400 font-medium">
+                      <span className="text-red-700 dark:text-red-400 font-semibold">
                         {summary.aspek_prioritas.join(", ")}
                       </span>
                     ) : (
-                      <span className="text-emerald-600 dark:text-emerald-400">Tuntas (&ge; 3.0)</span>
+                      <span className="text-emerald-700 dark:text-emerald-400">Sudah Tuntas (≥ 3.0)</span>
                     )}
                   </td>
                 </tr>

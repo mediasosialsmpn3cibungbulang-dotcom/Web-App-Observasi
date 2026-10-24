@@ -89,12 +89,12 @@ export function ChecklistManager() {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <CheckSquare className="w-7 h-7 text-pine-600 dark:text-pine-400" />
-            Checklist 29 Kegiatan Supervisi Semesteran
+            Checklist 29 Kegiatan Supervisi Semester
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Panduan operasional baku alur supervisi akademik dari persiapan awal hingga pelaporan akhir ke pengawas.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Daftar periksa 29 tahapan kerja supervisi sekolah dari persiapan awal semester hingga pelaporan akhir ke pengawas.
           </p>
         </div>
 

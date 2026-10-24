@@ -146,12 +146,12 @@ export function FollowupManager() {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground flex items-center gap-2">
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-2">
             <ListTodo className="w-7 h-7 text-pine-600 dark:text-pine-400" />
-            Tindak Lanjut & Rencana Aksi (RTL)
+            Rencana Aksi & Tindak Lanjut Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Pantau realisasi komitmen coaching, cek-in berkala pekan ke-2, 4, 8/9, dan verifikasi bukti tuntas.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Pantau realisasi komitmen mengajar guru, lakukan cek-in berkala (pekan 2, 4, 8/9), dan sahkan dokumen bukti yang tuntas.
           </p>
         </div>
 

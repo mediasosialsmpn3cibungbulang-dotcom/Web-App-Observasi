@@ -127,11 +127,11 @@ export const PreObservationForm: React.FC = () => {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-            Pertemuan Pra-Observasi Pembelajaran
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+            Diskusi Persiapan (Pra-Observasi)
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Penelaahan kesiapan modul ajar, tantangan kelas, dan kesepakatan fokus amatan pembelajaran (H-5).
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Wawancara awal bersama guru sebelum masuk kelas: sepakati materi, strategi belajar, dan fokus amatan (minimal H-5).
           </p>
         </div>
 

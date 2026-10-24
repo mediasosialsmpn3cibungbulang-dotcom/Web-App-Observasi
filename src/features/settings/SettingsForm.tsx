@@ -62,13 +62,13 @@ export const SettingsForm: React.FC = () => {
         </div>
       )}
 
-      <div className="flex items-center justify-between pb-4 border-b border-border">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-            Pengaturan Sistem & Standar Nilai
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+            Pengaturan Sekolah & Standar Nilai
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Konfigurasi profil sekolah, semester aktif, dan ambang batas predikat penilaian (Sheet 13).
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Atur identitas resmi sekolah, semester aktif, dan ambang batas predikat penilaian supervisi guru.
           </p>
         </div>
 

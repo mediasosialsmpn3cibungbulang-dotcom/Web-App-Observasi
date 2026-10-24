@@ -74,11 +74,11 @@ export const ScheduleList: React.FC = () => {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-            Jadwal Supervisi Akademik
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+            Jadwal Supervisi Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Matriks rencana dan realisasi supervisi gelombang 1 (Prioritas) dan gelombang 2 (Reguler).
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Atur tanggal 3 sesi supervisi: Pra-observasi (minimal H-5), Observasi kelas, dan Coaching (maksimal H+3).
           </p>
         </div>
 

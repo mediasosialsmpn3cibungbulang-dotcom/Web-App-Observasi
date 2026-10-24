@@ -11,7 +11,7 @@ export default function NotFound() {
         <div className="w-12 h-12 mx-auto rounded-full bg-primary-subtle text-primary flex items-center justify-center mb-4">
           <FileQuestion className="w-6 h-6" />
         </div>
-        <h2 className="text-xl font-bold font-serif mb-2">Halaman Tidak Ditemukan</h2>
+        <h2 className="text-xl font-bold mb-2">Halaman Tidak Ditemukan</h2>
         <p className="text-sm text-muted mb-6">
           Tautan yang Anda tuju tidak tersedia atau telah dipindahkan.
         </p>

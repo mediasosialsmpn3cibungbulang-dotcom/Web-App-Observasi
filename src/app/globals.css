@@ -4,42 +4,42 @@
 
 @layer base {
   :root {
-    /* Tema Terang: Kertas Hangat & Tinta Gelap */
-    --background: #FAF8F3;
+    /* Tema Terang: Bersih, Kontras Tinggi, Ramah di Mata */
+    --background: #F9FAF9;
     --surface: #FFFFFF;
-    --foreground: #1B1F1D;
-    --muted: #565C58;
-    --border: #E5E2DA;
+    --foreground: #111827;
+    --muted: #4B5563;
+    --border: #E5E7EB;
 
-    /* Aksen Hijau Pinus Utama */
-    --primary: #1F5C45;
-    --primary-hover: #184836;
-    --primary-subtle: #E8F2EC;
+    /* Aksen Hijau Pinus Edukasi */
+    --primary: #1E5C45;
+    --primary-hover: #164835;
+    --primary-subtle: #EAF4EE;
     --primary-foreground: #FFFFFF;
 
-    /* Predikat Status */
-    --status-amat-baik: #1F5C45;
-    --status-baik: #1E5E8A;
+    /* Predikat Mutu */
+    --status-amat-baik: #166534;
+    --status-baik: #1D4ED8;
     --status-cukup: #B45309;
     --status-pembinaan: #B91C1C;
   }
 
   .dark {
-    /* Tema Gelap: Arang Hangat */
-    --background: #16181A;
-    --surface: #1E2124;
-    --foreground: #ECEDEA;
-    --muted: #A9AFA9;
-    --border: #2E3338;
+    /* Tema Gelap: Arang Lembut Berkontras Tinggi */
+    --background: #111413;
+    --surface: #1A1F1D;
+    --foreground: #F3F4F6;
+    --muted: #9CA3AF;
+    --border: #2D3732;
 
     /* Aksen Hijau Pinus Mode Gelap */
-    --primary: #5BB38F;
-    --primary-hover: #4CA07D;
-    --primary-subtle: #1C3329;
-    --primary-foreground: #101F18;
+    --primary: #4ADE80;
+    --primary-hover: #22C55E;
+    --primary-subtle: #143525;
+    --primary-foreground: #052E16;
 
-    /* Predikat Status Mode Gelap */
-    --status-amat-baik: #5BB38F;
+    /* Predikat Mutu Mode Gelap */
+    --status-amat-baik: #4ADE80;
     --status-baik: #60A5FA;
     --status-cukup: #FBBF24;
     --status-pembinaan: #F87171;
@@ -48,16 +48,25 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: var(--font-sans), "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    line-height: 1.6;
+  }
+
+  /* Judul dan Heading yang Tegas dan Sangat Mudah Dibaca */
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--foreground);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
   }
 }
 
-/* Transisi halus GPU-accelerated */
+/* Transisi Halus */
 .transition-smooth {
   transition-property: opacity, transform, background-color, border-color, color;
-  transition-duration: 200ms;
+  transition-duration: 150ms;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -79,6 +88,7 @@
     background: #FFFFFF !important;
     color: #000000 !important;
     font-size: 11pt;
+    font-family: "Times New Roman", Georgia, serif !important;
   }
 
   .no-print {

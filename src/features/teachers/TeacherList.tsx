@@ -78,11 +78,11 @@ export const TeacherList: React.FC = () => {
       {/* Header Halaman */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-            Database Guru
+          <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+            Daftar Data Guru
           </h1>
-          <p className="text-sm text-muted mt-1">
-            Data pokok tenaga pendidik, target frekuensi supervisi, dan impor data Sheet 2 Excel.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Data lengkap tenaga pendidik sekolah, target frekuensi observasi kelas, dan impor dari file Excel.
           </p>
         </div>
 

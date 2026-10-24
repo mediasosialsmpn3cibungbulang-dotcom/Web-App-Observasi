@@ -75,15 +75,15 @@ export const Sidebar: React.FC = () => {
     >
       {/* Header Logo & Identitas */}
       <div className="flex items-center gap-3 px-2 py-3 mb-4 border-b border-border">
-        <div className="w-9 h-9 rounded-control bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg font-serif">
-          S
+        <div className="w-9 h-9 rounded-xl bg-pine-600 text-white flex items-center justify-center font-extrabold text-base shadow-xs">
+          SS
         </div>
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-foreground font-serif leading-none">
+          <h2 className="text-sm font-extrabold tracking-tight text-foreground leading-none">
             Smart Supervisi
           </h2>
-          <p className="text-[11px] text-muted mt-1 leading-tight">
-            Coaching Guru Akademik
+          <p className="text-xs text-muted mt-1 leading-tight">
+            Coaching Guru Sekolah
           </p>
         </div>
       </div>

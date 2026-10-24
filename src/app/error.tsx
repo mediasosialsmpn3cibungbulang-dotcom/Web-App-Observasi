@@ -23,7 +23,7 @@ export default function RouteError({
         <div className="w-12 h-12 mx-auto rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-4">
           <AlertTriangle className="w-6 h-6" />
         </div>
-        <h2 className="text-lg md:text-xl font-bold font-serif mb-2">Halaman Gagal Dimuat</h2>
+        <h2 className="text-lg md:text-xl font-bold mb-2">Halaman Gagal Dimuat</h2>
         <p className="text-sm text-muted mb-6">
           Komponen tampilan ini mengalami kendala teknis sementara. Data Anda tidak hilang.
         </p>

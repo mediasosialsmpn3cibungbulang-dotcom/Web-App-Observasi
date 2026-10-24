@@ -213,16 +213,16 @@ export const CoachingSessionView: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-              Percakapan Coaching Pasca-Observasi
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+              Diskusi Refleksi & Coaching Guru
             </h1>
             <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-300 border border-red-300 font-semibold">
               <Shield className="w-3 h-3" />
-              KONFIDENSIAL
+              KONFIDENSIAL (RAHASIA)
             </span>
           </div>
-          <p className="text-sm text-muted mt-1">
-            Nomor Dokumen: <strong className="font-mono">{session.nomor_dokumen}</strong> | Semester {session.semester}
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Dialog kemitraan 5 fase setelah observasi kelas: bantu guru merefleksikan proses belajar dan menyepakati rencana perbaikan.
           </p>
         </div>
 

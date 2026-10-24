@@ -270,8 +270,8 @@ export const ObservationSession: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl md:text-3xl font-bold font-serif tracking-tight text-foreground">
-              Lembar Observasi Pembelajaran
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+              Pengamatan Mengajar di Kelas (Observasi)
             </h1>
             <span
               className={`px-2.5 py-0.5 rounded text-xs font-semibold border ${
@@ -283,8 +283,8 @@ export const ObservationSession: React.FC = () => {
               {observation.is_locked ? "Status: Final (Terkunci)" : "Status: Draf Aktif"}
             </span>
           </div>
-          <p className="text-sm text-muted mt-1">
-            Rubrik baku 28 indikator (7 aspek) dan pencatatan fakta langsung saat jam mengajar di kelas.
+          <p className="text-sm text-muted mt-1 leading-relaxed">
+            Isi 28 butir indikator rubrik (skor 1 s.d. 4) dan catat peristiwa belajar langsung dari baris belakang kelas.
           </p>
         </div>
 

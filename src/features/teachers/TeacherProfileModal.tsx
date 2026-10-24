@@ -28,11 +28,11 @@ export const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
         {/* Header Profil */}
         <div className="flex items-center justify-between p-4 border-b border-border bg-black/5 dark:bg-white/5">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg font-serif">
+            <div className="w-10 h-10 rounded-full bg-pine-600/10 text-pine-700 dark:text-pine-300 flex items-center justify-center font-bold text-lg font-sans">
               {teacher.nama_lengkap.charAt(0)}
             </div>
             <div>
-              <h3 className="text-base font-bold font-serif text-foreground leading-tight">
+              <h3 className="text-base font-bold text-foreground leading-tight">
                 {teacher.nama_lengkap}
               </h3>
               <p className="text-xs font-mono text-muted mt-0.5">NIP/NUPTK: {teacher.nip_nuptk}</p>
