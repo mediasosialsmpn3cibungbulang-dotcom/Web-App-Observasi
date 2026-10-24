@@ -5,6 +5,9 @@ import { Users, UserPlus, Upload, Search, Filter, ShieldAlert, Award, Trash2, Ed
 import { Teacher } from "@/contracts/schemas";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
+import { ExportDropdown } from "@/components/ui/ExportDropdown";
+import { downloadAsExcel, downloadAsCSV } from "@/lib/export-service";
+import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "./teacher-service";
 import { TeacherFormModal } from "./TeacherFormModal";
 import { TeacherImportModal } from "./TeacherImportModal";
@@ -73,6 +76,63 @@ export const TeacherList: React.FC = () => {
     }
   };
 
+  const schoolSettings = SettingsService.getSchoolSettings();
+
+  const exportHeaders = [
+    "No",
+    "Nama Lengkap",
+    "NIP / NUPTK",
+    "Status Kepegawaian",
+    "Mata Pelajaran",
+    "Fase",
+    "Kelas Diampu",
+    "Tahun Masuk",
+    "Target Sesi Observasi",
+    "Nomor HP",
+    "Email",
+  ];
+
+  const getExportRows = () =>
+    teachers.map((t, idx) => [
+      idx + 1,
+      t.nama_lengkap,
+      t.nip_nuptk || "-",
+      t.status_kepegawaian,
+      t.mata_pelajaran,
+      t.fase,
+      t.kelas_diampu,
+      t.tahun_masuk,
+      t.target_sesi
+        ? `${t.target_sesi} Sesi (Kustom)`
+        : `${TeacherService.getRequiredFrequency(t)} Sesi (SOP)`,
+      t.nomor_hp,
+      t.email,
+    ]);
+
+  const handleExportExcel = () => {
+    downloadAsExcel({
+      filename: `Database_Guru_${schoolSettings.npsn}`,
+      sheetName: "Data Guru Sheet 2",
+      title: `DATABASE TENAGA PENDIDIK & TARGET SUPERVISI — ${schoolSettings.nama_sekolah}`,
+      metadata: [
+        { label: "Nama Sekolah", value: schoolSettings.nama_sekolah },
+        { label: "NPSN", value: schoolSettings.npsn },
+        { label: "Total Guru", value: `${teachers.length} Guru Aktif` },
+        { label: "Tanggal Unduh", value: new Date().toLocaleDateString("id-ID", { dateStyle: "long" }) },
+      ],
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
+  };
+
+  const handleExportCSV = () => {
+    downloadAsCSV({
+      filename: `Database_Guru_${schoolSettings.npsn}`,
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Halaman */}
@@ -86,7 +146,12 @@ export const TeacherList: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <ExportDropdown
+            label="Ekspor Data"
+            onExportExcel={handleExportExcel}
+            onExportCSV={handleExportCSV}
+          />
           <Button variant="secondary" size="md" onClick={() => setIsImportModalOpen(true)}>
             <Upload className="w-4 h-4 mr-2" />
             Impor Excel

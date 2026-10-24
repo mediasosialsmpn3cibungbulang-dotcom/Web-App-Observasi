@@ -22,6 +22,8 @@ import {
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ExportDropdown } from "@/components/ui/ExportDropdown";
+import { downloadAsExcel, downloadAsCSV } from "@/lib/export-service";
 import { MonitoringService, TeacherMonitoringSummary } from "./monitoring-service";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherMonitoringPrintModal } from "./TeacherMonitoringPrintModal";
@@ -86,57 +88,82 @@ export function TeacherMonitoringView() {
 
   const schoolSettings = SettingsService.getSchoolSettings();
 
-  // Fungsi Ekspor CSV sederhana untuk Sheet 8 & 9
-  const handleExportCSV = () => {
-    const headers = [
-      "Nama Guru",
-      "NIP/NUPTK",
-      "Mata Pelajaran",
-      "Fase/Kelas",
-      "Sesi 1 (%)",
-      "Sesi 2 (%)",
-      "Sesi 3 (%)",
-      "Skor Terbaru (%)",
-      "Predikat",
-      "Target Sekolah (%)",
-      "Status Target",
-      "Tren Perkembangan",
-      "Selisih Target (%)",
-      "Aspek Prioritas Perbaikan",
-      "Total RTL",
-      "RTL Tuntas",
-    ];
+  // Header kolom standar untuk ekspor Excel & CSV
+  const exportHeaders = [
+    "No",
+    "Nama Guru",
+    "NIP / NUPTK",
+    "Mata Pelajaran",
+    "Fase",
+    "Kelas Diampu",
+    "Target Sesi Wajib",
+    "Sesi 1 (%)",
+    "Sesi 2 (%)",
+    "Sesi 3 (%)",
+    "Skor Capaian (%)",
+    "Predikat Mutu",
+    "Target Sekolah (%)",
+    "Status Target",
+    "Tren Perkembangan",
+    "Selisih Target (%)",
+    "Fokus Perbaikan / Rekomendasi",
+    "Total RTL",
+    "RTL Selesai",
+  ];
 
-    const rows = summaries.map((s) => [
-      `"${s.teacher.nama_lengkap}"`,
-      `"${s.teacher.nip_nuptk}"`,
-      `"${s.teacher.mata_pelajaran}"`,
-      `"Fase ${s.teacher.fase} - ${s.teacher.kelas_diampu}"`,
+  // Baris data terstruktur bersih tanpa koma menyatu
+  const getExportRows = () =>
+    summaries.map((s, idx) => [
+      idx + 1,
+      s.teacher.nama_lengkap,
+      s.teacher.nip_nuptk || "-",
+      s.teacher.mata_pelajaran,
+      s.teacher.fase,
+      s.teacher.kelas_diampu,
+      `${s.min_sesi_wajib} Sesi`,
       s.sesi_1 ? s.sesi_1.persentase : "-",
-      s.sesi_2 ? s.sesi_2.persentase : "-",
-      s.sesi_3 ? s.sesi_3.persentase : "-",
+      s.sesi_2 ? s.sesi_2.persentase : s.min_sesi_wajib < 2 ? "-" : "-",
+      s.sesi_3 ? s.sesi_3.persentase : s.min_sesi_wajib < 3 ? "-" : "-",
       s.persentase_terbaru !== null ? s.persentase_terbaru : "-",
-      s.predikat_terbaru || "-",
+      s.predikat_terbaru || "Belum Dinilai",
       s.target_skor,
       s.status_target,
-      s.tren,
-      s.selisih_target !== null ? s.selisih_target : "-",
-      `"${s.aspek_prioritas.join(", ") || "Tidak ada"}"`,
+      s.total_sesi < 2 ? (s.total_sesi === 1 ? "Evaluasi Awal" : "-") : s.tren,
+      s.selisih_target !== null ? `${s.selisih_target >= 0 ? "+" : ""}${s.selisih_target}` : "-",
+      s.aspek_prioritas.length > 0
+        ? s.aspek_prioritas.join(", ")
+        : s.persentase_terbaru !== null
+        ? "Tuntas (≥ 3.0)"
+        : "Menunggu Observasi",
       s.total_rtl,
       s.rtl_selesai,
     ]);
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+  // Handler ekspor Excel (.xlsx) berkolom rapi
+  const handleExportExcel = () => {
+    downloadAsExcel({
+      filename: `Evaluasi_Supervisi_Sheet8_9_${schoolSettings.npsn}`,
+      sheetName: "Evaluasi Sheet 8-9",
+      title: `EVALUASI CAPAIAN NILAI & TARGET SUPERVISI GURU — ${schoolSettings.nama_sekolah}`,
+      metadata: [
+        { label: "Nama Sekolah", value: schoolSettings.nama_sekolah },
+        { label: "NPSN", value: schoolSettings.npsn },
+        { label: "Semester Aktif", value: schoolSettings.semester_aktif },
+        { label: "Kepala Sekolah", value: schoolSettings.nama_kepala_sekolah },
+        { label: "Tanggal Unduh", value: new Date().toLocaleDateString("id-ID", { dateStyle: "long" }) },
+      ],
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
+  };
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Rekap_Supervisi_Sheet8_9_${schoolSettings.npsn}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Handler ekspor CSV (.csv) titik koma ramah regional
+  const handleExportCSV = () => {
+    downloadAsCSV({
+      filename: `Evaluasi_Supervisi_Sheet8_9_${schoolSettings.npsn}`,
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
   };
 
   return (
@@ -154,10 +181,11 @@ export function TeacherMonitoringView() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="secondary" size="md" onClick={handleExportCSV}>
-            <FileSpreadsheet className="w-4 h-4 mr-2" />
-            Download Data (Excel/CSV)
-          </Button>
+          <ExportDropdown
+            label="Download Data"
+            onExportExcel={handleExportExcel}
+            onExportCSV={handleExportCSV}
+          />
         </div>
       </div>
 

@@ -16,6 +16,8 @@ import {
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { ExportDropdown } from "@/components/ui/ExportDropdown";
+import { downloadAsExcel, downloadAsCSV } from "@/lib/export-service";
 import { MonitoringService, TeacherMonitoringSummary } from "../monitoring/monitoring-service";
 import { SettingsService } from "../settings/settings-service";
 import { SupervisorRecapModal } from "./SupervisorRecapModal";
@@ -46,69 +48,89 @@ export function ReportsManager() {
         )
       : 0;
 
-  // Ekspor CSV format Sheet 10-13
-  const handleExportFullReport = () => {
-    const headers = [
-      "No",
-      "Nama Guru",
-      "NIP/NUPTK",
-      "Mata Pelajaran",
-      "Fase/Kelas",
-      "Sesi 1 (%)",
-      "Sesi 2 (%)",
-      "Sesi 3 (%)",
-      "Skor Observasi (Max 112)",
-      "Persentase Akhir (%)",
-      "Predikat Mutu",
-      "Target Sekolah",
-      "Status Target",
-      "Tren Progres",
-      "Rata Aspek A (Perencanaan)",
-      "Rata Aspek B (Pelaksanaan)",
-      "Rata Aspek C (Penilaian)",
-      "Rata Aspek D (Karakter)",
-      "Rata Aspek E (Iklim)",
-      "Aspek Prioritas Perbaikan",
-      "Total Kesepakatan RTL",
-      "RTL Tuntas Disahkan",
-    ];
+  // Header terstandarisasi untuk ekspor rekapitulasi lengkap
+  const exportHeaders = [
+    "No",
+    "Nama Guru",
+    "NIP / NUPTK",
+    "Mata Pelajaran",
+    "Fase",
+    "Kelas Diampu",
+    "Target Sesi",
+    "Sesi 1 (%)",
+    "Sesi 2 (%)",
+    "Sesi 3 (%)",
+    "Skor Akhir (Max 112)",
+    "Persentase (%)",
+    "Predikat Mutu",
+    "Target Sekolah (%)",
+    "Status Target",
+    "Tren Mutu",
+    "Rata Aspek A (Perencanaan)",
+    "Rata Aspek B (Pelaksanaan)",
+    "Rata Aspek C (Penilaian)",
+    "Rata Aspek D (Karakter)",
+    "Rata Aspek E (Iklim)",
+    "Aspek Prioritas Perbaikan",
+    "Total RTL",
+    "RTL Disahkan",
+  ];
 
-    const rows = summaries.map((s, idx) => [
+  // Baris data bersih tanpa tanda kutip berlebih
+  const getExportRows = () =>
+    summaries.map((s, idx) => [
       idx + 1,
-      `"${s.teacher.nama_lengkap}"`,
-      `"${s.teacher.nip_nuptk}"`,
-      `"${s.teacher.mata_pelajaran}"`,
-      `"Fase ${s.teacher.fase} - ${s.teacher.kelas_diampu}"`,
+      s.teacher.nama_lengkap,
+      s.teacher.nip_nuptk || "-",
+      s.teacher.mata_pelajaran,
+      s.teacher.fase,
+      s.teacher.kelas_diampu,
+      `${s.min_sesi_wajib} Sesi`,
       s.sesi_1 ? s.sesi_1.persentase : "-",
-      s.sesi_2 ? s.sesi_2.persentase : "-",
-      s.sesi_3 ? s.sesi_3.persentase : "-",
+      s.sesi_2 ? s.sesi_2.persentase : s.min_sesi_wajib < 2 ? "-" : "-",
+      s.sesi_3 ? s.sesi_3.persentase : s.min_sesi_wajib < 3 ? "-" : "-",
       s.skor_terbaru !== null ? s.skor_terbaru : "-",
       s.persentase_terbaru !== null ? s.persentase_terbaru : "-",
       s.predikat_terbaru || "Belum Selesai",
       s.target_skor,
       s.status_target,
-      s.tren,
-      s.rata_aspek?.A != null ? s.rata_aspek.A.toFixed(2) : "-",
-      s.rata_aspek?.B != null ? s.rata_aspek.B.toFixed(2) : "-",
-      s.rata_aspek?.C != null ? s.rata_aspek.C.toFixed(2) : "-",
-      s.rata_aspek?.D != null ? s.rata_aspek.D.toFixed(2) : "-",
-      s.rata_aspek?.E != null ? s.rata_aspek.E.toFixed(2) : "-",
-      `"${s.aspek_prioritas.join(", ") || "Tuntas"}"`,
+      s.total_sesi < 2 ? (s.total_sesi === 1 ? "Evaluasi Awal" : "-") : s.tren,
+      s.rata_aspek?.A != null ? Number(s.rata_aspek.A.toFixed(2)) : "-",
+      s.rata_aspek?.B != null ? Number(s.rata_aspek.B.toFixed(2)) : "-",
+      s.rata_aspek?.C != null ? Number(s.rata_aspek.C.toFixed(2)) : "-",
+      s.rata_aspek?.D != null ? Number(s.rata_aspek.D.toFixed(2)) : "-",
+      s.rata_aspek?.E != null ? Number(s.rata_aspek.E.toFixed(2)) : "-",
+      s.aspek_prioritas.length > 0 ? s.aspek_prioritas.join(", ") : "Tuntas (≥ 3.0)",
       s.total_rtl,
       s.rtl_selesai,
     ]);
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+  // Handler ekspor Excel (.xlsx) resmi
+  const handleExportExcel = () => {
+    downloadAsExcel({
+      filename: `Laporan_Supervisi_Akademik_${school.npsn}_${school.semester_aktif}`,
+      sheetName: "Rekap Sheet 10-13",
+      title: `REKAPITULASI LAPORAN HASIL SUPERVISI AKADEMIK & COACHING GURU — ${school.nama_sekolah}`,
+      metadata: [
+        { label: "Nama Sekolah", value: school.nama_sekolah },
+        { label: "NPSN", value: school.npsn },
+        { label: "Semester Aktif", value: school.semester_aktif },
+        { label: "Kepala Sekolah", value: school.nama_kepala_sekolah },
+        { label: "Pengawas Pembina", value: school.nama_pengawas || "-" },
+        { label: "Tanggal Dokumen", value: new Date().toLocaleDateString("id-ID", { dateStyle: "long" }) },
+      ],
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
+  };
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `Laporan_Supervisi_Akademik_${school.npsn}_${school.semester_aktif.replace(/\s+/g, "_")}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  // Handler ekspor CSV (.csv) titik koma ramah regional
+  const handleExportCSV = () => {
+    downloadAsCSV({
+      filename: `Laporan_Supervisi_Akademik_${school.npsn}_${school.semester_aktif}`,
+      headers: exportHeaders,
+      rows: getExportRows(),
+    });
   };
 
   return (
@@ -126,10 +148,11 @@ export function ReportsManager() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
-          <Button variant="secondary" size="md" onClick={handleExportFullReport}>
-            <Download className="w-4 h-4 mr-2" />
-            Ekspor Data (XLSX/CSV)
-          </Button>
+          <ExportDropdown
+            label="Ekspor Data"
+            onExportExcel={handleExportExcel}
+            onExportCSV={handleExportCSV}
+          />
           <Button variant="secondary" size="md" onClick={() => setIsSupervisorModalOpen(true)}>
             <Printer className="w-4 h-4 mr-2" />
             Rekap Pengawas (Sheet 10-11)
@@ -217,10 +240,11 @@ export function ReportsManager() {
               variant="ghost"
               size="sm"
               className="w-full justify-center text-xs"
-              onClick={handleExportFullReport}
+              onClick={handleExportExcel}
+              title="Unduh berkas Excel resmi berkolom rapi"
             >
-              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
-              Download Arsip Digital (.CSV)
+              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
+              Download Arsip Excel (.XLSX)
             </Button>
           </div>
         </Panel>
