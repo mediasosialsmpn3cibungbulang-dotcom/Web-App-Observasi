@@ -260,20 +260,22 @@ export function TeacherMonitoringView() {
           <table className="w-full text-left text-sm border-collapse">
             <thead className="bg-black/5 dark:bg-white/5 border-b border-border text-xs uppercase text-muted tracking-wider">
               <tr>
-                <th className="py-3 px-4 md:px-6">Nama Guru & Mapel</th>
-                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-1">Obs-1</th>
-                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-2">Obs-2</th>
-                <th className="py-3 px-3 text-center" title="Observasi Sesi ke-3">Obs-3</th>
-                <th className="py-3 px-4 text-center">Nilai Terbaru</th>
-                <th className="py-3 px-4 text-center">Target Sekolah</th>
-                <th className="py-3 px-4 text-center">Kemajuan Nilai</th>
-                <th className="py-3 px-4">Fokus Bimbingan & Aksi</th>
-                <th className="py-3 px-4 text-center">Dokumen</th>
+                <th className="py-3 px-4 md:px-6 min-w-[230px]">Nama Guru & Mapel</th>
+                <th className="py-3 px-3 text-center whitespace-nowrap" title="Target Sesi Supervisi">Target Sesi</th>
+                <th className="py-3 px-3 text-center whitespace-nowrap min-w-[68px]">Sesi 1</th>
+                <th className="py-3 px-3 text-center whitespace-nowrap min-w-[68px]">Sesi 2</th>
+                <th className="py-3 px-3 text-center whitespace-nowrap min-w-[68px]">Sesi 3</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Nilai Capaian</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Target Sekolah</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Tren Mutu</th>
+                <th className="py-3 px-4 min-w-[170px]">Fokus & RTL</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Dokumen</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {filteredSummaries.map((item) => {
                 const isExpanded = expandedTeacherId === item.teacher.id;
+                const hasObs = item.persentase_terbaru !== null;
 
                 return (
                   <React.Fragment key={item.teacher.id}>
@@ -284,24 +286,36 @@ export function TeacherMonitoringView() {
                           <button
                             type="button"
                             onClick={() => setExpandedTeacherId(isExpanded ? null : item.teacher.id)}
-                            className="p-1 rounded text-muted hover:text-foreground"
+                            className="p-1 rounded text-muted hover:text-foreground shrink-0"
                           >
                             {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                           </button>
                           <div>
-                            <p className="font-semibold text-foreground">{item.teacher.nama_lengkap}</p>
-                            <p className="text-xs text-muted">
+                            <p className="font-bold text-foreground leading-snug">{item.teacher.nama_lengkap}</p>
+                            <p className="text-xs text-muted mt-0.5">
                               {item.teacher.mata_pelajaran} • Fase {item.teacher.fase} ({item.teacher.kelas_diampu})
                             </p>
                           </div>
                         </div>
                       </td>
 
+                      {/* Target Sesi */}
+                      <td className="py-3.5 px-3 text-center align-middle whitespace-nowrap font-mono text-xs">
+                        <span className="px-2 py-0.5 rounded-full font-bold bg-primary-subtle text-primary border border-primary/20 text-[11px]">
+                          {item.min_sesi_wajib}x Sesi
+                        </span>
+                        {item.teacher.target_sesi && (
+                          <span className="block text-[9px] text-pine-700 dark:text-pine-300 font-semibold mt-0.5">
+                            (Kustom)
+                          </span>
+                        )}
+                      </td>
+
                       {/* Sesi 1 */}
-                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs">
+                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs whitespace-nowrap">
                         {item.sesi_1 ? (
                           <div>
-                            <span className="font-bold">{item.sesi_1.persentase}%</span>
+                            <span className="font-bold text-foreground">{item.sesi_1.persentase}%</span>
                             <span className="block text-[10px] text-muted">{item.sesi_1.predikat}</span>
                           </div>
                         ) : (
@@ -310,14 +324,14 @@ export function TeacherMonitoringView() {
                       </td>
 
                       {/* Sesi 2 */}
-                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs">
+                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs whitespace-nowrap">
                         {item.sesi_2 ? (
                           <div>
-                            <span className="font-bold">{item.sesi_2.persentase}%</span>
+                            <span className="font-bold text-foreground">{item.sesi_2.persentase}%</span>
                             <span className="block text-[10px] text-muted">{item.sesi_2.predikat}</span>
                           </div>
                         ) : item.min_sesi_wajib < 2 ? (
-                          <span className="text-muted/40 text-[11px]" title="Tidak ditargetkan untuk guru ini (Target: 1x)">
+                          <span className="text-muted/40 text-[11px]" title="Tidak ditargetkan untuk guru ini (Target: 1 Sesi)">
                             -
                           </span>
                         ) : (
@@ -326,10 +340,10 @@ export function TeacherMonitoringView() {
                       </td>
 
                       {/* Sesi 3 */}
-                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs">
+                      <td className="py-3.5 px-3 text-center align-middle font-mono text-xs whitespace-nowrap">
                         {item.sesi_3 ? (
                           <div>
-                            <span className="font-bold">{item.sesi_3.persentase}%</span>
+                            <span className="font-bold text-foreground">{item.sesi_3.persentase}%</span>
                             <span className="block text-[10px] text-muted">{item.sesi_3.predikat}</span>
                           </div>
                         ) : item.min_sesi_wajib < 3 ? (
@@ -341,96 +355,110 @@ export function TeacherMonitoringView() {
                         )}
                       </td>
 
-                      {/* Skor Akhir & Predikat */}
-                      <td className="py-3.5 px-4 text-center align-middle">
-                        {item.persentase_terbaru !== null ? (
+                      {/* Skor Capaian & Predikat */}
+                      <td className="py-3.5 px-4 text-center align-middle whitespace-nowrap">
+                        {hasObs ? (
                           <div className="inline-flex flex-col items-center">
-                            <span className="font-bold font-mono text-base text-foreground">
+                            <span className="font-extrabold font-mono text-base text-foreground leading-none">
                               {item.persentase_terbaru}%
                             </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-primary-subtle text-primary border border-primary/20">
+                            <span className="text-[10px] px-2 py-0.5 rounded font-semibold bg-primary-subtle text-primary border border-primary/20 mt-1">
                               {item.predikat_terbaru}
                             </span>
                           </div>
                         ) : (
-                          <span className="text-xs text-muted">Belum ada data</span>
+                          <span className="text-xs text-muted italic">Belum Dinilai</span>
                         )}
                       </td>
 
-                      {/* Evaluasi Target */}
-                      <td className="py-3.5 px-4 text-center align-middle">
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={`text-[11px] font-bold px-2 py-0.5 rounded ${
-                              item.status_target === "Tercapai"
-                                ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700"
-                                : item.status_target === "Belum Tercapai"
-                                ? "bg-amber-50 text-amber-800 border border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700"
-                                : "bg-zinc-100 text-zinc-600 border border-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-700"
-                            }`}
-                          >
-                            {item.status_target}
-                          </span>
-                          {item.selisih_target !== null && (
-                            <span className="text-[10px] font-mono text-muted mt-0.5">
-                              {item.selisih_target >= 0 ? `+${item.selisih_target}%` : `${item.selisih_target}%`} dari target
+                      {/* Evaluasi Target Sekolah */}
+                      <td className="py-3.5 px-4 text-center align-middle whitespace-nowrap">
+                        {hasObs ? (
+                          <div className="inline-flex flex-col items-center">
+                            <span
+                              className={`text-[11px] font-bold px-2 py-0.5 rounded ${
+                                item.status_target === "Tercapai"
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-700"
+                                  : "bg-amber-50 text-amber-800 border border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-700"
+                              }`}
+                            >
+                              {item.status_target}
                             </span>
-                          )}
-                        </div>
+                            {item.selisih_target !== null && (
+                              <span className="text-[10px] font-mono text-muted mt-0.5">
+                                {item.selisih_target >= 0 ? `+${item.selisih_target}%` : `${item.selisih_target}%`} vs target
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-[11px] font-mono text-muted">Target: {item.target_skor}%</span>
+                        )}
                       </td>
 
                       {/* Tren Progres */}
-                      <td className="py-3.5 px-4 text-center align-middle">
-                        <div className="flex flex-col items-center">
-                          <span
-                            className={`flex items-center gap-1 text-xs font-semibold ${
-                              item.tren === "Meningkat"
-                                ? "text-emerald-600 dark:text-emerald-400"
-                                : item.tren === "Menurun"
-                                ? "text-red-600 dark:text-red-400"
-                                : item.tren === "Stagnan"
-                                ? "text-amber-600 dark:text-amber-400"
-                                : "text-muted"
-                            }`}
-                          >
-                            {item.tren === "Meningkat" && <TrendingUp className="w-3.5 h-3.5" />}
-                            {item.tren === "Menurun" && <TrendingDown className="w-3.5 h-3.5" />}
-                            {item.tren === "Stagnan" && <Minus className="w-3.5 h-3.5" />}
-                            {item.tren}
-                          </span>
-                          {item.perkembangan_poin !== null && (
-                            <span className="text-[10px] font-mono text-muted">
-                              {item.perkembangan_poin >= 0 ? `+${item.perkembangan_poin}` : item.perkembangan_poin} poin
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Prioritas & RTL */}
-                      <td className="py-3.5 px-4 align-middle text-xs max-w-[200px]">
-                        {item.aspek_prioritas.length > 0 ? (
-                          <div className="flex flex-wrap gap-1">
-                            {item.aspek_prioritas.map((asp) => (
-                              <span
-                                key={asp}
-                                className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800"
-                              >
-                                {asp}
-                              </span>
-                            ))}
-                          </div>
+                      <td className="py-3.5 px-4 text-center align-middle whitespace-nowrap">
+                        {!hasObs ? (
+                          <span className="text-muted text-xs">-</span>
+                        ) : item.total_sesi < 2 ? (
+                          <span className="text-xs text-muted font-medium">Evaluasi Awal</span>
                         ) : (
-                          <span className="text-[11px] text-muted">Kompetensi merata (&ge; 3.0)</span>
+                          <div className="flex flex-col items-center">
+                            <span
+                              className={`flex items-center gap-1 text-xs font-semibold ${
+                                item.tren === "Meningkat"
+                                  ? "text-emerald-600 dark:text-emerald-400"
+                                  : item.tren === "Menurun"
+                                  ? "text-red-600 dark:text-red-400"
+                                  : "text-amber-600 dark:text-amber-400"
+                              }`}
+                            >
+                              {item.tren === "Meningkat" && <TrendingUp className="w-3.5 h-3.5" />}
+                              {item.tren === "Menurun" && <TrendingDown className="w-3.5 h-3.5" />}
+                              {item.tren === "Stagnan" && <Minus className="w-3.5 h-3.5" />}
+                              {item.tren}
+                            </span>
+                            {item.perkembangan_poin !== null && (
+                              <span className="text-[10px] font-mono text-muted">
+                                {item.perkembangan_poin >= 0 ? `+${item.perkembangan_poin}` : item.perkembangan_poin} poin
+                              </span>
+                            )}
+                          </div>
                         )}
-                        <p className="text-[10px] text-muted mt-1">
-                          RTL: <span className="font-semibold text-foreground">{item.rtl_selesai} tuntas</span> dari {item.total_rtl}
-                        </p>
                       </td>
 
-                      {/* Aksi */}
+                      {/* Fokus Bimbingan & RTL */}
+                      <td className="py-3.5 px-4 align-middle text-xs">
+                        {!hasObs ? (
+                          <span className="text-muted italic text-[11px]">Menunggu Observasi</span>
+                        ) : (
+                          <div>
+                            {item.aspek_prioritas.length > 0 ? (
+                              <div className="flex flex-wrap gap-1">
+                                {item.aspek_prioritas.map((asp) => (
+                                  <span
+                                    key={asp}
+                                    className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800"
+                                  >
+                                    {asp}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                                Tuntas (≥ 3.0)
+                              </span>
+                            )}
+                            <p className="text-[10px] text-muted mt-1 whitespace-nowrap">
+                              RTL: <span className="font-semibold text-foreground">{item.rtl_selesai} selesai</span> dari {item.total_rtl}
+                            </p>
+                          </div>
+                        )}
+                      </td>
+
+                      {/* Aksi Dokumen */}
                       <td className="py-3.5 px-4 text-center align-middle whitespace-nowrap">
                         <Button
-                          variant="ghost"
+                          variant="secondary"
                           size="sm"
                           title="Cetak Lembar Rekap Capaian Guru A4"
                           onClick={() => setSelectedForPrint(item)}
