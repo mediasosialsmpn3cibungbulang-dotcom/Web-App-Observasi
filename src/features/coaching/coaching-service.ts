@@ -163,12 +163,23 @@ export const CoachingService = {
       throw new Error(`Sesi coaching wajib memuat minimal 3 pertanyaan percakapan reflektif (saat ini ${questions.length} terpilih).`);
     }
 
-    // 2. Tanggal monitoring berikutnya terisi
-    if (!session.rencana_monitoring_berikutnya) {
-      throw new Error("Tanggal monitoring berikutnya wajib ditetapkan.");
+    // 2. Intisari dialog wajib diisi lengkap saat finalisasi
+    if (!session.poin_kunci_dialog || session.poin_kunci_dialog.trim().length === 0) {
+      throw new Error("Poin kunci dialog wajib diisi sebelum finalisasi sesi coaching.");
+    }
+    if (!session.insight_utama_guru || session.insight_utama_guru.trim().length === 0) {
+      throw new Error("Insight / kesadaran baru guru wajib diisi sebelum finalisasi sesi coaching.");
+    }
+    if (!session.komitmen_utama_guru || session.komitmen_utama_guru.trim().length === 0) {
+      throw new Error("Komitmen aksi nyata guru wajib diisi sebelum finalisasi sesi coaching.");
     }
 
-    // 3. Kesepakatan tindak lanjut minimal 1 baris
+    // 3. Tanggal monitoring berikutnya terisi
+    if (!session.rencana_monitoring_berikutnya) {
+      throw new Error("Tanggal monitoring berikutnya wajib ditetapkan sebelum finalisasi.");
+    }
+
+    // 4. Kesepakatan tindak lanjut minimal 1 baris
     const followups = FollowupService.getFollowupsByCoachingSessionId(sessionId);
     if (followups.length === 0) {
       throw new Error("Sesi coaching wajib menghasilkan minimal 1 butir kesepakatan tindak lanjut nyata.");

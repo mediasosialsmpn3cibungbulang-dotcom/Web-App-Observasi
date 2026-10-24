@@ -256,9 +256,9 @@ export const CoachingSessionSchema = z.object({
   // Temuan supervisor per 7 aspek (Doc 5 bagian B)
   temuan_aspek: z.record(AspectCodeSchema, z.string()).optional(),
   // Inti percakapan
-  poin_kunci_dialog: z.string().min(1),
-  insight_utama_guru: z.string().min(1),
-  komitmen_utama_guru: z.string().min(1),
+  poin_kunci_dialog: z.string().default(""),
+  insight_utama_guru: z.string().default(""),
+  komitmen_utama_guru: z.string().default(""),
   rencana_monitoring_berikutnya: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   catatan_supervisor: z.string().optional(),
   status: SessionStatusSchema.default("Draf"),
@@ -275,7 +275,7 @@ export const CoachingSessionQuestionItemSchema = z.object({
   session_id: z.string().uuid(),
   kode_pertanyaan: z.string().regex(/^[A-G]-\d{2}$/),
   urutan: z.number().int().positive(),
-  jawaban_ringkas_guru: z.string().min(1, "Jawaban ringkas guru wajib dicatat"),
+  jawaban_ringkas_guru: z.string().default(""),
 });
 export type CoachingSessionQuestionItem = z.infer<typeof CoachingSessionQuestionItemSchema>;
 
@@ -287,10 +287,10 @@ export const FollowupItemSchema = z.object({
   coaching_session_id: z.string().uuid(),
   teacher_id: z.string().uuid(),
   semester: z.string(),
-  masalah_utama: z.string().min(1),
-  solusi_disepakati: z.string().min(1),
-  aksi_konkret_guru: z.string().min(1),
-  dukungan_kepala_sekolah: z.string().min(1),
+  masalah_utama: z.string().default(""),
+  solusi_disepakati: z.string().default(""),
+  aksi_konkret_guru: z.string().default(""),
+  dukungan_kepala_sekolah: z.string().default(""),
   deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   bukti_tindak_lanjut: z.string().optional(),
   foto_bukti_url: z.string().url().nullable().optional(),
