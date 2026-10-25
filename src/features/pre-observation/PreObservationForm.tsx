@@ -315,24 +315,25 @@ export const PreObservationForm: React.FC = () => {
   const isAlreadySaved = formData.status === "Final";
 
   return (
-    <div className="space-y-4 md:space-y-5 pb-16">
-      {/* Notifikasi Keberhasilan (Di Dalam Halaman Seperti Semula) */}
-      {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-950 dark:text-emerald-100 text-sm font-semibold flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2.5">
-            <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
-            <span>{successMsg}</span>
+    <>
+      <div className="no-print space-y-4 md:space-y-5 pb-16">
+        {/* Notifikasi Keberhasilan (Di Dalam Halaman Seperti Semula) */}
+        {successMsg && (
+          <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-950 dark:text-emerald-100 text-sm font-semibold flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
+            <div className="flex items-center gap-2.5">
+              <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <span>{successMsg}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setSuccessMsg(null)}
+              className="text-emerald-800 dark:text-emerald-300 hover:text-emerald-950 dark:hover:text-white p-1 text-sm font-bold"
+              aria-label="Tutup notifikasi"
+            >
+              ✕
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setSuccessMsg(null)}
-            className="text-emerald-800 dark:text-emerald-300 hover:text-emerald-950 dark:hover:text-white p-1 text-sm font-bold"
-            aria-label="Tutup notifikasi"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+        )}
 
       {/* Header Halaman yang Ramping & Proporsional (Sesuai Desain Halaman Lain) */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-3 border-b border-border">
@@ -805,6 +806,7 @@ export const PreObservationForm: React.FC = () => {
           </Button>
         </div>
       </div>
+      </div>
 
       {/* Modal Cetak Berita Acara A4 */}
       <PreObservationPrintModal
@@ -814,6 +816,6 @@ export const PreObservationForm: React.FC = () => {
         teacher={currentTeacher}
         school={schoolSettings}
       />
-    </div>
+    </>
   );
 };
