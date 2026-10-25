@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { X, Printer, Shield } from "lucide-react";
+import { X, Printer } from "lucide-react";
 import { CoachingSession, Teacher, SchoolSettings, FollowupItem } from "@/contracts/schemas";
 import { Button } from "@/components/ui/Button";
 import { PrintPortal } from "@/components/ui/PrintPortal";
@@ -38,7 +38,7 @@ export const CoachingPrintModal: React.FC<CoachingPrintModalProps> = ({
 
   return (
     <PrintPortal>
-      {/* Backdrop gelap: klik area gelap untuk menutup */}
+      {/* Backdrop gelap: klik area luar untuk menutup */}
       <div
         className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs select-none"
         onClick={onClose}
@@ -50,16 +50,16 @@ export const CoachingPrintModal: React.FC<CoachingPrintModalProps> = ({
           aria-modal="true"
           aria-label="Pratinjau Dokumen Sesi Coaching"
         >
-          {/* Header Modal Bar */}
+          {/* Header Modal Bar (Tidak ikut tercetak) */}
           <div className="no-print flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-200 bg-white flex-shrink-0">
             <div className="flex items-center gap-2 min-w-0">
               <Printer className="w-4 h-4 text-emerald-600 shrink-0" />
               <div className="min-w-0">
                 <p className="font-bold text-sm text-gray-900 truncate">
-                  Pratinjau Dokumen Sesi Coaching & Notulen Konfidensial
+                  Pratinjau Dokumen Sesi Coaching Pasca Observasi
                 </p>
                 <p className="text-[11px] text-gray-500 truncate">
-                  Format A4 · Tekan Esc atau klik area gelap untuk menutup
+                  Format A4 Resmi (Monokrom / Hitam Putih) · Tekan Esc untuk menutup
                 </p>
               </div>
             </div>
@@ -80,142 +80,178 @@ export const CoachingPrintModal: React.FC<CoachingPrintModalProps> = ({
             </div>
           </div>
 
-          {/* Area Dokumen Kertas A4 */}
+          {/* Area Dokumen Kertas A4 Formal */}
           <div className="flex-1 overflow-y-auto p-3 sm:p-6 print:p-0">
             <div className="print-document mx-auto bg-white text-black shadow-md print:shadow-none w-full max-w-[794px] min-h-[1050px] p-8 sm:p-12 font-sans text-[11px] leading-relaxed flex flex-col justify-between">
-              <div className="space-y-4">
-                {/* Kop Surat */}
+              <div className="space-y-3">
+                {/* Kop Surat Resmi Kedinasan */}
                 <div className="text-center border-b-[3px] border-double border-black pb-2.5">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-800">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-black">
                     Pemerintah Daerah Provinsi Jawa Barat / Dinas Pendidikan
                   </p>
                   <p className="font-serif text-[17px] font-bold uppercase tracking-wide leading-tight text-black mt-0.5">
                     {school.nama_sekolah}
                   </p>
-                  <p className="text-[10px] text-gray-600 mt-0.5">
+                  <p className="text-[10px] text-gray-700 mt-0.5 font-sans">
                     {school.alamat} &nbsp;|&nbsp; NPSN: {school.npsn}
                   </p>
                 </div>
 
-                {/* Judul & Status Rahasia */}
-                <div className="text-center space-y-1">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded border border-amber-400 bg-amber-50 text-amber-900 font-sans text-[10px] font-bold uppercase tracking-wider">
-                    <Shield className="w-3 h-3 text-amber-700" />
-                    Dokumen Supervisi Akademik & Coaching Reflektif
-                  </div>
+                {/* Judul Dokumen Formal */}
+                <div className="text-center space-y-0.5 pt-1">
                   <h1 className="font-serif text-sm font-bold uppercase tracking-wide underline text-black">
-                    NOTULEN PERCAKAPAN COACHING PASCA OBSERVASI
+                    NOTULEN PERCAKAPAN COACHING PASCA OBSERVASI KELAS
                   </h1>
-                  <p className="text-[10px] text-gray-600">
-                    Nomor Dokumen: <strong>{session.nomor_dokumen}</strong> | Semester: {session.semester}
+                  <p className="text-[10px] text-gray-700 font-mono">
+                    Nomor Dokumen: <strong>{session.nomor_dokumen}</strong> &nbsp;|&nbsp; Semester: {session.semester}
                   </p>
                 </div>
 
-                {/* Identitas Sesi */}
-                <div className="grid grid-cols-2 gap-3 border border-black p-2.5 rounded bg-gray-50 text-[10.5px]">
-                  <div className="space-y-0.5">
-                    <p><strong>Nama Guru Sasaran:</strong> {teacher.nama_lengkap}</p>
-                    <p><strong>NIP / NUPTK:</strong> {teacher.nip_nuptk}</p>
-                    <p><strong>Mata Pelajaran:</strong> {teacher.mata_pelajaran}</p>
-                  </div>
-                  <div className="space-y-0.5">
-                    <p><strong>Nama Supervisor:</strong> {school.nama_kepala_sekolah}</p>
-                    <p><strong>Waktu & Tempat:</strong> {formatTanggalIndonesia(session.tanggal_coaching)} ({session.waktu_mulai} WIB) di {session.tempat}</p>
-                    <p><strong>Status Sesi:</strong> {session.status === "Final" ? "Final (Disepakati Bersama)" : "Draf Kerja"}</p>
-                  </div>
-                </div>
+                {/* Tabel Identitas Sesi Coaching */}
+                <table className="w-full border-collapse border border-black text-[10px] my-1">
+                  <tbody>
+                    <tr>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100 w-[20%]">Nama Guru Sasaran</td>
+                      <td className="p-1.5 border border-black w-[30%]">{teacher.nama_lengkap}</td>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100 w-[20%]">Nama Supervisor / Coach</td>
+                      <td className="p-1.5 border border-black w-[30%]">{school.nama_kepala_sekolah}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100">NIP / NUPTK</td>
+                      <td className="p-1.5 border border-black font-mono">{teacher.nip_nuptk}</td>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100">Waktu & Tempat</td>
+                      <td className="p-1.5 border border-black">{formatTanggalIndonesia(session.tanggal_coaching)} ({session.waktu_mulai} WIB) di {session.tempat}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100">Mata Pelajaran</td>
+                      <td className="p-1.5 border border-black">{teacher.mata_pelajaran}</td>
+                      <td className="p-1.5 border border-black font-semibold bg-gray-100">Status Dokumen</td>
+                      <td className="p-1.5 border border-black font-semibold">{session.status === "Final" ? "Final (Disepakati Bersama)" : "Draf Kerja"}</td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                {/* Bagian A: Refleksi Mandiri Guru */}
-                {session.refleksi_guru && (
-                  <div className="space-y-1.5 border border-gray-300 p-2.5 rounded bg-white">
-                    <h2 className="font-bold text-[11px] uppercase tracking-wider border-b border-gray-200 pb-1 text-gray-900">
-                      Bagian A: Refleksi Mandiri Guru Pasca Mengajar
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[10px]">
-                      <div>
-                        <strong className="text-emerald-800">1. Hal yang Sudah Berjalan Sangat Baik:</strong>
-                        <p className="text-gray-700 mt-0.5 pl-2 border-l-2 border-emerald-500">
-                          {session.refleksi_guru.hal_sudah_baik || "Belum dicatat."}
-                        </p>
-                      </div>
-                      <div>
-                        <strong className="text-amber-800">2. Hal yang Masih Perlu Ditingkatkan:</strong>
-                        <p className="text-gray-700 mt-0.5 pl-2 border-l-2 border-amber-500">
-                          {session.refleksi_guru.hal_perlu_ditingkatkan || "Belum dicatat."}
-                        </p>
-                      </div>
-                    </div>
+                {/* Bagian A: Refleksi Mandiri Guru Pasca Mengajar */}
+                <div className="space-y-0 pt-1">
+                  <div className="bg-gray-100 border border-black px-2 py-1 font-bold text-[10px] uppercase tracking-wide text-black">
+                    Bagian A: Refleksi Mandiri Guru Pasca Mengajar
                   </div>
-                )}
-
-                {/* Bagian B: Inti Percakapan Coaching */}
-                <div className="space-y-2 border border-black p-2.5 rounded bg-white text-[10.5px]">
-                  <h2 className="font-bold text-[11px] uppercase tracking-wider border-b border-gray-200 pb-1 text-gray-900">
-                    Bagian B: Inti Percakapan Coaching & Kesadaran Reflektif
-                  </h2>
-                  <div className="space-y-1.5">
-                    <div>
-                      <strong>1. Poin Kunci Dialog & Eksplorasi Realitas:</strong>
-                      <p className="text-gray-800 mt-0.5 pl-2 border-l-2 border-primary">
-                        {session.poin_kunci_dialog || "-"}
-                      </p>
-                    </div>
-                    <div>
-                      <strong>2. Insight / Kesadaran Baru yang Ditemukan Guru:</strong>
-                      <p className="text-gray-800 mt-0.5 pl-2 border-l-2 border-emerald-500 font-medium">
-                        &quot;{session.insight_utama_guru || "-"}&quot;
-                      </p>
-                    </div>
-                    <div>
-                      <strong>3. Komitmen Utama Guru dalam Aksi Pembelajaran:</strong>
-                      <p className="text-gray-800 mt-0.5 pl-2 border-l-2 border-blue-500">
-                        {session.komitmen_utama_guru || "-"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bagian C: Rencana Tindak Lanjut (RTL) */}
-                <div className="space-y-1.5">
-                  <h2 className="font-bold text-[11px] uppercase tracking-wider text-gray-900">
-                    Bagian C: Kesepakatan Rencana Tindak Lanjut (RTL)
-                  </h2>
-                  <table className="w-full border-collapse border border-black text-[9.5px]">
-                    <thead className="bg-gray-100">
+                  <table className="w-full border-collapse border border-black border-t-0 text-[10px]">
+                    <tbody>
                       <tr>
-                        <th className="border border-black p-1 w-8 text-center">No</th>
-                        <th className="border border-black p-1">Fokus Tantangan / Masalah</th>
-                        <th className="border border-black p-1">Solusi yang Disepakati</th>
-                        <th className="border border-black p-1">Aksi Konkret Guru</th>
-                        <th className="border border-black p-1">Dukungan Sekolah</th>
-                        <th className="border border-black p-1 w-20 text-center">Batas Waktu</th>
+                        <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                          1. Hal yang Sudah Berjalan Baik
+                        </td>
+                        <td className="p-2 border border-black align-top leading-relaxed text-black">
+                          {session.refleksi_guru?.hal_sudah_baik || "Pembelajaran dan interaksi kelas terlaksana sesuai rencana pelaksanaan pembelajaran."}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                          2. Hal yang Masih Perlu Ditingkatkan
+                        </td>
+                        <td className="p-2 border border-black align-top leading-relaxed text-black">
+                          {session.refleksi_guru?.hal_perlu_ditingkatkan || "Perlu penguatan strategi bimbingan berjenjang (scaffolding) bagi kelompok siswa mandiri."}
+                        </td>
+                      </tr>
+                      {session.refleksi_guru?.tantangan_terbesar && (
+                        <tr>
+                          <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                            3. Tantangan Pembelajaran
+                          </td>
+                          <td className="p-2 border border-black align-top leading-relaxed text-black">
+                            {session.refleksi_guru.tantangan_terbesar}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Bagian B: Inti Percakapan Reflektif Coaching */}
+                <div className="space-y-0 pt-1">
+                  <div className="bg-gray-100 border border-black px-2 py-1 font-bold text-[10px] uppercase tracking-wide text-black">
+                    Bagian B: Inti Percakapan Reflektif Coaching
+                  </div>
+                  <table className="w-full border-collapse border border-black border-t-0 text-[10px]">
+                    <tbody>
+                      <tr>
+                        <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                          1. Poin Kunci Dialog & Eksplorasi Realitas
+                        </td>
+                        <td className="p-2 border border-black align-top leading-relaxed text-black">
+                          {session.poin_kunci_dialog || "-"}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                          2. Kesadaran / Insight Baru Guru
+                        </td>
+                        <td className="p-2 border border-black align-top leading-relaxed italic text-black">
+                          &quot;{session.insight_utama_guru || "-"}&quot;
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="p-2 border border-black font-semibold w-[30%] align-top bg-gray-50/70">
+                          3. Rencana Aksi & Komitmen Guru
+                        </td>
+                        <td className="p-2 border border-black align-top leading-relaxed text-black">
+                          {session.komitmen_utama_guru || "-"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Bagian C: Kesepakatan Rencana Tindak Lanjut (RTL) */}
+                <div className="space-y-0 pt-1">
+                  <div className="bg-gray-100 border border-black px-2 py-1 font-bold text-[10px] uppercase tracking-wide text-black">
+                    Bagian C: Kesepakatan Rencana Tindak Lanjut (RTL)
+                  </div>
+                  <table className="w-full border-collapse border border-black border-t-0 text-[9.5px]">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="border border-black p-1.5 w-7 text-center font-bold">No</th>
+                        <th className="border border-black p-1.5 font-bold w-[25%]">Fokus Masalah / Tantangan</th>
+                        <th className="border border-black p-1.5 font-bold w-[24%]">Solusi yang Disepakati</th>
+                        <th className="border border-black p-1.5 font-bold w-[24%]">Aksi Konkret Guru</th>
+                        <th className="border border-black p-1.5 font-bold w-[16%]">Dukungan Sekolah</th>
+                        <th className="border border-black p-1.5 font-bold w-[11%] text-center">Batas Waktu</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {followups.map((f, idx) => (
-                        <tr key={f.id} className="border-b border-gray-300">
-                          <td className="border border-black p-1 text-center font-bold">{idx + 1}</td>
-                          <td className="border border-black p-1">{f.masalah_utama}</td>
-                          <td className="border border-black p-1">{f.solusi_disepakati}</td>
-                          <td className="border border-black p-1">{f.aksi_konkret_guru}</td>
-                          <td className="border border-black p-1 text-gray-700">{f.dukungan_kepala_sekolah}</td>
-                          <td className="border border-black p-1 font-mono text-center">
-                            {formatTanggalIndonesia(f.deadline)}
+                      {followups.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="border border-black p-2 text-center text-gray-600 italic">
+                            Rencana tindak lanjut diselaraskan langsung dengan komitmen pengajaran guru di kelas.
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        followups.map((f, idx) => (
+                          <tr key={f.id} className="border-b border-gray-300">
+                            <td className="border border-black p-1.5 text-center font-bold">{idx + 1}</td>
+                            <td className="border border-black p-1.5 leading-snug">{f.masalah_utama}</td>
+                            <td className="border border-black p-1.5 leading-snug">{f.solusi_disepakati}</td>
+                            <td className="border border-black p-1.5 leading-snug">{f.aksi_konkret_guru}</td>
+                            <td className="border border-black p-1.5 leading-snug text-gray-700">{f.dukungan_kepala_sekolah}</td>
+                            <td className="border border-black p-1.5 font-mono text-center text-[9px]">
+                              {formatTanggalIndonesia(f.deadline)}
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
-                  <p className="text-[10px] text-gray-600 pt-0.5">
-                    Jadwal Cek Monitoring Berikutnya: <strong>{formatTanggalIndonesia(session.rencana_monitoring_berikutnya)}</strong> (Pekan ke-2 pasca coaching).
+                  <p className="text-[9.5px] text-gray-700 pt-1 font-mono">
+                    Jadwal Cek Monitoring Evaluasi Berikutnya: <strong>{formatTanggalIndonesia(session.rencana_monitoring_berikutnya)}</strong> (Pekan ke-2 pasca coaching).
                   </p>
                 </div>
               </div>
 
-              {/* Tanda Tangan */}
+              {/* Tanda Tangan Pengesahan Resmi */}
               <div className="pt-6 grid grid-cols-2 gap-8 text-center text-[10.5px] break-inside-avoid">
                 <div>
-                  <p className="text-gray-700 mb-14">Guru yang Dicoaching,</p>
+                  <p className="text-gray-700 mb-14">Guru Sasaran,</p>
                   <p className="font-bold underline text-black">{teacher.nama_lengkap}</p>
                   <p className="font-mono text-gray-700 text-[10px]">NIP. {teacher.nip_nuptk}</p>
                 </div>
@@ -224,6 +260,12 @@ export const CoachingPrintModal: React.FC<CoachingPrintModalProps> = ({
                   <p className="font-bold underline text-black">{school.nama_kepala_sekolah}</p>
                   <p className="font-mono text-gray-700 text-[10px]">NIP. {school.nip_kepala_sekolah}</p>
                 </div>
+              </div>
+
+              {/* Catatan Kaki Dokumen */}
+              <div className="pt-2 border-t border-gray-300 flex items-center justify-between text-[9px] text-gray-500 font-mono">
+                <span>Dokumen Supervisi Akademik — {school.nama_sekolah}</span>
+                <span>Lembar Berita Acara Coaching Pasca Observasi</span>
               </div>
             </div>
           </div>
