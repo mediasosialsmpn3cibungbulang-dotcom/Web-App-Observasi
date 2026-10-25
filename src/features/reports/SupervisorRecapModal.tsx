@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { X, Printer, FileText, CheckCircle2 } from "lucide-react";
+import React, { useEffect } from "react";
+import { X, Printer, FileText } from "lucide-react";
 import { TeacherMonitoringSummary } from "../monitoring/monitoring-service";
 import { SchoolSettings } from "@/contracts/schemas";
 import { Button } from "@/components/ui/Button";
@@ -21,6 +21,16 @@ export const SupervisorRecapModal: React.FC<SupervisorRecapModalProps> = ({
   summaries,
   school,
 }) => {
+  // Listener tombol Escape untuk menutup modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const totalGuru = summaries.length;
@@ -36,195 +46,316 @@ export const SupervisorRecapModal: React.FC<SupervisorRecapModalProps> = ({
         )
       : 0;
 
+  const namaPengawas = school.nama_pengawas || "Drs. H. Bambang Sujatmiko, M.M.";
+  const nipPengawas = school.nip_pengawas || "196803121994121002";
+  const tanggalHariIni = formatTanggalIndonesia(new Date().toISOString().split("T")[0]);
+
   return (
     <PrintPortal>
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:z-auto print:block print:overflow-visible">
-      <div className="bg-white text-black border border-border rounded-panel max-w-5xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none print:h-auto print:overflow-visible print:m-0 print:p-0">
-        {/* Modal Header Bar */}
-        <div className="no-print flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-          <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-pine-600" />
-            <span className="font-bold font-serif text-sm">
-              Rekapitulasi Supervisi Akademik untuk Pengawas Pembina (Sheet 10 & 11 Siap Cetak A4)
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="primary" size="sm" onClick={() => window.print()}>
-              <Printer className="w-4 h-4 mr-1.5" />
-              Cetak Dokumen
-            </Button>
-            <button
-              onClick={onClose}
-              className="p-1 rounded-full text-gray-500 hover:text-black hover:bg-gray-200"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-
-        {/* Print Content Area A4 */}
+      {/* Backdrop Gelap: Klik luar untuk menutup */}
+      <div
+        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-xs select-none"
+        onClick={onClose}
+      >
         <div
-          id="printable-area"
-          className="print-document print-area flex-1 overflow-y-auto p-8 md:p-12 space-y-6 text-black bg-white print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none"
+          className="bg-gray-100 rounded-2xl w-full max-w-[880px] max-h-[94vh] flex flex-col shadow-2xl overflow-hidden print:block print:bg-white print:rounded-none print:shadow-none print:max-w-none"
+          onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Pratinjau Rekapitulasi Supervisi Pengawas"
         >
-          {/* KOP SURAT RESMI */}
-          <div className="text-center border-b-2 border-black pb-4">
-            <h2 className="text-base font-bold uppercase tracking-wider">
-              DINAS PENDIDIKAN DAN KEBUDAYAAN
-            </h2>
-            <h1 className="text-xl font-black uppercase tracking-wide">
-              {school.nama_sekolah}
-            </h1>
-            <p className="text-xs mt-1">
-              {school.alamat} | NPSN: {school.npsn}
-            </p>
-          </div>
-
-          {/* JUDUL REKAPITULASI */}
-          <div className="text-center py-2">
-            <h3 className="text-sm md:text-base font-bold uppercase tracking-wider underline">
-              REKAPITULASI HASIL OBSERVASI PEMBELAJARAN DAN COACHING GURU
-            </h3>
-            <p className="text-xs font-mono mt-1">Semester: {school.semester_aktif} — Tahun Ajaran 2026/2027</p>
-          </div>
-
-          {/* STATISTIK RINGKAS SEKOLAH */}
-          <div className="grid grid-cols-4 gap-3 p-3 border border-black rounded text-xs text-center">
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gray-600">Total Sasaran</span>
-              <p className="font-bold font-mono text-base mt-0.5">{totalGuru} Guru</p>
+          {/* Header Modal Bar (Tidak ikut tercetak) */}
+          <div className="no-print flex items-center justify-between gap-3 px-4 py-3 border-b border-gray-200 bg-white flex-shrink-0">
+            <div className="flex items-center gap-2 min-w-0">
+              <FileText className="w-5 h-5 text-pine-600 shrink-0" />
+              <div className="min-w-0">
+                <p className="font-bold text-sm text-gray-900 truncate">
+                  Rekapitulasi Supervisi Akademik untuk Pengawas Pembina (Sheet 10 &amp; 11)
+                </p>
+                <p className="text-[11px] text-gray-500 truncate">
+                  Format A4 Resmi (2 Lembar Terpisah) · Monokrom Standar Kedinasan · Tekan Esc untuk menutup
+                </p>
+              </div>
             </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gray-600">Tuntas Supervisi</span>
-              <p className="font-bold font-mono text-base mt-0.5 text-emerald-800">
-                {guruSelesai} Guru ({totalGuru > 0 ? Math.round((guruSelesai / totalGuru) * 100) : 0}%)
-              </p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gray-600">Rata-Rata Capaian</span>
-              <p className="font-bold font-mono text-base mt-0.5 text-pine-800">{rataRataSekolah}%</p>
-            </div>
-            <div>
-              <span className="text-[10px] uppercase font-bold text-gray-600">Predikat Mutu Sekolah</span>
-              <p className="font-bold text-base mt-0.5">
-                {rataRataSekolah >= 90 ? "Amat Baik" : rataRataSekolah >= 75 ? "Baik" : "Cukup"}
-              </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button variant="primary" size="sm" onClick={() => window.print()}>
+                <Printer className="w-4 h-4 mr-1.5" />
+                Cetak Dokumen Resmi
+              </Button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex items-center gap-1 h-9 px-3 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-100 transition-colors"
+                aria-label="Tutup modal"
+              >
+                <X className="w-4 h-4" />
+                Tutup
+              </button>
             </div>
           </div>
 
-          {/* TABEL REKAP GURU (SHEET 10) */}
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider">
-              Tabel 1: Rekapitulasi Capaian Nilai dan Predikat per Guru
-            </h4>
-            <table className="w-full text-xs border border-black border-collapse text-left">
-              <thead>
-                <tr className="bg-gray-100 border-b border-black text-center font-bold">
-                  <th className="border border-black p-2 w-8">No</th>
-                  <th className="border border-black p-2">Nama Guru</th>
-                  <th className="border border-black p-2">NIP / NUPTK</th>
-                  <th className="border border-black p-2">Mata Pelajaran</th>
-                  <th className="border border-black p-2 w-16">Kelas</th>
-                  <th className="border border-black p-2 w-16">Skor Max 112</th>
-                  <th className="border border-black p-2 w-16">Nilai (%)</th>
-                  <th className="border border-black p-2 w-24">Predikat</th>
-                  <th className="border border-black p-2 w-20">Status RTL</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaries.map((s, idx) => (
-                  <tr key={s.teacher.id} className="border-b border-black">
-                    <td className="border border-black p-2 text-center font-mono">{idx + 1}</td>
-                    <td className="border border-black p-2 font-semibold">{s.teacher.nama_lengkap}</td>
-                    <td className="border border-black p-2 font-mono text-[11px]">{s.teacher.nip_nuptk}</td>
-                    <td className="border border-black p-2">{s.teacher.mata_pelajaran}</td>
-                    <td className="border border-black p-2 text-center">{s.teacher.kelas_diampu}</td>
-                    <td className="border border-black p-2 text-center font-mono font-semibold">
-                      {s.skor_terbaru !== null ? s.skor_terbaru : "-"}
-                    </td>
-                    <td className="border border-black p-2 text-center font-mono font-bold">
-                      {s.persentase_terbaru !== null ? `${s.persentase_terbaru}%` : "-"}
-                    </td>
-                    <td className="border border-black p-2 text-center font-semibold">
-                      {s.predikat_terbaru || "Belum Selesai"}
-                    </td>
-                    <td className="border border-black p-2 text-center font-mono text-[11px]">
-                      {s.rtl_selesai}/{s.total_rtl} Tuntas
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {/* Area Preview Lembaran A4 (2 Lembar Terpisah) */}
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 space-y-6 print:space-y-0 print:p-0">
 
-          {/* TABEL ANALISIS 5 ASPEK (SHEET 11) */}
-          <div className="space-y-2 pt-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider">
-              Tabel 2: Analisis Rata-Rata 5 Aspek Pembelajaran (Skala 1.00 - 4.00)
-            </h4>
-            <table className="w-full text-xs border border-black border-collapse text-center">
-              <thead>
-                <tr className="bg-gray-100 border-b border-black font-bold">
-                  <th className="border border-black p-2 text-left">Nama Guru</th>
-                  <th className="border border-black p-2">A. Perencanaan</th>
-                  <th className="border border-black p-2">B. Pelaksanaan</th>
-                  <th className="border border-black p-2">C. Penilaian</th>
-                  <th className="border border-black p-2">D. Karakter</th>
-                  <th className="border border-black p-2">E. Iklim Kelas</th>
-                  <th className="border border-black p-2 text-left">Aspek Prioritas (&lt; 3.0)</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaries.map((s) => (
-                  <tr key={s.teacher.id} className="border-b border-black">
-                    <td className="border border-black p-2 text-left font-semibold">{s.teacher.nama_lengkap}</td>
-                    <td className="border border-black p-2 font-mono">
-                      {s.rata_aspek?.A != null ? s.rata_aspek.A.toFixed(2) : "-"}
-                    </td>
-                    <td className="border border-black p-2 font-mono">
-                      {s.rata_aspek?.B != null ? s.rata_aspek.B.toFixed(2) : "-"}
-                    </td>
-                    <td className="border border-black p-2 font-mono">
-                      {s.rata_aspek?.C != null ? s.rata_aspek.C.toFixed(2) : "-"}
-                    </td>
-                    <td className="border border-black p-2 font-mono">
-                      {s.rata_aspek?.D != null ? s.rata_aspek.D.toFixed(2) : "-"}
-                    </td>
-                    <td className="border border-black p-2 font-mono">
-                      {s.rata_aspek?.E != null ? s.rata_aspek.E.toFixed(2) : "-"}
-                    </td>
-                    <td className="border border-black p-2 text-left text-red-700 font-semibold text-[11px]">
-                      {s.aspek_prioritas.length > 0 ? s.aspek_prioritas.join(", ") : "Tidak Ada (Tuntas)"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            {/* ======================================================== */}
+            {/* LEMBAR 1: REKAPITULASI CAPAIAN NILAI & PREDIKAT (SHEET 10) */}
+            {/* ======================================================== */}
+            <div className="print-document mx-auto bg-white text-black shadow-md print:shadow-none w-full max-w-[794px] min-h-[1050px] p-8 sm:p-10 font-sans leading-tight flex flex-col justify-between border print:border-none border-gray-300">
+              <div className="space-y-2.5">
+                {/* Kop Surat Resmi Kedinasan */}
+                <div className="text-center border-b-[3px] border-double border-black pb-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-black">
+                    Pemerintah Daerah Kabupaten Bogor &nbsp;·&nbsp; Dinas Pendidikan
+                  </p>
+                  <p className="font-serif text-[16px] font-bold uppercase tracking-wide leading-tight text-black mt-0.5">
+                    {school.nama_sekolah}
+                  </p>
+                  <p className="text-[10px] text-gray-700 mt-0.5 font-sans">
+                    {school.alamat} &nbsp;|&nbsp; NPSN: {school.npsn}
+                  </p>
+                </div>
 
-          {/* TANDA TANGAN PENGESAHAN */}
-          <div className="pt-8 grid grid-cols-2 text-xs">
-            <div className="text-center">
-              <p>Mengetahui,</p>
-              <p>Pengawas Pembina Sekolah,</p>
-              <div className="h-16" />
-              <p className="font-bold underline">Drs. H. Mulyadi, M.Pd.</p>
-              <p className="font-mono">NIP. 19680512 199303 1 004</p>
+                {/* Judul Dokumen Sheet 10 */}
+                <div className="text-center space-y-0.5 pt-0.5">
+                  <h3 className="font-serif text-xs font-bold uppercase tracking-wide underline text-black">
+                    REKAPITULASI HASIL OBSERVASI PEMBELAJARAN DAN COACHING GURU
+                  </h3>
+                  <p className="text-[10px] text-gray-800 font-sans">
+                    Format Pelaporan Pengawas Pembina Sekolah &nbsp;|&nbsp; <strong>Dokumen Sheet 10</strong>
+                  </p>
+                  <p className="text-[9.5px] font-mono text-gray-700">
+                    Semester: {school.semester_aktif} &nbsp;—&nbsp; Tahun Ajaran 2026/2027
+                  </p>
+                </div>
+
+                {/* Statistik Ringkas Mutu Sekolah */}
+                <div className="grid grid-cols-4 gap-2 p-1.5 border border-black text-center text-[9.5px]">
+                  <div>
+                    <span className="text-[8.5px] uppercase font-bold text-gray-600">Total Sasaran</span>
+                    <p className="font-bold font-mono text-xs mt-0.5 text-black">{totalGuru} Guru</p>
+                  </div>
+                  <div>
+                    <span className="text-[8.5px] uppercase font-bold text-gray-600">Tuntas Supervisi</span>
+                    <p className="font-bold font-mono text-xs mt-0.5 text-black">
+                      {guruSelesai} Guru ({totalGuru > 0 ? Math.round((guruSelesai / totalGuru) * 100) : 0}%)
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-[8.5px] uppercase font-bold text-gray-600">Rata-Rata Capaian</span>
+                    <p className="font-bold font-mono text-xs mt-0.5 text-black">{rataRataSekolah}%</p>
+                  </div>
+                  <div>
+                    <span className="text-[8.5px] uppercase font-bold text-gray-600">Predikat Mutu Sekolah</span>
+                    <p className="font-bold text-xs mt-0.5 text-black">
+                      {rataRataSekolah >= 90 ? "Amat Baik" : rataRataSekolah >= 75 ? "Baik" : "Cukup"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Tabel Rekap Guru (Sheet 10) */}
+                <div className="space-y-1">
+                  <h4 className="font-serif font-bold text-[9.5px] uppercase text-black">
+                    Tabel 1: Rekapitulasi Capaian Nilai dan Predikat per Guru
+                  </h4>
+                  <table className="w-full text-[8.5px] border border-black border-collapse text-left">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-black text-center font-bold">
+                        <th className="border border-black py-1 px-1 w-6">No</th>
+                        <th className="border border-black py-1 px-1.5 text-left">Nama Guru &amp; NIP/NUPTK</th>
+                        <th className="border border-black py-1 px-1 text-left w-24">Mata Pelajaran</th>
+                        <th className="border border-black py-1 px-1 w-14">Kelas</th>
+                        <th className="border border-black py-1 px-1 w-12">Skor Max 112</th>
+                        <th className="border border-black py-1 px-1 w-12">Nilai (%)</th>
+                        <th className="border border-black py-1 px-1 w-16">Predikat</th>
+                        <th className="border border-black py-1 px-1 w-16">Status RTL</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {summaries.map((s, idx) => (
+                        <tr key={s.teacher.id} className="border-b border-gray-300">
+                          <td className="border border-black py-0.5 px-1 text-center font-mono">{idx + 1}</td>
+                          <td className="border border-black py-0.5 px-1.5">
+                            <span className="font-semibold block leading-tight">{s.teacher.nama_lengkap}</span>
+                            <span className="font-mono text-[7.5px] text-gray-600">{s.teacher.nip_nuptk || "-"}</span>
+                          </td>
+                          <td className="border border-black py-0.5 px-1 leading-tight">{s.teacher.mata_pelajaran}</td>
+                          <td className="border border-black py-0.5 px-1 text-center">{s.teacher.kelas_diampu}</td>
+                          <td className="border border-black py-0.5 px-1 text-center font-mono font-medium">
+                            {s.skor_terbaru !== null ? s.skor_terbaru : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 text-center font-mono font-bold">
+                            {s.persentase_terbaru !== null ? `${s.persentase_terbaru}%` : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 text-center font-medium">
+                            {s.predikat_terbaru || "Belum Selesai"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 text-center font-mono text-[8px]">
+                            {s.rtl_selesai}/{s.total_rtl} Tuntas
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Tanda Tangan Pengesahan Sheet 10 */}
+              <div className="space-y-2 pt-2">
+                <div className="grid grid-cols-2 text-[10px]">
+                  <div className="text-center">
+                    <p>Mengetahui,</p>
+                    <p className="font-semibold">Pengawas Pembina Sekolah,</p>
+                    <div className="h-12" />
+                    <p className="font-bold underline text-black">{namaPengawas}</p>
+                    <p className="font-mono text-[9px]">NIP. {nipPengawas}</p>
+                  </div>
+                  <div className="text-center">
+                    <p>
+                      Kabupaten Bogor, {tanggalHariIni}
+                    </p>
+                    <p className="font-semibold">Kepala {school.nama_sekolah},</p>
+                    <div className="h-12" />
+                    <p className="font-bold underline text-black">{school.nama_kepala_sekolah}</p>
+                    <p className="font-mono text-[9px]">NIP. {school.nip_kepala_sekolah}</p>
+                  </div>
+                </div>
+
+                {/* Catatan Kaki Lembar 1 */}
+                <div className="pt-1.5 border-t border-black/30 flex justify-between text-[9px] text-gray-600 font-sans">
+                  <span>Dokumen Pengawas Pembina · Format Sheet 10</span>
+                  <span>Lembar 1 dari 2 · {school.nama_sekolah}</span>
+                </div>
+              </div>
             </div>
-            <div className="text-center">
-              <p>
-                {school.nama_sekolah.includes("Kota") ? "Kota" : "Kabupaten"},{" "}
-                {formatTanggalIndonesia(new Date().toISOString().split("T")[0])}
-              </p>
-              <p>Kepala {school.nama_sekolah},</p>
-              <div className="h-16" />
-              <p className="font-bold underline">{school.nama_kepala_sekolah}</p>
-              <p className="font-mono">NIP. {school.nip_kepala_sekolah}</p>
+
+            {/* ======================================================== */}
+            {/* LEMBAR 2: ANALISIS 5 ASPEK PEMBELAJARAN (SHEET 11) */}
+            {/* ======================================================== */}
+            <div className="print-document mx-auto bg-white text-black shadow-md print:shadow-none w-full max-w-[794px] min-h-[1050px] p-8 sm:p-10 font-sans leading-tight flex flex-col justify-between border print:border-none border-gray-300">
+              <div className="space-y-2.5">
+                {/* Kop Surat Resmi Kedinasan */}
+                <div className="text-center border-b-[3px] border-double border-black pb-2">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-black">
+                    Pemerintah Daerah Kabupaten Bogor &nbsp;·&nbsp; Dinas Pendidikan
+                  </p>
+                  <p className="font-serif text-[16px] font-bold uppercase tracking-wide leading-tight text-black mt-0.5">
+                    {school.nama_sekolah}
+                  </p>
+                  <p className="text-[10px] text-gray-700 mt-0.5 font-sans">
+                    {school.alamat} &nbsp;|&nbsp; NPSN: {school.npsn}
+                  </p>
+                </div>
+
+                {/* Judul Dokumen Sheet 11 */}
+                <div className="text-center space-y-0.5 pt-0.5">
+                  <h3 className="font-serif text-xs font-bold uppercase tracking-wide underline text-black">
+                    ANALISIS KETERCAPAIAN 5 ASPEK PEMBELAJARAN DAN REKOMENDASI PRIORITAS
+                  </h3>
+                  <p className="text-[10px] text-gray-800 font-sans">
+                    Format Pelaporan Pengawas Pembina Sekolah &nbsp;|&nbsp; <strong>Dokumen Sheet 11</strong>
+                  </p>
+                  <p className="text-[9.5px] font-mono text-gray-700">
+                    Semester: {school.semester_aktif} &nbsp;—&nbsp; Tahun Ajaran 2026/2027
+                  </p>
+                </div>
+
+                <div className="p-1 border border-black text-center text-[9px] text-gray-800 bg-gray-50/50">
+                  <p>
+                    <strong>Standar Penilaian:</strong> Skala 1.00 s.d. 4.00 &nbsp;|&nbsp; 
+                    <strong>Kriteria Pembinaan Khusus:</strong> Nilai Rata-Rata Aspek &lt; 3.00 &nbsp;|&nbsp; 
+                    <strong>Aspek:</strong> A (Perencanaan), B (Pelaksanaan), C (Penilaian), D (Karakter), E (Iklim Kelas)
+                  </p>
+                </div>
+
+                {/* Tabel Analisis 5 Aspek (Sheet 11) */}
+                <div className="space-y-1">
+                  <h4 className="font-serif font-bold text-[9.5px] uppercase text-black">
+                    Tabel 2: Analisis Rata-Rata 5 Aspek Rubrik Pembelajaran per Guru
+                  </h4>
+                  <table className="w-full text-[8.5px] border border-black border-collapse text-center">
+                    <thead>
+                      <tr className="bg-gray-100 border-b border-black font-bold">
+                        <th className="border border-black py-1 px-1 w-6">No</th>
+                        <th className="border border-black py-1 px-1.5 text-left">Nama Guru &amp; NIP/NUPTK</th>
+                        <th className="border border-black py-1 px-1 w-14">A. Perenc.</th>
+                        <th className="border border-black py-1 px-1 w-14">B. Pelaks.</th>
+                        <th className="border border-black py-1 px-1 w-14">C. Penilai.</th>
+                        <th className="border border-black py-1 px-1 w-14">D. Karakter</th>
+                        <th className="border border-black py-1 px-1 w-14">E. Iklim</th>
+                        <th className="border border-black py-1 px-1.5 text-left w-36">Aspek Prioritas (&lt; 3.00)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {summaries.map((s, idx) => (
+                        <tr key={s.teacher.id} className="border-b border-gray-300">
+                          <td className="border border-black py-0.5 px-1 text-center font-mono">{idx + 1}</td>
+                          <td className="border border-black py-0.5 px-1.5 text-left">
+                            <span className="font-semibold block leading-tight">{s.teacher.nama_lengkap}</span>
+                            <span className="font-mono text-[7.5px] text-gray-600">{s.teacher.nip_nuptk || "-"}</span>
+                          </td>
+                          <td className="border border-black py-0.5 px-1 font-mono font-medium">
+                            {s.rata_aspek?.A != null ? s.rata_aspek.A.toFixed(2) : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 font-mono font-medium">
+                            {s.rata_aspek?.B != null ? s.rata_aspek.B.toFixed(2) : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 font-mono font-medium">
+                            {s.rata_aspek?.C != null ? s.rata_aspek.C.toFixed(2) : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 font-mono font-medium">
+                            {s.rata_aspek?.D != null ? s.rata_aspek.D.toFixed(2) : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1 font-mono font-medium">
+                            {s.rata_aspek?.E != null ? s.rata_aspek.E.toFixed(2) : "-"}
+                          </td>
+                          <td className="border border-black py-0.5 px-1.5 text-left text-[8px] leading-tight">
+                            {s.aspek_prioritas.length > 0 ? (
+                              <span className="font-bold text-black underline">
+                                Aspek {s.aspek_prioritas.join(", ")}
+                              </span>
+                            ) : (
+                              <span className="text-gray-700">Tuntas (Semua ≥ 3.00)</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Tanda Tangan Pengesahan Sheet 11 */}
+              <div className="space-y-2 pt-2">
+                <div className="grid grid-cols-2 text-[10px]">
+                  <div className="text-center">
+                    <p>Mengetahui,</p>
+                    <p className="font-semibold">Pengawas Pembina Sekolah,</p>
+                    <div className="h-12" />
+                    <p className="font-bold underline text-black">{namaPengawas}</p>
+                    <p className="font-mono text-[9px]">NIP. {nipPengawas}</p>
+                  </div>
+                  <div className="text-center">
+                    <p>
+                      Kabupaten Bogor, {tanggalHariIni}
+                    </p>
+                    <p className="font-semibold">Kepala {school.nama_sekolah},</p>
+                    <div className="h-12" />
+                    <p className="font-bold underline text-black">{school.nama_kepala_sekolah}</p>
+                    <p className="font-mono text-[9px]">NIP. {school.nip_kepala_sekolah}</p>
+                  </div>
+                </div>
+
+                {/* Catatan Kaki Lembar 2 */}
+                <div className="pt-1.5 border-t border-black/30 flex justify-between text-[9px] text-gray-600 font-sans">
+                  <span>Dokumen Pengawas Pembina · Format Sheet 11</span>
+                  <span>Lembar 2 dari 2 · {school.nama_sekolah}</span>
+                </div>
+              </div>
             </div>
+
           </div>
         </div>
       </div>
-    </div>
     </PrintPortal>
   );
 };
