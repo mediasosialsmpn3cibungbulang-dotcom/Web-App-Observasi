@@ -13,6 +13,7 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         surface: "var(--surface)",
+        card: "var(--surface)",
         foreground: "var(--foreground)",
         muted: "var(--muted)",
         border: "var(--border)",

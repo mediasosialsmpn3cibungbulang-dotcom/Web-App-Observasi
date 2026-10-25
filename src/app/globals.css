@@ -7,6 +7,7 @@
     /* Tema Terang: Bersih, Kontras Tinggi, Ramah di Mata */
     --background: #F9FAF9;
     --surface: #FFFFFF;
+    --card: #FFFFFF;
     --foreground: #111827;
     --muted: #4B5563;
     --border: #E5E7EB;
@@ -28,6 +29,7 @@
     /* Tema Gelap: Arang Lembut Berkontras Tinggi */
     --background: #111413;
     --surface: #1A1F1D;
+    --card: #1A1F1D;
     --foreground: #F3F4F6;
     --muted: #9CA3AF;
     --border: #2D3732;
@@ -60,6 +62,32 @@
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.25;
+  }
+
+  /* Kepatuhan Kontras Tinggi Form Input & Dropdown */
+  input, select, textarea {
+    background-color: var(--surface);
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background-color: #1A1F1D !important;
+    color: #F3F4F6 !important;
+    border-color: #2D3732 !important;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #9CA3AF !important;
+    opacity: 0.8;
+  }
+
+  .dark select option {
+    background-color: #1A1F1D !important;
+    color: #F3F4F6 !important;
   }
 }
 

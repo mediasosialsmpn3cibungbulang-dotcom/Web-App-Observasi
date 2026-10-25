@@ -193,25 +193,25 @@ export function FollowupManager() {
 
       {/* Ringkasan Status & Indikator */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <p className="text-xs uppercase text-muted font-bold tracking-wider">Total Kesepakatan</p>
-          <p className="text-2xl font-bold font-mono mt-1 text-foreground">{totalRTL}</p>
-          <p className="text-xs text-muted mt-0.5">Komitmen perbaikan guru</p>
+        <div className="p-4 rounded-xl border border-border bg-surface dark:bg-zinc-900/60 shadow-2xs">
+          <p className="text-xs uppercase text-muted dark:text-zinc-400 font-bold tracking-wider">Total Kesepakatan</p>
+          <p className="text-2xl font-bold font-mono mt-1 text-foreground dark:text-zinc-100">{totalRTL}</p>
+          <p className="text-xs text-muted dark:text-zinc-400 mt-0.5">Komitmen perbaikan guru</p>
         </div>
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <p className="text-xs uppercase text-muted font-bold tracking-wider">Sedang Berjalan</p>
+        <div className="p-4 rounded-xl border border-border bg-surface dark:bg-zinc-900/60 shadow-2xs">
+          <p className="text-xs uppercase text-muted dark:text-zinc-400 font-bold tracking-wider">Sedang Berjalan</p>
           <p className="text-2xl font-bold font-mono mt-1 text-pine-600 dark:text-pine-400">{countBerjalan}</p>
-          <p className="text-xs text-muted mt-0.5">Dalam fase aksi kelas</p>
+          <p className="text-xs text-muted dark:text-zinc-400 mt-0.5">Dalam fase aksi kelas</p>
         </div>
-        <div className="p-4 rounded-xl border border-border bg-card">
-          <p className="text-xs uppercase text-muted font-bold tracking-wider">Tuntas & Diverifikasi</p>
+        <div className="p-4 rounded-xl border border-border bg-surface dark:bg-zinc-900/60 shadow-2xs">
+          <p className="text-xs uppercase text-muted dark:text-zinc-400 font-bold tracking-wider">Tuntas & Diverifikasi</p>
           <p className="text-2xl font-bold font-mono mt-1 text-emerald-600 dark:text-emerald-400">{countSelesai}</p>
-          <p className="text-xs text-muted mt-0.5">Disahkan supervisor</p>
+          <p className="text-xs text-muted dark:text-zinc-400 mt-0.5">Disahkan supervisor</p>
         </div>
-        <div className="p-4 rounded-xl border border-red-200 dark:border-red-900/40 bg-red-50/50 dark:bg-red-950/20">
+        <div className="p-4 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/50 dark:bg-red-950/30 shadow-2xs">
           <p className="text-xs uppercase text-red-600 dark:text-red-400 font-bold tracking-wider">Perlu Perhatian / Lewat</p>
           <p className="text-2xl font-bold font-mono mt-1 text-red-600 dark:text-red-400">{countOverdue}</p>
-          <p className="text-xs text-red-700/80 dark:text-red-300/80 mt-0.5">Melewati tenggat target</p>
+          <p className="text-xs text-red-700/80 dark:text-red-300 mt-0.5">Melewati tenggat target</p>
         </div>
       </div>
 
@@ -219,24 +219,24 @@ export function FollowupManager() {
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative min-w-[200px]">
-            <Search className="w-4 h-4 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-4 h-4 text-muted dark:text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Cari guru, masalah, atau aksi..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-card focus:outline-none focus:ring-1 focus:ring-pine-500"
+              className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-border bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100 placeholder:text-muted dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-pine-500 transition-colors"
             />
           </div>
 
           <select
             value={selectedTeacherId}
             onChange={(e) => setSelectedTeacherId(e.target.value)}
-            className="px-3 py-2 text-xs rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-pine-500"
+            className="px-3 py-2 text-xs rounded-lg border border-border bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500 transition-colors cursor-pointer"
           >
-            <option value="all">Semua Guru</option>
+            <option value="all" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Semua Guru</option>
             {teachers.map((t) => (
-              <option key={t.id} value={t.id}>
+              <option key={t.id} value={t.id} className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">
                 {t.nama_lengkap}
               </option>
             ))}
@@ -245,18 +245,18 @@ export function FollowupManager() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 text-xs rounded-lg border border-border bg-card text-foreground focus:outline-none focus:ring-1 focus:ring-pine-500"
+            className="px-3 py-2 text-xs rounded-lg border border-border bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500 transition-colors cursor-pointer"
           >
-            <option value="all">Semua Status</option>
-            <option value="Belum Dimulai">Belum Dimulai</option>
-            <option value="Berjalan">Berjalan</option>
-            <option value="Pending">Pending</option>
-            <option value="Selesai">Selesai</option>
-            <option value="overdue">🚨 Lewat Tenggat (Overdue)</option>
+            <option value="all" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Semua Status</option>
+            <option value="Belum Dimulai" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Belum Dimulai</option>
+            <option value="Berjalan" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Berjalan</option>
+            <option value="Pending" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Pending</option>
+            <option value="Selesai" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">Selesai</option>
+            <option value="overdue" className="bg-surface dark:bg-zinc-900 text-foreground dark:text-zinc-100">🚨 Lewat Tenggat (Overdue)</option>
           </select>
         </div>
 
-        <p className="text-xs text-muted self-end md:self-center">
+        <p className="text-xs text-muted dark:text-zinc-400 self-end md:self-center">
           Menampilkan {filteredList.length} dari {totalRTL} kesepakatan
         </p>
       </div>
@@ -265,14 +265,14 @@ export function FollowupManager() {
       <Panel
         title="Daftar Komitmen & Kesepakatan Tindak Lanjut Guru"
         action={
-          <div className="flex items-center gap-1 bg-muted/20 p-1 rounded-xl border border-border">
+          <div className="flex items-center gap-1 bg-muted/20 dark:bg-zinc-800/60 p-1 rounded-xl border border-border dark:border-zinc-700/60">
             <button
               type="button"
               onClick={() => setViewMode("card")}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "card"
-                  ? "bg-card text-foreground shadow-2xs"
-                  : "text-muted hover:text-foreground"
+                  ? "bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 shadow-2xs"
+                  : "text-muted dark:text-zinc-400 hover:text-foreground dark:hover:text-white"
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
@@ -283,8 +283,8 @@ export function FollowupManager() {
               onClick={() => setViewMode("table")}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === "table"
-                  ? "bg-card text-foreground shadow-2xs"
-                  : "text-muted hover:text-foreground"
+                  ? "bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 shadow-2xs"
+                  : "text-muted dark:text-zinc-400 hover:text-foreground dark:hover:text-white"
               }`}
             >
               <TableIcon className="w-3.5 h-3.5" />
@@ -311,10 +311,10 @@ export function FollowupManager() {
               return (
                 <div
                   key={item.id}
-                  className={`flex flex-col justify-between rounded-2xl border transition-all duration-200 bg-card p-5 ${
+                  className={`flex flex-col justify-between rounded-2xl border transition-all duration-200 bg-surface dark:bg-zinc-900/80 p-5 ${
                     isOverdue
                       ? "border-red-300 dark:border-red-900/60 shadow-xs ring-1 ring-red-400/20"
-                      : "border-border shadow-2xs hover:shadow-md hover:border-pine-400/40"
+                      : "border-border dark:border-zinc-800 shadow-2xs hover:shadow-md hover:border-pine-400/40"
                   }`}
                 >
                   {/* Bagian Atas: Profil Guru & Status */}
@@ -379,22 +379,22 @@ export function FollowupManager() {
                     </div>
 
                     {/* Target Capaian (Kotak Aksen Rapi) */}
-                    <div className="p-2.5 rounded-xl bg-muted/15 border border-border/50 text-xs">
+                    <div className="p-2.5 rounded-xl bg-muted/15 dark:bg-zinc-800/40 border border-border/50 dark:border-zinc-800 text-xs">
                       <div className="flex items-center gap-1.5 text-[10px] font-bold text-pine-700 dark:text-pine-400 uppercase tracking-wide mb-1">
                         <Target className="w-3.5 h-3.5 text-pine-600 shrink-0" />
                         <span>Target Indikator Keberhasilan</span>
                       </div>
-                      <p className="text-muted text-[11px] italic leading-relaxed line-clamp-2" title={item.target_indikator_sukses}>
+                      <p className="text-muted dark:text-zinc-300 text-[11px] italic leading-relaxed line-clamp-2" title={item.target_indikator_sukses}>
                         {item.target_indikator_sukses || "Meningkatnya hasil belajar dan keaktifan siswa"}
                       </p>
                     </div>
 
                     {/* Dukungan Kepala Sekolah */}
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted block mb-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted dark:text-zinc-400 block mb-1">
                         Dukungan Sekolah
                       </span>
-                      <p className="text-xs text-muted leading-relaxed line-clamp-2" title={item.dukungan_kepala_sekolah}>
+                      <p className="text-xs text-muted dark:text-zinc-300 leading-relaxed line-clamp-2" title={item.dukungan_kepala_sekolah}>
                         {item.dukungan_kepala_sekolah || "Pendampingan dan pemantauan berkala."}
                       </p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
@@ -469,7 +469,7 @@ export function FollowupManager() {
                       type="button"
                       title="Cetak Format Dokumen 7 RTL"
                       onClick={() => setSelectedFollowupForPrint(item)}
-                      className="inline-flex items-center justify-center p-2 rounded-xl border border-border bg-card hover:bg-muted/10 text-muted hover:text-foreground transition-colors shadow-2xs cursor-pointer"
+                      className="inline-flex items-center justify-center p-2 rounded-xl border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 hover:bg-muted/10 text-muted dark:text-zinc-300 hover:text-foreground dark:hover:text-white transition-colors shadow-2xs cursor-pointer"
                     >
                       <Printer className="w-4 h-4" />
                     </button>
@@ -479,7 +479,7 @@ export function FollowupManager() {
             })}
           </div>
         ) : (
-          <div className="w-full overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
+          <div className="w-full overflow-hidden rounded-xl border border-border dark:border-zinc-800 bg-surface dark:bg-zinc-900/90 shadow-2xs">
             <table className="w-full table-fixed text-left text-sm border-collapse">
               <colgroup>
                 <col className="w-[21%]" />
@@ -489,7 +489,7 @@ export function FollowupManager() {
                 <col className="w-[12%]" />
                 <col className="w-[13%]" />
               </colgroup>
-              <thead className="bg-slate-50/80 dark:bg-zinc-800/80 border-b border-border text-[11px] uppercase font-bold text-muted tracking-wider">
+              <thead className="bg-slate-50/80 dark:bg-zinc-800/80 border-b border-border dark:border-zinc-800 text-[11px] uppercase font-bold text-muted dark:text-zinc-400 tracking-wider">
                 <tr>
                   <th className="py-3 px-3.5 text-left">Guru & Masalah</th>
                   <th className="py-3 px-3 text-left">Aksi & Target Capaian</th>
@@ -499,7 +499,7 @@ export function FollowupManager() {
                   <th className="py-3 px-2 text-center whitespace-nowrap">Tindakan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border text-xs">
+              <tbody className="divide-y divide-border dark:divide-zinc-800 text-xs">
                 {filteredList.map((item) => {
                   const teacher = teachers.find((t) => t.id === item.teacher_id);
                   const isOverdue = FollowupService.isOverdue(item);
@@ -520,7 +520,7 @@ export function FollowupManager() {
                         <p className="text-[11px] font-mono text-muted whitespace-nowrap">
                           {teacher?.nip_nuptk ? `NIP. ${teacher.nip_nuptk}` : "Guru Mata Pelajaran"}
                         </p>
-                        <p className="text-xs text-muted/90 mt-1.5 leading-relaxed line-clamp-2 break-words" title={item.masalah_utama}>
+                        <p className="text-xs text-muted/90 dark:text-zinc-300 mt-1.5 leading-relaxed line-clamp-2 break-words" title={item.masalah_utama}>
                           {item.masalah_utama}
                         </p>
                         <div className="flex items-center gap-1.5 mt-2">
@@ -544,7 +544,7 @@ export function FollowupManager() {
                           <span className="text-[10px] font-bold text-pine-700 dark:text-pine-400 block uppercase tracking-wider">
                             Target Capaian:
                           </span>
-                          <p className="text-[11px] text-muted italic leading-snug line-clamp-2 break-words" title={item.target_indikator_sukses}>
+                          <p className="text-[11px] text-muted dark:text-zinc-300 italic leading-snug line-clamp-2 break-words" title={item.target_indikator_sukses}>
                             {item.target_indikator_sukses || "Meningkatnya hasil belajar siswa"}
                           </p>
                         </div>
@@ -558,7 +558,7 @@ export function FollowupManager() {
 
                       {/* Dukungan Kepsek */}
                       <td className="py-3.5 px-3 align-top">
-                        <p className="text-xs text-muted leading-relaxed line-clamp-2 break-words" title={item.dukungan_kepala_sekolah}>
+                        <p className="text-xs text-muted dark:text-zinc-300 leading-relaxed line-clamp-2 break-words" title={item.dukungan_kepala_sekolah}>
                           {item.dukungan_kepala_sekolah || "Pendampingan dan pemantauan berkala."}
                         </p>
                         <div className="mt-1.5">
@@ -623,7 +623,7 @@ export function FollowupManager() {
                             type="button"
                             title="Lakukan Cek-in Berkala (Pekan 2/4/8/9)"
                             onClick={() => setSelectedFollowupForCheck(item)}
-                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-foreground transition-all shadow-2xs cursor-pointer whitespace-nowrap shrink-0"
+                            className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 hover:bg-muted/10 text-foreground dark:text-zinc-100 transition-all shadow-2xs cursor-pointer whitespace-nowrap shrink-0"
                           >
                             <CalendarCheck2 className="w-3.5 h-3.5 text-pine-600 shrink-0" />
                             <span className="whitespace-nowrap">Cek-in</span>
@@ -632,7 +632,7 @@ export function FollowupManager() {
                             type="button"
                             title="Cetak Format Dokumen 7 RTL"
                             onClick={() => setSelectedFollowupForPrint(item)}
-                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold rounded-lg border border-border bg-card hover:bg-muted/10 text-muted hover:text-foreground transition-all shadow-2xs cursor-pointer shrink-0"
+                            className="inline-flex items-center justify-center p-1.5 text-xs font-semibold rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 hover:bg-muted/10 text-muted dark:text-zinc-300 hover:text-foreground dark:hover:text-white transition-all shadow-2xs cursor-pointer shrink-0"
                           >
                             <Printer className="w-3.5 h-3.5" />
                           </button>
@@ -650,16 +650,16 @@ export function FollowupManager() {
       {/* Modal Dialog Form Tambah Kesepakatan RTL */}
       {isModalCreateOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-card border border-border rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-border">
-              <h3 className="text-lg font-bold font-serif text-foreground flex items-center gap-2">
+          <div className="bg-surface dark:bg-zinc-900 border border-border dark:border-zinc-800 rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-border dark:border-zinc-800">
+              <h3 className="text-lg font-bold font-serif text-foreground dark:text-zinc-100 flex items-center gap-2">
                 <Sparkles className="w-5 h-5 text-pine-600" />
                 Tambah Rencana Tindak Lanjut Guru
               </h3>
               <button
                 type="button"
                 onClick={() => setIsModalCreateOpen(false)}
-                className="text-muted hover:text-foreground text-sm font-bold"
+                className="text-muted hover:text-foreground dark:hover:text-white text-sm font-bold"
               >
                 ✕
               </button>
@@ -667,13 +667,13 @@ export function FollowupManager() {
 
             <form onSubmit={handleCreateFollowup} className="space-y-4 mt-4">
               <div>
-                <label className="block text-xs font-semibold text-foreground mb-1">
+                <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                   Guru Sasaran <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formTeacherId}
                   onChange={(e) => setFormTeacherId(e.target.value)}
-                  className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                  className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                   required
                 >
                   {teachers.map((t) => (
@@ -685,7 +685,7 @@ export function FollowupManager() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-foreground mb-1">
+                <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                   Masalah Utama Pembelajaran <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -693,14 +693,14 @@ export function FollowupManager() {
                   value={formMasalah}
                   onChange={(e) => setFormMasalah(e.target.value)}
                   placeholder="Contoh: Siswa di kelompok 4 pasif saat transisi latihan mandiri..."
-                  className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                  className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Solusi yang Disepakati <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -708,12 +708,12 @@ export function FollowupManager() {
                     value={formSolusi}
                     onChange={(e) => setFormSolusi(e.target.value)}
                     placeholder="Contoh: Penggunaan rubrik scaffolding bertingkat..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Aksi Konkret Guru <span className="text-red-500">*</span>
                   </label>
                   <textarea
@@ -721,7 +721,7 @@ export function FollowupManager() {
                     value={formAksi}
                     onChange={(e) => setFormAksi(e.target.value)}
                     placeholder="Contoh: Menyusun 2 set LKPD dan membagikannya..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                     required
                   />
                 </div>
@@ -729,7 +729,7 @@ export function FollowupManager() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Dukungan Kepala Sekolah / Supervisor
                   </label>
                   <input
@@ -737,18 +737,18 @@ export function FollowupManager() {
                     value={formDukungan}
                     onChange={(e) => setFormDukungan(e.target.value)}
                     placeholder="Contoh: Fasilitasi modul ajar MGMP..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Jenis Dukungan
                   </label>
                   <select
                     value={formJenisDukungan}
                     onChange={(e) => setFormJenisDukungan(e.target.value as FollowupItem["jenis_dukungan"])}
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                   >
                     <option value="Sarana dan Prasarana">Sarana dan Prasarana</option>
                     <option value="Pelatihan atau Workshop">Pelatihan atau Workshop</option>
@@ -761,20 +761,20 @@ export function FollowupManager() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Tenggat Waktu Realisasi <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="date"
                     value={formDeadline}
                     onChange={(e) => setFormDeadline(e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground font-mono"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 font-mono focus:outline-none focus:ring-1 focus:ring-pine-500"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
+                  <label className="block text-xs font-semibold text-foreground dark:text-zinc-200 mb-1">
                     Target Indikator Keberhasilan
                   </label>
                   <input
@@ -782,12 +782,12 @@ export function FollowupManager() {
                     value={formTarget}
                     onChange={(e) => setFormTarget(e.target.value)}
                     placeholder="Contoh: 85% siswa mencapai KKM..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-border bg-card text-foreground"
+                    className="w-full text-xs p-2.5 rounded-lg border border-border dark:border-zinc-700 bg-surface dark:bg-zinc-800 text-foreground dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-pine-500"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border dark:border-zinc-800">
                 <Button type="button" variant="secondary" onClick={() => setIsModalCreateOpen(false)}>
                   Batal
                 </Button>
