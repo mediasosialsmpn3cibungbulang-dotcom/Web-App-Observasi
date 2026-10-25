@@ -19,6 +19,12 @@ export const SettingsService = {
       const data = localStorage.getItem(STORAGE_KEY_SCHOOL_SETTINGS);
       if (data) {
         const parsed = JSON.parse(data);
+        if (parsed.nama_sekolah?.includes("Prestasi Bangsa") || parsed.nama_sekolah?.includes("SMA Negeri 1") || parsed.nama_sekolah?.includes("SMAN 1")) {
+          parsed.nama_sekolah = "SMPN 3 Cibungbulang";
+          parsed.alamat = "Jl. Raya Cibungbulang, Kab. Bogor, Jawa Barat";
+          parsed.npsn = "20200551";
+          localStorage.setItem(STORAGE_KEY_SCHOOL_SETTINGS, JSON.stringify(parsed));
+        }
         _cachedSchoolSettings = parsed;
         return parsed;
       }

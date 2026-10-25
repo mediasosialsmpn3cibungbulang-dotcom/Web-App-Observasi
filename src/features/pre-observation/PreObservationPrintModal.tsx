@@ -17,9 +17,9 @@ interface PreObservationPrintModalProps {
 }
 
 // Gaya baris label : isi pada tabel identitas & RPP
-const LABEL = "py-[2px] pr-2 align-top w-[34%] text-gray-700";
-const SEP = "py-[2px] px-1 align-top w-[2%]";
-const VALUE = "py-[2px] align-top";
+const LABEL = "py-1 pr-2 align-top w-[32%] text-gray-700 font-medium";
+const SEP = "py-1 px-1 align-top w-[2%]";
+const VALUE = "py-1 align-top text-gray-900";
 
 export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> = ({
   isOpen,
@@ -88,107 +88,114 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
           <div className="flex-1 overflow-y-auto p-3 sm:p-6 print:p-0">
             <div
               id="printable-area"
-              className="print-document mx-auto bg-white text-black shadow-md print:shadow-none w-full max-w-[794px] px-8 py-8 sm:px-12 sm:py-10 font-sans text-[11px] leading-snug"
+              className="print-document mx-auto bg-white text-black shadow-md print:shadow-none w-full max-w-[794px] min-h-[1050px] p-8 sm:p-12 font-sans text-[11px] leading-relaxed flex flex-col justify-between"
             >
-              {/* Kop Surat */}
-              <div className="text-center border-b-[3px] border-double border-black pb-2">
-                <p className="text-[11px] font-bold uppercase tracking-wide">
-                  Pemerintah Daerah Provinsi / Dinas Pendidikan
+              {/* Bagian Atas: Kop, Judul, Identitas, RPP, dan Tabel Fokus Pengamatan */}
+              <div className="space-y-3.5">
+                {/* Kop Surat */}
+                <div className="text-center border-b-[3px] border-double border-black pb-2.5">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-gray-800">
+                    Pemerintah Daerah Provinsi Jawa Barat / Dinas Pendidikan
+                  </p>
+                  <p className="font-serif text-[17px] font-bold uppercase tracking-wide leading-tight text-black mt-0.5">
+                    {school.nama_sekolah}
+                  </p>
+                  <p className="text-[10px] text-gray-700 mt-0.5">
+                    {school.alamat} | NPSN: {school.npsn}
+                  </p>
+                </div>
+
+                {/* Judul */}
+                <div className="text-center my-2.5">
+                  <p className="font-serif text-[13px] font-bold uppercase underline underline-offset-4 tracking-wider">
+                    Berita Acara Pertemuan Pra-Observasi Pembelajaran
+                  </p>
+                  <p className="text-[10px] text-gray-700 mt-1">
+                    Tahun Ajaran / Semester: {school.semester_aktif}
+                  </p>
+                </div>
+
+                <p className="text-justify text-[11px] leading-relaxed mb-2">
+                  Pada hari ini, tanggal <strong>{formatTanggalIndonesia(data.tanggal_pelaksanaan)}</strong>, telah
+                  diselenggarakan pertemuan dialog telaah perencanaan pembelajaran (Pra-Observasi) antara Guru dengan
+                  Supervisor akademik sebagai berikut:
                 </p>
-                <p className="font-serif text-[16px] font-bold uppercase tracking-wide leading-tight">
-                  {school.nama_sekolah}
-                </p>
-                <p className="text-[10px] text-gray-700">
-                  {school.alamat} | NPSN: {school.npsn}
-                </p>
-              </div>
 
-              {/* Judul */}
-              <div className="text-center mt-4 mb-3">
-                <p className="font-serif text-[13px] font-bold uppercase underline underline-offset-2">
-                  Berita Acara Pertemuan Pra-Observasi Pembelajaran
-                </p>
-                <p className="text-[10px] text-gray-700 mt-0.5">
-                  Tahun Ajaran / Semester: {school.semester_aktif}
-                </p>
-              </div>
+                {/* Identitas */}
+                <table className="w-full mb-3">
+                  <tbody>
+                    <tr><td className={LABEL}>Nama Guru</td><td className={SEP}>:</td><td className={`${VALUE} font-bold`}>{teacher.nama_lengkap}</td></tr>
+                    <tr><td className={LABEL}>NIP / NUPTK</td><td className={SEP}>:</td><td className={VALUE}>{teacher.nip_nuptk}</td></tr>
+                    <tr><td className={LABEL}>Mata Pelajaran / Kelas</td><td className={SEP}>:</td><td className={VALUE}>{teacher.mata_pelajaran} / {teacher.kelas_diampu} (Fase {teacher.fase})</td></tr>
+                    <tr><td className={LABEL}>Supervisor</td><td className={SEP}>:</td><td className={`${VALUE} font-bold`}>{school.nama_kepala_sekolah}</td></tr>
+                    <tr><td className={LABEL}>NIP Supervisor</td><td className={SEP}>:</td><td className={VALUE}>{school.nip_kepala_sekolah}</td></tr>
+                  </tbody>
+                </table>
 
-              <p className="text-justify mb-2">
-                Pada hari ini, tanggal <strong>{formatTanggalIndonesia(data.tanggal_pelaksanaan)}</strong>, telah
-                diselenggarakan pertemuan dialog telaah perencanaan pembelajaran (Pra-Observasi) antara Guru dengan
-                Supervisor akademik sebagai berikut:
-              </p>
-
-              {/* Identitas */}
-              <table className="w-full mb-3">
-                <tbody>
-                  <tr><td className={LABEL}>Nama Guru</td><td className={SEP}>:</td><td className={`${VALUE} font-bold`}>{teacher.nama_lengkap}</td></tr>
-                  <tr><td className={LABEL}>NIP / NUPTK</td><td className={SEP}>:</td><td className={VALUE}>{teacher.nip_nuptk}</td></tr>
-                  <tr><td className={LABEL}>Mata Pelajaran / Kelas</td><td className={SEP}>:</td><td className={VALUE}>{teacher.mata_pelajaran} / {teacher.kelas_diampu} (Fase {teacher.fase})</td></tr>
-                  <tr><td className={LABEL}>Supervisor</td><td className={SEP}>:</td><td className={`${VALUE} font-bold`}>{school.nama_kepala_sekolah}</td></tr>
-                  <tr><td className={LABEL}>NIP Supervisor</td><td className={SEP}>:</td><td className={VALUE}>{school.nip_kepala_sekolah}</td></tr>
-                </tbody>
-              </table>
-
-              {/* A. RPP */}
-              <p className="font-bold uppercase text-[11px] border-b border-black pb-0.5 mb-1">
-                A. Rencana Pelaksanaan Pembelajaran
-              </p>
-              <table className="w-full mb-3">
-                <tbody>
-                  <tr><td className={LABEL}>Topik / Materi</td><td className={SEP}>:</td><td className={VALUE}>{data.topik_pembelajaran}</td></tr>
-                  <tr><td className={LABEL}>Tujuan Pembelajaran</td><td className={SEP}>:</td><td className={VALUE}>{data.tujuan_pembelajaran}</td></tr>
-                  <tr><td className={LABEL}>Metode Pembelajaran</td><td className={SEP}>:</td><td className={VALUE}>{data.metode_pembelajaran}</td></tr>
-                  <tr><td className={LABEL}>Media / Alat</td><td className={SEP}>:</td><td className={VALUE}>{data.media_alat}</td></tr>
-                  <tr><td className={LABEL}>Teknik Asesmen</td><td className={SEP}>:</td><td className={VALUE}>{data.teknik_asesmen}</td></tr>
-                  <tr><td className={LABEL}>Alokasi Waktu</td><td className={SEP}>:</td><td className={VALUE}>{data.alokasi_waktu}</td></tr>
-                </tbody>
-              </table>
-
-              {/* B. Fokus Pengamatan */}
-              <p className="font-bold uppercase text-[11px] border-b border-black pb-0.5 mb-1.5">
-                B. Kesepakatan Fokus Pengamatan
-              </p>
-              <table className="w-full border-collapse text-[10.5px] mb-5 table-fixed">
-                <colgroup>
-                  <col className="w-[6%]" />
-                  <col className="w-[26%]" />
-                  <col className="w-[40%]" />
-                  <col className="w-[28%]" />
-                </colgroup>
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border border-black px-1.5 py-1 text-center">No</th>
-                    <th className="border border-black px-1.5 py-1 text-left">Aspek Pengamatan</th>
-                    <th className="border border-black px-1.5 py-1 text-left">Indikator Keberhasilan</th>
-                    <th className="border border-black px-1.5 py-1 text-left">Catatan Khusus</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.fokus_amatan.map((f, idx) => (
-                    <tr key={idx} className="break-inside-avoid">
-                      <td className="border border-black px-1.5 py-1 text-center align-top">{idx + 1}</td>
-                      <td className="border border-black px-1.5 py-1 align-top">Aspek {f.aspek}: {ASPECT_NAMES[f.aspek]}</td>
-                      <td className="border border-black px-1.5 py-1 align-top">{f.indikator_sukses}</td>
-                      <td className="border border-black px-1.5 py-1 align-top">{f.catatan_khusus || "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Tanda Tangan */}
-              <div className="grid grid-cols-2 gap-8 text-center break-inside-avoid">
+                {/* A. RPP */}
                 <div>
-                  <p>Guru Mata Pelajaran,</p>
-                  <div className="h-16" />
-                  <p className="font-bold underline">{teacher.nama_lengkap}</p>
-                  <p>NIP. {teacher.nip_nuptk}</p>
+                  <p className="font-bold uppercase text-[11px] border-b border-black pb-0.5 mb-1.5">
+                    A. Rencana Pelaksanaan Pembelajaran
+                  </p>
+                  <table className="w-full mb-3">
+                    <tbody>
+                      <tr><td className={LABEL}>Topik / Materi</td><td className={SEP}>:</td><td className={VALUE}>{data.topik_pembelajaran}</td></tr>
+                      <tr><td className={LABEL}>Tujuan Pembelajaran</td><td className={SEP}>:</td><td className={VALUE}>{data.tujuan_pembelajaran}</td></tr>
+                      <tr><td className={LABEL}>Metode Pembelajaran</td><td className={SEP}>:</td><td className={VALUE}>{data.metode_pembelajaran}</td></tr>
+                      <tr><td className={LABEL}>Media / Alat</td><td className={SEP}>:</td><td className={VALUE}>{data.media_alat}</td></tr>
+                      <tr><td className={LABEL}>Teknik Asesmen</td><td className={SEP}>:</td><td className={VALUE}>{data.teknik_asesmen}</td></tr>
+                      <tr><td className={LABEL}>Alokasi Waktu</td><td className={SEP}>:</td><td className={VALUE}>{data.alokasi_waktu}</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* B. Fokus Pengamatan */}
+                <div>
+                  <p className="font-bold uppercase text-[11px] border-b border-black pb-0.5 mb-1.5">
+                    B. Kesepakatan Fokus Pengamatan
+                  </p>
+                  <table className="w-full border-collapse text-[10.5px] table-fixed">
+                    <colgroup>
+                      <col className="w-[6%]" />
+                      <col className="w-[26%]" />
+                      <col className="w-[40%]" />
+                      <col className="w-[28%]" />
+                    </colgroup>
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="border border-black px-2 py-1 text-center font-bold">No</th>
+                        <th className="border border-black px-2 py-1 text-left font-bold">Aspek Pengamatan</th>
+                        <th className="border border-black px-2 py-1 text-left font-bold">Indikator Keberhasilan</th>
+                        <th className="border border-black px-2 py-1 text-left font-bold">Catatan Khusus</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.fokus_amatan.map((f, idx) => (
+                        <tr key={idx} className="break-inside-avoid">
+                          <td className="border border-black px-2 py-1.5 text-center align-top">{idx + 1}</td>
+                          <td className="border border-black px-2 py-1.5 align-top font-medium">Aspek {f.aspek}: {ASPECT_NAMES[f.aspek]}</td>
+                          <td className="border border-black px-2 py-1.5 align-top leading-relaxed">{f.indikator_sukses}</td>
+                          <td className="border border-black px-2 py-1.5 align-top leading-relaxed">{f.catatan_khusus || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Bagian Bawah: Tanda Tangan Pas & Seimbang */}
+              <div className="pt-6 grid grid-cols-2 gap-8 text-center break-inside-avoid">
+                <div>
+                  <p className="text-gray-800">Guru Mata Pelajaran,</p>
+                  <div className="h-20" />
+                  <p className="font-bold underline text-sm text-black">{teacher.nama_lengkap}</p>
+                  <p className="text-[11px] text-gray-700 font-mono mt-0.5">NIP. {teacher.nip_nuptk}</p>
                 </div>
                 <div>
-                  <p>Supervisor / Kepala Sekolah,</p>
-                  <div className="h-16" />
-                  <p className="font-bold underline">{school.nama_kepala_sekolah}</p>
-                  <p>NIP. {school.nip_kepala_sekolah}</p>
+                  <p className="text-gray-800">Supervisor / Kepala Sekolah,</p>
+                  <div className="h-20" />
+                  <p className="font-bold underline text-sm text-black">{school.nama_kepala_sekolah}</p>
+                  <p className="text-[11px] text-gray-700 font-mono mt-0.5">NIP. {school.nip_kepala_sekolah}</p>
                 </div>
               </div>
             </div>

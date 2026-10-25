@@ -204,17 +204,26 @@
     display: none !important;
   }
 
-  /* 3. Lembar dokumen resmi */
+  /* 3. Lembar dokumen resmi - Pas 1 lembar A4 proporsional tanpa ruang kosong berlebih */
   #printable-area,
   .print-document {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    box-sizing: border-box !important;
+    padding: 16mm 20mm 16mm 20mm !important;
+    margin: 0 auto !important;
     background: #FFFFFF !important;
     border: none !important;
     border-radius: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
   }
 
   /* Reset halaman menjadi putih bersih */
@@ -223,7 +232,7 @@
     background: #FFFFFF !important;
     background-color: #FFFFFF !important;
     color: #000000 !important;
-    font-size: 10pt !important;
+    font-size: 10.5pt !important;
     font-family: "Times New Roman", Georgia, serif !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -250,9 +259,9 @@
     height: 0 !important;
   }
 
-  /* Standarisasi Kertas A4 Portrait */
+  /* Standarisasi Kertas A4 Portrait murni (margin 0 melenyapkan header/footer tanggal dan URL otomatis browser) */
   @page {
     size: A4 portrait;
-    margin: 10mm 15mm 10mm 15mm;
+    margin: 0 !important;
   }
 }

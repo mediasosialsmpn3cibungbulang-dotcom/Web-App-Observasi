@@ -137,8 +137,8 @@ export const Sidebar: React.FC = () => {
       {/* Footer Info Instansi */}
       <div className="pt-3 border-t border-border px-2 flex-shrink-0">
         <div className="text-[11px] text-muted">
-          <p className="font-semibold text-foreground truncate">SMAN 1 Prestasi Bangsa</p>
-          <p className="truncate">NPSN: 20101234</p>
+          <p className="font-semibold text-foreground truncate">SMPN 3 Cibungbulang</p>
+          <p className="truncate">NPSN: 20200551</p>
         </div>
       </div>
     </aside>

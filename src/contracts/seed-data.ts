@@ -1120,9 +1120,9 @@ export const SEED_CHECKLIST_TEMPLATES: Omit<ChecklistItem, "id" | "semester" | "
  */
 export const SEED_SCHOOL_SETTINGS: SchoolSettings = {
   id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-  nama_sekolah: "SMA Negeri 1 Prestasi Bangsa",
-  npsn: "20101234",
-  alamat: "Jl. Pendidikan Nasional No. 45, Jakarta Selatan",
+  nama_sekolah: "SMPN 3 Cibungbulang",
+  npsn: "20200551",
+  alamat: "Jl. Raya Cibungbulang, Kab. Bogor, Jawa Barat",
   nama_kepala_sekolah: "Dr. Hj. Rahmawati, M.Pd.",
   nip_kepala_sekolah: "197205141998022001",
   nama_pengawas: "Drs. H. Bambang Sujatmiko, M.M.",
