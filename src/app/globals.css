@@ -209,9 +209,11 @@
   .print-document {
     width: 210mm !important;
     max-width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
     min-height: 297mm !important;
     box-sizing: border-box !important;
-    padding: 16mm 20mm 16mm 20mm !important;
+    padding: 12mm 16mm 12mm 16mm !important;
     margin: 0 auto !important;
     background: #FFFFFF !important;
     border: none !important;
