@@ -219,11 +219,20 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    page-break-after: avoid !important;
     page-break-inside: avoid !important;
-    break-after: avoid !important;
     break-inside: avoid !important;
     overflow: hidden !important;
+  }
+
+  /* Pemisahan antar halaman jika dokumen terdiri dari multi-lembar A4 */
+  .print-document:not(:last-child) {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
+  .print-document:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   /* Reset halaman menjadi putih bersih */
