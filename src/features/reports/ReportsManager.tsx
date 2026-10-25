@@ -8,7 +8,6 @@ import {
   BookOpen,
   Award,
   CheckCircle2,
-  FileSpreadsheet,
   FileCheck,
   ChevronRight,
   Info,
@@ -47,6 +46,11 @@ export function ReportsManager() {
           ).toFixed(1)
         )
       : 0;
+
+  const countAmatBaik = summaries.filter((s) => s.predikat_terbaru === "Amat Baik").length;
+  const countBaik = summaries.filter((s) => s.predikat_terbaru === "Baik").length;
+  const countCukup = summaries.filter((s) => s.predikat_terbaru === "Cukup").length;
+  const countPerlu = summaries.filter((s) => s.predikat_terbaru === "Perlu Pembinaan").length;
 
   // Header terstandarisasi untuk ekspor rekapitulasi lengkap
   const exportHeaders = [
@@ -216,36 +220,36 @@ export function ReportsManager() {
           </div>
         </Panel>
 
-        <Panel title="Aksi Cepat Dokumen Resmi" subtitle="Cetak instan & lampiran siap tanda tangan">
-          <div className="space-y-3">
-            <Button
-              variant="primary"
-              size="md"
-              className="w-full justify-center"
-              onClick={() => setIsOfficialModalOpen(true)}
-            >
-              <BookOpen className="w-4 h-4 mr-2" />
-              Buka Laporan Lengkap (A4)
-            </Button>
-            <Button
-              variant="secondary"
-              size="md"
-              className="w-full justify-center"
-              onClick={() => setIsSupervisorModalOpen(true)}
-            >
-              <Printer className="w-4 h-4 mr-2" />
-              Buka Rekap Pengawas (Sheet 10-11)
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-center text-xs"
-              onClick={handleExportExcel}
-              title="Unduh berkas Excel resmi berkolom rapi"
-            >
-              <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5 text-emerald-600" />
-              Download Arsip Excel (.XLSX)
-            </Button>
+        <Panel title="Distribusi Predikat Mutu" subtitle="Sebaran hasil penilaian guru">
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                Amat Baik (&ge; 90%):
+              </span>
+              <span className="font-bold text-foreground font-mono">{countAmatBaik} Guru</span>
+            </div>
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-pine-500" />
+                Baik (75 - 89%):
+              </span>
+              <span className="font-bold text-foreground font-mono">{countBaik} Guru</span>
+            </div>
+            <div className="flex justify-between items-center py-1 border-b border-border">
+              <span className="text-muted flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                Cukup (60 - 74%):
+              </span>
+              <span className="font-bold text-foreground font-mono">{countCukup} Guru</span>
+            </div>
+            <div className="flex justify-between items-center py-1">
+              <span className="text-muted flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                Perlu Pembinaan (&lt; 60%):
+              </span>
+              <span className="font-bold text-foreground font-mono">{countPerlu} Guru</span>
+            </div>
           </div>
         </Panel>
       </div>
