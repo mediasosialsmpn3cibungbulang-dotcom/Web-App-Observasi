@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import Link from "next/link";
 import {
   CalendarDays,
   Plus,
@@ -33,6 +34,13 @@ export const ScheduleList: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    const handleRefresh = () => loadData();
+    window.addEventListener("focus", handleRefresh);
+    window.addEventListener("storage", handleRefresh);
+    return () => {
+      window.removeEventListener("focus", handleRefresh);
+      window.removeEventListener("storage", handleRefresh);
+    };
   }, []);
 
   const filtered = useMemo(() => {
@@ -195,36 +203,51 @@ export const ScheduleList: React.FC = () => {
                     </td>
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5 text-xs">
-                        <span
-                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        <Link
+                          href="/pra-observasi"
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiPraObs
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
-                              : "bg-gray-100 text-gray-500 dark:bg-gray-800"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"
+                              : "bg-gray-100 text-gray-500 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                           }`}
-                          title={s.realisasiPraObs ? "Pra-Obs Selesai" : "Pra-Obs Belum"}
+                          title={
+                            s.realisasiPraObs
+                              ? "Pra-Observasi: Sudah terlaksana & tersimpan (Klik untuk membuka)"
+                              : "Pra-Observasi: Belum dilaksanakan (Klik untuk mengisi)"
+                          }
                         >
                           P
-                        </span>
-                        <span
-                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        </Link>
+                        <Link
+                          href="/observasi"
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiObs
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
-                              : "bg-gray-100 text-gray-500 dark:bg-gray-800"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"
+                              : "bg-gray-100 text-gray-500 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                           }`}
-                          title={s.realisasiObs ? "Observasi Selesai" : "Observasi Belum"}
+                          title={
+                            s.realisasiObs
+                              ? "Observasi Kelas: Sudah dinilai & tersimpan (Klik untuk membuka)"
+                              : "Observasi Kelas: Belum dilaksanakan (Klik untuk mengisi)"
+                          }
                         >
                           O
-                        </span>
-                        <span
-                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                        </Link>
+                        <Link
+                          href="/coaching"
+                          className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiCoaching
-                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300"
-                              : "bg-gray-100 text-gray-500 dark:bg-gray-800"
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"
+                              : "bg-gray-100 text-gray-500 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700"
                           }`}
-                          title={s.realisasiCoaching ? "Coaching Selesai" : "Coaching Belum"}
+                          title={
+                            s.realisasiCoaching
+                              ? "Percakapan Coaching: Sudah terlaksana & tersimpan (Klik untuk membuka)"
+                              : "Percakapan Coaching: Belum dilaksanakan (Klik untuk mengisi)"
+                          }
                         >
                           C
-                        </span>
+                        </Link>
                       </div>
                     </td>
                     <td className="py-3.5 px-4 text-right">

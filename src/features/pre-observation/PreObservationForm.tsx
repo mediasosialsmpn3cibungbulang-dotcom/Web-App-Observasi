@@ -177,29 +177,32 @@ export const PreObservationForm: React.FC = () => {
   useEffect(() => {
     const list = TeacherService.getTeachers().filter((t) => t.aktif);
     setTeachers(list);
-    setSchedules(ScheduleService.getSchedules());
+    const scList = ScheduleService.getSchedules();
+    setSchedules(scList);
 
     const settings = SettingsService.getSchoolSettings();
     setSchoolSettings(settings);
 
     if (list.length > 0) {
       setSelectedTeacherId(list[0].id);
-      loadPreObs(list[0].id, settings.semester_aktif);
+      loadPreObs(list[0].id, settings.semester_aktif, scList);
     }
   }, []);
 
-  const loadPreObs = (teacherId: string, semester: string) => {
+  const loadPreObs = (teacherId: string, semester: string, scList?: Schedule[]) => {
     const existing = PreObservationService.getByTeacherId(teacherId);
     if (existing) {
       setFormData(existing);
     } else {
+      const scheduleLookup = scList || schedules;
+      const targetSchedule = scheduleLookup.find((s) => s.teacher_id === teacherId);
       setFormData({
         id: crypto.randomUUID(),
-        schedule_id: crypto.randomUUID(),
+        schedule_id: targetSchedule ? targetSchedule.id : crypto.randomUUID(),
         teacher_id: teacherId,
         supervisor_id: "00000000-0000-0000-0000-000000000001",
         semester,
-        tanggal_pelaksanaan: new Date().toISOString().split("T")[0],
+        tanggal_pelaksanaan: targetSchedule?.rencana_pra_observasi || new Date().toISOString().split("T")[0],
         topik_pembelajaran: "",
         tujuan_pembelajaran: "",
         metode_pembelajaran: "Problem-Based Learning (PBL)",
@@ -291,10 +294,16 @@ export const PreObservationForm: React.FC = () => {
     if (e) e.preventDefault();
     if (!formData) return;
 
-    PreObservationService.savePreObservation({
+    // Pastikan schedule_id terisi dengan ID jadwal yang valid jika ada
+    const targetSchedule = schedules.find((s) => s.teacher_id === selectedTeacherId);
+    const dataToSave: PreObservation = {
       ...formData,
+      schedule_id: targetSchedule ? targetSchedule.id : formData.schedule_id,
       status: "Final",
-    });
+    };
+
+    const saved = PreObservationService.savePreObservation(dataToSave);
+    setFormData(saved);
     setSuccessMsg(
       `Hasil wawancara persiapan bersama ${currentTeacher?.nama_lengkap} berhasil disimpan!`
     );

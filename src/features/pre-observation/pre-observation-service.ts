@@ -1,7 +1,6 @@
 import { PreObservation, PreObservationSchema, Teacher } from "@/contracts/schemas";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "../teachers/teacher-service";
-import { ScheduleService } from "../schedules/schedule-service";
 
 const STORAGE_KEY_PRE_OBS = "smart_supervisi_pre_obs_db";
 
@@ -64,7 +63,9 @@ export const PreObservationService = {
 
   savePreObservation(payload: PreObservation): PreObservation {
     const list = this.getPreObservations();
-    const index = list.findIndex((p) => p.id === payload.id);
+    const index = list.findIndex(
+      (p) => p.id === payload.id || (p.teacher_id === payload.teacher_id && p.semester === payload.semester)
+    );
 
     const updated: PreObservation = {
       ...payload,

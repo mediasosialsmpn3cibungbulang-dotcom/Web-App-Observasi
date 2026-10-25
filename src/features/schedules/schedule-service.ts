@@ -2,6 +2,9 @@ import { Schedule, ScheduleSchema, Teacher } from "@/contracts/schemas";
 import { isScheduleMissed } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "../teachers/teacher-service";
+import { PreObservationService } from "../pre-observation/pre-observation-service";
+import { ObservationService } from "../observation/observation-service";
+import { CoachingService } from "../coaching/coaching-service";
 
 const STORAGE_KEY_SCHEDULES = "smart_supervisi_schedules_db";
 
@@ -72,6 +75,10 @@ export const ScheduleService = {
     const teacherMap = new Map(teachers.map((t) => [t.id, t]));
     const today = new Date();
 
+    const preObservations = PreObservationService.getPreObservations();
+    const observations = ObservationService.getObservations();
+    const coachingSessions = CoachingService.getSessions();
+
     return schedules
       .map((s) => {
         const teacher = teacherMap.get(s.teacher_id);
@@ -97,10 +104,35 @@ export const ScheduleService = {
           warnings.push("Tanggal coaching tidak boleh mendahului tanggal observasi kelas.");
         }
 
-        // Simulasi realisasi berdasarkan data contoh
-        const isObsRealized = s.id === "s1111111-1111-1111-1111-111111111111";
-        const isPraRealized = isObsRealized || s.id === "s2222222-2222-2222-2222-222222222222";
-        const isCoachingRealized = isObsRealized;
+        // Realisasi Pra-Observasi (P):
+        // Terlaksana jika data hasil diskusi pra-observasi guru/jadwal telah disimpan (status Final atau data terisi)
+        const isPraRealized = preObservations.some(
+          (p) =>
+            (p.schedule_id === s.id || p.teacher_id === s.teacher_id) &&
+            (p.status === "Final" || Boolean(p.topik_pembelajaran && p.topik_pembelajaran.trim() !== ""))
+        );
+
+        // Realisasi Observasi (O):
+        // Terlaksana jika sesi observasi kelas telah difinalisasi, dikunci resmi, atau telah memiliki butir skor indikator
+        const teacherObs = observations.filter(
+          (o) => o.schedule_id === s.id || o.teacher_id === s.teacher_id
+        );
+        const isObsRealized = teacherObs.some((o) => {
+          if (o.status === "Final" || o.is_locked) return true;
+          const scores = ObservationService.getAllScores(o.id);
+          return scores.length > 0;
+        });
+
+        // Realisasi Coaching (C):
+        // Terlaksana jika sesi percakapan coaching telah difinalisasi atau dialog/refleksi/pertanyaan telah diisi & disimpan
+        const isCoachingRealized = coachingSessions.some(
+          (c) =>
+            c.teacher_id === s.teacher_id &&
+            (c.status === "Final" ||
+              Boolean(c.poin_kunci_dialog && c.poin_kunci_dialog.trim() !== "") ||
+              Boolean(c.refleksi_guru?.hal_sudah_baik) ||
+              CoachingService.getSessionQuestions(c.id).length > 0)
+        );
 
         const isMissed = isScheduleMissed(s.rencana_observasi, isObsRealized, today);
 
