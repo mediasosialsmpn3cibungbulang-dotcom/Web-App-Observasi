@@ -41,8 +41,8 @@ export const OfficialReportModal: React.FC<OfficialReportModalProps> = ({
   const countPerlu = summaries.filter((s) => s.predikat_terbaru === "Perlu Pembinaan").length;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="bg-white text-black border border-border rounded-panel max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:z-auto print:block print:overflow-visible">
+      <div className="bg-white text-black border border-border rounded-panel max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none print:h-auto print:overflow-visible print:m-0 print:p-0">
         {/* Header Modal Bar */}
         <div className="no-print flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export const OfficialReportModal: React.FC<OfficialReportModalProps> = ({
         </div>
 
         {/* Print Content Area A4 */}
-        <div className="print-area flex-1 overflow-y-auto p-8 md:p-14 space-y-8 text-black bg-white leading-relaxed">
+        <div className="print-area flex-1 overflow-y-auto p-8 md:p-14 space-y-8 text-black bg-white leading-relaxed print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none">
           {/* HALAMAN JUDUL / COVER RESMI */}
           <div className="text-center py-12 border-b-2 border-black min-h-[400px] flex flex-col justify-between">
             <div className="space-y-2">

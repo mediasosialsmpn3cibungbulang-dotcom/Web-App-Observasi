@@ -36,8 +36,8 @@ export const SupervisorRecapModal: React.FC<SupervisorRecapModalProps> = ({
       : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="bg-white text-black border border-border rounded-panel max-w-5xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:z-auto print:block print:overflow-visible">
+      <div className="bg-white text-black border border-border rounded-panel max-w-5xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none print:h-auto print:overflow-visible print:m-0 print:p-0">
         {/* Modal Header Bar */}
         <div className="no-print flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
           <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ export const SupervisorRecapModal: React.FC<SupervisorRecapModalProps> = ({
         </div>
 
         {/* Print Content Area A4 */}
-        <div className="print-area flex-1 overflow-y-auto p-8 md:p-12 space-y-6 text-black bg-white">
+        <div className="print-area flex-1 overflow-y-auto p-8 md:p-12 space-y-6 text-black bg-white print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none">
           {/* KOP SURAT RESMI */}
           <div className="text-center border-b-2 border-black pb-4">
             <h2 className="text-base font-bold uppercase tracking-wider">

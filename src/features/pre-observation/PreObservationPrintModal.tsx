@@ -29,15 +29,20 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-      <div className="bg-white text-black border border-border rounded-panel max-w-3xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden">
-        {/* Header Modal Bar (Tidak ikut tercetak) */}
-        <div className="no-print flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:z-auto print:block print:overflow-visible">
+      <div className="bg-white text-black border border-border rounded-panel max-w-3xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none print:h-auto print:overflow-visible print:m-0 print:p-0">
+        {/* Header Modal Bar (Hanya tampil di layar, tidak ikut tercetak) */}
+        <div className="no-print flex items-center justify-between p-3.5 border-b border-gray-200 bg-gray-50 flex-shrink-0">
           <div className="flex items-center gap-2">
-            <Printer className="w-5 h-5 text-primary" />
-            <span className="font-bold font-serif text-sm">
-              Pratinjau Dokumen Siap Cetak (A4) - Berita Acara Pra-Observasi
-            </span>
+            <Printer className="w-5 h-5 text-pine-600" />
+            <div>
+              <span className="font-bold font-serif text-sm block leading-tight text-gray-900">
+                Pratinjau Dokumen Siap Cetak (A4) - Berita Acara Pra-Observasi
+              </span>
+              <span className="text-[11px] text-gray-500 block leading-tight mt-0.5">
+                Format resmi terstandar 1 Lembar A4 tanpa scrollbar
+              </span>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="primary" size="sm" onClick={handlePrint}>
@@ -47,43 +52,46 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
             <button
               type="button"
               onClick={onClose}
-              className="p-1.5 rounded-full text-gray-500 hover:text-black hover:bg-gray-200"
+              className="p-1.5 rounded-full text-gray-500 hover:text-black hover:bg-gray-200 transition-colors"
+              title="Tutup Pratinjau"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Lembar Dokumen A4 Resmi */}
-        <div className="flex-1 overflow-y-auto p-8 md:p-12 space-y-6 font-serif text-black leading-relaxed print:p-0">
+        {/* Lembar Dokumen A4 Resmi (Proporsi 1 Lembar Pas) */}
+        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-3 font-serif text-black leading-snug print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none print:space-y-2.5 print:text-[10pt]">
           {/* Kop Surat Resmi */}
-          <div className="text-center border-b-2 border-black pb-4 space-y-1">
-            <h2 className="text-lg font-bold uppercase tracking-wide">
+          <div className="text-center border-b-2 border-black pb-2 space-y-0.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-gray-800">
               PEMERINTAH DAERAH PROVINSI / DINAS PENDIDIKAN
             </h2>
-            <h1 className="text-xl font-bold uppercase tracking-wider">{school.nama_sekolah}</h1>
-            <p className="text-xs font-sans text-gray-700">
+            <h1 className="text-base md:text-lg font-bold uppercase tracking-wide text-black">
+              {school.nama_sekolah}
+            </h1>
+            <p className="text-[10px] font-sans text-gray-600">
               {school.alamat} | NPSN: {school.npsn}
             </p>
           </div>
 
           {/* Judul Dokumen */}
-          <div className="text-center pt-2 space-y-1">
-            <h3 className="text-base font-bold uppercase tracking-wide underline">
+          <div className="text-center pt-0.5 space-y-0.5">
+            <h3 className="text-xs md:text-sm font-bold uppercase tracking-wider underline">
               BERITA ACARA PERTEMUAN PRA-OBSERVASI PEMBELAJARAN
             </h3>
-            <p className="text-xs font-sans text-gray-600">
+            <p className="text-[10px] font-sans text-gray-600">
               Tahun Ajaran / Semester: {school.semester_aktif}
             </p>
           </div>
 
           {/* Pernyataan Pengantar */}
-          <p className="text-xs font-sans text-justify">
+          <p className="text-[10.5px] font-sans text-justify leading-relaxed">
             Pada hari ini, tanggal <strong>{formatTanggalIndonesia(data.tanggal_pelaksanaan)}</strong>, telah diselenggarakan pertemuan dialog telaah perencanaan pembelajaran (Pra-Observasi) antara Guru yang bersangkutan dengan Supervisor akademik:
           </p>
 
           {/* Tabel Identitas Para Pihak */}
-          <div className="font-sans text-xs space-y-2 border border-gray-300 p-3 rounded">
+          <div className="font-sans text-[10.5px] border border-gray-400 p-2.5 rounded space-y-1 bg-gray-50/50 print:bg-transparent">
             <div className="grid grid-cols-3 gap-2">
               <span className="font-semibold text-gray-600">Nama Guru Teramati:</span>
               <span className="col-span-2 font-bold">{teacher.nama_lengkap}</span>
@@ -107,11 +115,11 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
           </div>
 
           {/* Rencana Pembelajaran */}
-          <div className="font-sans text-xs space-y-1.5">
-            <h4 className="font-bold text-sm uppercase border-b border-gray-300 pb-1">
+          <div className="font-sans text-[10.5px] space-y-1">
+            <h4 className="font-bold text-xs uppercase border-b border-gray-400 pb-0.5 tracking-wide">
               A. Rencana Pelaksanaan Pembelajaran
             </h4>
-            <div className="grid grid-cols-3 gap-2 pt-1">
+            <div className="grid grid-cols-3 gap-2 pt-0.5">
               <span className="font-semibold text-gray-600">Topik / Materi:</span>
               <span className="col-span-2">{data.topik_pembelajaran}</span>
             </div>
@@ -130,28 +138,28 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
           </div>
 
           {/* Tabel Fokus Pengamatan Bersama */}
-          <div className="font-sans text-xs space-y-2">
-            <h4 className="font-bold text-sm uppercase border-b border-gray-300 pb-1">
+          <div className="font-sans text-[10px] space-y-1">
+            <h4 className="font-bold text-xs uppercase border-b border-gray-400 pb-0.5 tracking-wide">
               B. Kesepakatan Fokus Pengamatan (Maksimal 5 Butir)
             </h4>
-            <table className="w-full border-collapse border border-gray-300 text-left">
-              <thead className="bg-gray-100 border-b border-gray-300">
+            <table className="w-full border-collapse border border-gray-400 text-left">
+              <thead className="bg-gray-100 border-b border-gray-400 print:bg-gray-100">
                 <tr>
-                  <th className="border border-gray-300 p-2 w-10 text-center">No</th>
-                  <th className="border border-gray-300 p-2 w-48">Aspek Pengamatan</th>
-                  <th className="border border-gray-300 p-2">Indikator Keberhasilan yang Diharapkan</th>
-                  <th className="border border-gray-300 p-2 w-40">Catatan Khusus</th>
+                  <th className="border border-gray-400 p-1.5 w-8 text-center font-bold">No</th>
+                  <th className="border border-gray-400 p-1.5 w-44 font-bold">Aspek Pengamatan</th>
+                  <th className="border border-gray-400 p-1.5 font-bold">Indikator Keberhasilan yang Diharapkan</th>
+                  <th className="border border-gray-400 p-1.5 w-36 font-bold">Catatan Khusus</th>
                 </tr>
               </thead>
               <tbody>
                 {data.fokus_amatan.map((f, idx) => (
                   <tr key={idx}>
-                    <td className="border border-gray-300 p-2 text-center font-bold">{idx + 1}</td>
-                    <td className="border border-gray-300 p-2 font-medium">
+                    <td className="border border-gray-400 p-1.5 text-center font-bold">{idx + 1}</td>
+                    <td className="border border-gray-400 p-1.5 font-medium">
                       Aspek {f.aspek}: {ASPECT_NAMES[f.aspek]}
                     </td>
-                    <td className="border border-gray-300 p-2">{f.indikator_sukses}</td>
-                    <td className="border border-gray-300 p-2 text-gray-600">{f.catatan_khusus || "-"}</td>
+                    <td className="border border-gray-400 p-1.5 leading-snug">{f.indikator_sukses}</td>
+                    <td className="border border-gray-400 p-1.5 text-gray-700 leading-snug">{f.catatan_khusus || "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -159,16 +167,16 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
           </div>
 
           {/* Blok Tanda Tangan */}
-          <div className="font-sans text-xs pt-8 grid grid-cols-2 gap-8 text-center break-inside-avoid">
+          <div className="font-sans text-[10.5px] pt-3 grid grid-cols-2 gap-8 text-center break-inside-avoid">
             <div>
-              <p className="text-gray-600 mb-16">Guru Mata Pelajaran,</p>
-              <p className="font-bold underline">{teacher.nama_lengkap}</p>
-              <p className="font-mono text-gray-600">NIP. {teacher.nip_nuptk}</p>
+              <p className="text-gray-600 mb-10">Guru Mata Pelajaran,</p>
+              <p className="font-bold underline text-black">{teacher.nama_lengkap}</p>
+              <p className="font-mono text-gray-600 text-[10px]">NIP. {teacher.nip_nuptk}</p>
             </div>
             <div>
-              <p className="text-gray-600 mb-16">Supervisor / Kepala Sekolah,</p>
-              <p className="font-bold underline">{school.nama_kepala_sekolah}</p>
-              <p className="font-mono text-gray-600">NIP. {school.nip_kepala_sekolah}</p>
+              <p className="text-gray-600 mb-10">Supervisor / Kepala Sekolah,</p>
+              <p className="font-bold underline text-black">{school.nama_kepala_sekolah}</p>
+              <p className="font-mono text-gray-600 text-[10px]">NIP. {school.nip_kepala_sekolah}</p>
             </div>
           </div>
         </div>

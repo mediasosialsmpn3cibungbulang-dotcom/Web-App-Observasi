@@ -12,6 +12,7 @@ import {
   Calendar,
   Lightbulb,
   Check,
+  X,
 } from "lucide-react";
 import { PreObservation, Teacher, SchoolSettings, Schedule } from "@/contracts/schemas";
 import { Panel } from "@/components/ui/Panel";
@@ -315,11 +316,32 @@ export const PreObservationForm: React.FC = () => {
 
   return (
     <div className="space-y-4 md:space-y-5 pb-16">
-      {/* Notifikasi Keberhasilan */}
+      {/* Notifikasi Keberhasilan Mengambang (Floating Toast - Terlihat Tanpa Scroll) */}
       {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-950 dark:text-emerald-100 text-sm font-semibold flex items-center gap-2.5 shadow-xs animate-in fade-in duration-200">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
-          <span>{successMsg}</span>
+        <div
+          role="status"
+          aria-live="polite"
+          className="fixed top-20 right-4 sm:right-8 z-50 max-w-sm sm:max-w-md bg-surface dark:bg-zinc-900 border border-emerald-500/60 dark:border-emerald-500/50 shadow-2xl rounded-2xl p-3.5 flex items-start gap-3 animate-page-enter"
+        >
+          <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-300 dark:border-emerald-800">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="flex-1 min-w-0 pt-0.5">
+            <h4 className="text-xs font-bold text-foreground dark:text-zinc-100 leading-tight">
+              Diskusi Berhasil Disimpan!
+            </h4>
+            <p className="text-[11px] text-muted dark:text-zinc-300 mt-0.5 leading-snug">
+              {successMsg}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setSuccessMsg(null)}
+            className="p-1 rounded-lg text-muted hover:text-foreground dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 transition-colors shrink-0"
+            aria-label="Tutup notifikasi"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
 
