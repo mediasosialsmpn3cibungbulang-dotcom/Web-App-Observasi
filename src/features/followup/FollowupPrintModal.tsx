@@ -50,7 +50,10 @@ export const FollowupPrintModal: React.FC<FollowupPrintModalProps> = ({
         </div>
 
         {/* Lembar RTL A4 */}
-        <div className="flex-1 overflow-y-auto p-8 md:p-12 space-y-6 font-serif text-black leading-relaxed print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none">
+        <div
+          id="printable-area"
+          className="print-document flex-1 overflow-y-auto p-8 md:p-12 space-y-6 font-serif text-black leading-relaxed print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none"
+        >
           {/* Kop Surat */}
           <div className="text-center border-b-2 border-black pb-3 space-y-1">
             <h2 className="text-base font-bold uppercase tracking-wide">

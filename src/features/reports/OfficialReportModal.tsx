@@ -66,7 +66,10 @@ export const OfficialReportModal: React.FC<OfficialReportModalProps> = ({
         </div>
 
         {/* Print Content Area A4 */}
-        <div className="print-area flex-1 overflow-y-auto p-8 md:p-14 space-y-8 text-black bg-white leading-relaxed print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none">
+        <div
+          id="printable-area"
+          className="print-document print-area flex-1 overflow-y-auto p-8 md:p-14 space-y-8 text-black bg-white leading-relaxed print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none"
+        >
           {/* HALAMAN JUDUL / COVER RESMI */}
           <div className="text-center py-12 border-b-2 border-black min-h-[400px] flex flex-col justify-between">
             <div className="space-y-2">

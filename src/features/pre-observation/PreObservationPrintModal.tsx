@@ -60,8 +60,11 @@ export const PreObservationPrintModal: React.FC<PreObservationPrintModalProps> =
           </div>
         </div>
 
-        {/* Lembar Dokumen A4 Resmi (Proporsi 1 Lembar Pas) */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-8 space-y-3 font-serif text-black leading-snug print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none print:space-y-2.5 print:text-[10pt]">
+        {/* Lembar Dokumen A4 Resmi (Proporsi 1 Lembar Pas & Bersih Tanpa Scrollbar) */}
+        <div
+          id="printable-area"
+          className="print-document flex-1 overflow-y-auto p-6 md:p-8 space-y-3 font-serif text-black leading-snug print:p-0 print:m-0 print:overflow-visible print:h-auto print:max-h-none print:space-y-2.5 print:text-[10pt]"
+        >
           {/* Kop Surat Resmi */}
           <div className="text-center border-b-2 border-black pb-2 space-y-0.5">
             <h2 className="text-xs font-bold uppercase tracking-wider text-gray-800">

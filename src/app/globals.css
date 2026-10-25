@@ -176,20 +176,44 @@
 
 /* Gaya cetak dokumen resmi format A4 */
 @media print {
-  /* Sembunyikan seluruh UI navigasi dan shell aplikasi di luar lembar cetak */
-  aside,
-  header,
-  nav,
-  footer,
-  .no-print,
-  [role="navigation"],
-  [aria-label="Navigasi Utama Aplikasi"],
-  [aria-label="Navigasi Bawah Mobile"],
-  .fixed.top-0.left-0.right-0.h-\[2\.5px\] {
-    display: none !important;
+  /* 1. Sembunyikan seluruh elemen body agar background dan modal wrapper tidak ikut tercetak */
+  body * {
+    visibility: hidden !important;
   }
 
-  /* Reset halaman menjadi putih bersih tanpa margin berlebih */
+  /* 2. Hanya area dokumen resmi yang dibuat tampak pada cetakan */
+  #printable-area,
+  #printable-area *,
+  .print-document,
+  .print-document * {
+    visibility: visible !important;
+  }
+
+  /* 3. Posisikan lembar dokumen persis di atas kertas A4 murni tanpa container scroll */
+  #printable-area,
+  .print-document {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
+    z-index: 99999999 !important;
+  }
+
+  /* Reset halaman menjadi putih bersih */
   html,
   body {
     background: #FFFFFF !important;
@@ -220,10 +244,6 @@
     display: none !important;
     width: 0 !important;
     height: 0 !important;
-  }
-
-  .print-only {
-    display: block !important;
   }
 
   /* Standarisasi Kertas A4 Portrait */
