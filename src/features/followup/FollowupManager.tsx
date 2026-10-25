@@ -170,20 +170,6 @@ export function FollowupManager() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button
-            variant="secondary"
-            size="md"
-            onClick={() => {
-              if (followups.length > 0) {
-                setSelectedFollowupForPrint(followups[0]);
-              } else {
-                alert("Belum ada data kesepakatan tindak lanjut untuk dicetak.");
-              }
-            }}
-          >
-            <Printer className="w-4 h-4 mr-2" />
-            Cetak Format RTL (Doc 7)
-          </Button>
           <Button variant="primary" size="md" onClick={() => setIsModalCreateOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Tambah Kesepakatan
