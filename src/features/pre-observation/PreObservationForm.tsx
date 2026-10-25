@@ -317,17 +317,21 @@ export const PreObservationForm: React.FC = () => {
   return (
     <>
       <div className="no-print space-y-4 md:space-y-5 pb-16">
-        {/* Notifikasi Keberhasilan (Di Dalam Halaman Seperti Semula) */}
+        {/* Notifikasi Keberhasilan Mengambang di Atas (Terlihat Langsung Tanpa Perlu Scroll) */}
         {successMsg && (
-          <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-950 dark:text-emerald-100 text-sm font-semibold flex items-center justify-between gap-2.5 shadow-xs animate-in fade-in duration-200">
-            <div className="flex items-center gap-2.5">
+          <div
+            role="status"
+            aria-live="polite"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-2xl p-3.5 sm:px-4 rounded-xl bg-emerald-500/15 dark:bg-emerald-950/85 border border-emerald-500/50 text-emerald-950 dark:text-emerald-100 text-xs sm:text-sm font-semibold flex items-center justify-between gap-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-top-3 duration-300"
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
               <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
-              <span>{successMsg}</span>
+              <span className="truncate sm:whitespace-normal">{successMsg}</span>
             </div>
             <button
               type="button"
               onClick={() => setSuccessMsg(null)}
-              className="text-emerald-800 dark:text-emerald-300 hover:text-emerald-950 dark:hover:text-white p-1 text-sm font-bold"
+              className="p-1 rounded-lg text-emerald-800 dark:text-emerald-300 hover:text-emerald-950 dark:hover:text-white hover:bg-emerald-500/20 transition-colors shrink-0 font-bold text-sm"
               aria-label="Tutup notifikasi"
             >
               ✕
