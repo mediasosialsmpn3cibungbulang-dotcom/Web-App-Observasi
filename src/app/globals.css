@@ -114,9 +114,11 @@
   }
 }
 
+/* Catatan: sengaja TANPA fill-mode "forwards" dan TANPA will-change: transform.
+   Transform yang tertinggal membuat elemen menjadi containing block untuk anak "position: fixed",
+   sehingga modal tidak lagi menempel ke viewport (terpotong & sulit ditutup). */
 .animate-page-enter {
-  animation: pageEnter 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: opacity, transform;
+  animation: pageEnter 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Scrollbar Ramping & Halus Khusus Sidebar Navigasi */
@@ -176,41 +178,43 @@
 
 /* Gaya cetak dokumen resmi format A4 */
 @media print {
-  /* 1. Sembunyikan seluruh elemen body agar background dan modal wrapper tidak ikut tercetak */
-  body * {
-    visibility: hidden !important;
+  /* 1. Jika modal cetak (portal) sedang terbuka, buang seluruh app shell dari alur cetak
+        (display: none, bukan visibility: hidden, agar tinggi halaman aplikasi tidak menambah lembar kosong) */
+  body:has(> .print-portal-root) > *:not(.print-portal-root) {
+    display: none !important;
   }
 
-  /* 2. Hanya area dokumen resmi yang dibuat tampak pada cetakan */
-  #printable-area,
-  #printable-area *,
-  .print-document,
-  .print-document * {
-    visibility: visible !important;
+  /* 2. Wrapper modal menjadi elemen statis biasa di atas kertas */
+  .print-portal-root,
+  .print-portal-root > * {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    border-radius: 0 !important;
   }
 
-  /* 3. Posisikan lembar dokumen persis di atas kertas A4 murni tanpa container scroll */
+  .no-print {
+    display: none !important;
+  }
+
+  /* 3. Lembar dokumen resmi */
   #printable-area,
   .print-document {
-    position: fixed !important;
-    left: 0 !important;
-    top: 0 !important;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
-    max-height: none !important;
     margin: 0 !important;
     padding: 0 !important;
     background: #FFFFFF !important;
     border: none !important;
-    box-shadow: none !important;
     border-radius: 0 !important;
-    overflow: visible !important;
-    page-break-after: avoid !important;
-    page-break-inside: avoid !important;
-    break-after: avoid !important;
-    break-inside: avoid !important;
-    z-index: 99999999 !important;
   }
 
   /* Reset halaman menjadi putih bersih */

@@ -5,6 +5,7 @@ import { X, Printer, Award, BookOpen, CheckCircle2 } from "lucide-react";
 import { TeacherMonitoringSummary } from "../monitoring/monitoring-service";
 import { SchoolSettings } from "@/contracts/schemas";
 import { Button } from "@/components/ui/Button";
+import { PrintPortal } from "@/components/ui/PrintPortal";
 import { formatTanggalIndonesia } from "@/lib/utils";
 
 interface OfficialReportModalProps {
@@ -41,6 +42,7 @@ export const OfficialReportModal: React.FC<OfficialReportModalProps> = ({
   const countPerlu = summaries.filter((s) => s.predikat_terbaru === "Perlu Pembinaan").length;
 
   return (
+    <PrintPortal>
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none print:static print:inset-auto print:p-0 print:m-0 print:bg-white print:z-auto print:block print:overflow-visible">
       <div className="bg-white text-black border border-border rounded-panel max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden print:border-none print:shadow-none print:rounded-none print:max-w-none print:w-full print:max-h-none print:h-auto print:overflow-visible print:m-0 print:p-0">
         {/* Header Modal Bar */}
@@ -235,5 +237,6 @@ export const OfficialReportModal: React.FC<OfficialReportModalProps> = ({
         </div>
       </div>
     </div>
+    </PrintPortal>
   );
 };
