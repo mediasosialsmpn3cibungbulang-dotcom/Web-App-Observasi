@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { Header } from "@/components/shell/Header";
 import { BottomBar } from "@/components/shell/BottomBar";
+import { NavigationProgressBar } from "@/components/shell/NavigationProgressBar";
 
 // Font sans-serif modern yang ramah, bersih, dan sangat mudah dibaca
 const plusJakarta = Plus_Jakarta_Sans({
@@ -40,12 +41,15 @@ export default function RootLayout({
   return (
     <html lang="id" className={plusJakarta.variable} suppressHydrationWarning>
       <body className="min-h-screen flex flex-col font-sans bg-background text-foreground antialiased selection:bg-pine-600/20 selection:text-pine-700">
-        <div className="flex-1 flex w-full">
-          {/* Sidebar Navigasi Desktop */}
+        {/* Indikator Progres Navigasi Puncak */}
+        <NavigationProgressBar />
+
+        <div className="flex-1 flex w-full items-start">
+          {/* Sidebar Navigasi Desktop (Sticky & Terisolasi) */}
           <Sidebar />
 
           {/* Area Konten Utama */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 min-h-screen">
             {/* Header Aplikasi */}
             <Header />
 

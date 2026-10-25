@@ -32,8 +32,9 @@ export const BottomBar: React.FC = () => {
           <Link
             href="/beranda"
             prefetch={true}
+            scroll={false}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
+              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-all duration-200 active:scale-95 text-xs",
               pathname === "/beranda"
                 ? "text-primary font-semibold"
                 : "text-muted hover:text-foreground"
@@ -47,8 +48,9 @@ export const BottomBar: React.FC = () => {
           <Link
             href="/jadwal"
             prefetch={true}
+            scroll={false}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
+              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-all duration-200 active:scale-95 text-xs",
               pathname.startsWith("/jadwal")
                 ? "text-primary font-semibold"
                 : "text-muted hover:text-foreground"
@@ -62,8 +64,9 @@ export const BottomBar: React.FC = () => {
           <Link
             href="/observasi"
             prefetch={true}
+            scroll={false}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[60px] min-h-[52px] -mt-3 p-1.5 rounded-full shadow-md transition-smooth",
+              "flex flex-col items-center justify-center min-w-[60px] min-h-[52px] -mt-3 p-1.5 rounded-full shadow-md transition-all duration-200 active:scale-90",
               pathname.startsWith("/observasi")
                 ? "bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2 ring-offset-surface"
                 : "bg-primary text-primary-foreground hover:bg-primary-hover"
@@ -78,8 +81,9 @@ export const BottomBar: React.FC = () => {
           <Link
             href="/tindak-lanjut"
             prefetch={true}
+            scroll={false}
             className={cn(
-              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs",
+              "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-all duration-200 active:scale-95 text-xs",
               pathname.startsWith("/tindak-lanjut")
                 ? "text-primary font-semibold"
                 : "text-muted hover:text-foreground"
@@ -93,7 +97,7 @@ export const BottomBar: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsDrawerOpen(true)}
-            className="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-smooth text-xs text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-all duration-200 active:scale-95 text-xs text-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             aria-label="Buka menu lengkap lainnya"
           >
             <Menu className="w-5 h-5 mb-0.5" />

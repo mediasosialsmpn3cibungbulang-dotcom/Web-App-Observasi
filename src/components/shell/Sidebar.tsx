@@ -70,12 +70,12 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className="hidden lg:flex flex-col w-64 bg-surface border-r border-border min-h-screen p-4 select-none flex-shrink-0"
+      className="hidden lg:flex flex-col w-64 bg-surface border-r border-border h-screen sticky top-0 p-4 select-none flex-shrink-0 z-20 overflow-hidden"
       aria-label="Navigasi Utama Aplikasi"
     >
       {/* Header Logo & Identitas */}
-      <div className="flex items-center gap-3 px-2 py-3 mb-4 border-b border-border">
-        <div className="w-9 h-9 rounded-xl bg-pine-600 text-white flex items-center justify-center font-extrabold text-base shadow-xs">
+      <div className="flex items-center gap-3 px-2 py-3 mb-3 border-b border-border flex-shrink-0">
+        <div className="w-9 h-9 rounded-xl bg-pine-600 dark:bg-emerald-600 text-white flex items-center justify-center font-extrabold text-base shadow-xs transition-transform duration-200 hover:scale-105">
           SS
         </div>
         <div>
@@ -88,11 +88,11 @@ export const Sidebar: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigasi Berkelompok */}
-      <nav className="flex-1 space-y-6 overflow-y-auto pr-1">
+      {/* Navigasi Berkelompok dengan Scrollbar Ramping */}
+      <nav className="flex-1 space-y-5 overflow-y-auto pr-1 sidebar-scrollbar">
         {NAV_GROUPS.map((group) => (
           <div key={group.groupName}>
-            <p className="px-3 text-[11px] font-semibold tracking-wider text-muted uppercase mb-2">
+            <p className="px-3 text-[11px] font-semibold tracking-wider text-muted uppercase mb-1.5">
               {group.groupName}
             </p>
             <ul className="space-y-1">
@@ -104,15 +104,27 @@ export const Sidebar: React.FC = () => {
                     <Link
                       href={item.href}
                       prefetch={true}
+                      scroll={false}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-control text-sm font-medium transition-smooth",
+                        "group relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ease-out active:scale-[0.98]",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                          : "text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                          ? "bg-pine-600 text-white shadow-xs font-semibold dark:bg-emerald-600 dark:text-white"
+                          : "text-muted hover:text-foreground hover:bg-pine-50/70 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
                       )}
                     >
-                      <Icon className={cn("w-4 h-4", isActive ? "text-primary-foreground" : "text-muted")} />
-                      <span>{item.label}</span>
+                      {/* Indikator Aksen Halus untuk Item Aktif */}
+                      {isActive && (
+                        <span className="absolute left-1.5 w-1 h-3.5 bg-white/90 rounded-full" />
+                      )}
+                      <Icon
+                        className={cn(
+                          "w-4 h-4 shrink-0 transition-transform duration-200 ease-out group-hover:scale-110",
+                          isActive
+                            ? "text-white scale-105 ml-1"
+                            : "text-muted group-hover:text-pine-700 dark:group-hover:text-emerald-400"
+                        )}
+                      />
+                      <span className="truncate">{item.label}</span>
                     </Link>
                   </li>
                 );
@@ -123,7 +135,7 @@ export const Sidebar: React.FC = () => {
       </nav>
 
       {/* Footer Info Instansi */}
-      <div className="pt-4 border-t border-border px-2">
+      <div className="pt-3 border-t border-border px-2 flex-shrink-0">
         <div className="text-[11px] text-muted">
           <p className="font-semibold text-foreground truncate">SMAN 1 Prestasi Bangsa</p>
           <p className="truncate">NPSN: 20101234</p>

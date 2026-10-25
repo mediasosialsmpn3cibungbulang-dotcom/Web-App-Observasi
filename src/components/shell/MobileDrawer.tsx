@@ -81,9 +81,10 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) =
                 key={item.href}
                 href={item.href}
                 prefetch={true}
+                scroll={false}
                 onClick={onClose}
                 className={cn(
-                  "flex items-center gap-3 p-3 rounded-control border text-sm font-medium transition-smooth",
+                  "flex items-center gap-3 p-3 rounded-control border text-sm font-medium transition-all duration-200 active:scale-95",
                   isActive
                     ? "bg-primary text-primary-foreground border-primary font-semibold"
                     : "bg-surface text-foreground border-border hover:bg-black/5 dark:hover:bg-white/5"
