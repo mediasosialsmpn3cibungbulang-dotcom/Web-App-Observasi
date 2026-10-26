@@ -30,7 +30,8 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 
-# 4. OS & Editor
+# 4. OS & Editor & Artefak Lokal
+screenshots/
 .DS_Store
 Thumbs.db
 *.swp
