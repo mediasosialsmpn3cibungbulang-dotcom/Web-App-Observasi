@@ -15,6 +15,10 @@ import {
   generateAutoRecommendation,
   calculateChecklistProgress,
 } from "./scoring";
+import {
+  validateObservationDateAgainstSchedule,
+  getTeachingDays,
+} from "../contracts/teaching-schedules";
 
 console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)...");
 
@@ -241,6 +245,32 @@ console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)
   // Seluruh item Tidak Berlaku
   const res2 = calculateChecklistProgress(["Tidak Berlaku", "Tidak Berlaku"]);
   assert.strictEqual(res2.percentage, 100);
+}
+
+// 11. Uji Keselarasan Jadwal Observasi dengan Jadwal Mengajar aSc Timetables (SOP Validasi KBM)
+{
+  const lilisId = "a2222222-2222-2222-2222-222222222222"; // Lilis Yuliati, M.Pd (IPA)
+  const lilisDays = getTeachingDays(lilisId);
+  assert.ok(lilisDays.includes("Senin"), "Lilis harus mengajar di hari Senin");
+  assert.ok(lilisDays.includes("Selasa"), "Lilis harus mengajar di hari Selasa");
+  assert.ok(lilisDays.includes("Kamis"), "Lilis harus mengajar di hari Kamis");
+
+  // Uji tanggal observasi sah (2026-09-08 adalah hari Selasa)
+  const validCheck = validateObservationDateAgainstSchedule(lilisId, "2026-09-08");
+  assert.strictEqual(validCheck.isValid, true, "2026-09-08 (Selasa) harus valid untuk Lilis Yuliati");
+  assert.strictEqual(validCheck.dayName, "Selasa");
+  assert.ok(validCheck.slots.length > 0, "Harus memiliki slot mengajar di hari Selasa");
+  assert.strictEqual(validCheck.slots[0].kelas, "8F", "Slot pertama Selasa adalah kelas 8F");
+
+  // Uji tanggal akhir pekan (2026-09-12 adalah hari Sabtu)
+  const weekendCheck = validateObservationDateAgainstSchedule(lilisId, "2026-09-12");
+  assert.strictEqual(weekendCheck.isValid, false, "Hari Sabtu harus ditolak");
+  assert.match(weekendCheck.message || "", /akhir pekan/i);
+
+  // Uji guru ke-26 Lucky Aditya Putra (Informatika)
+  const luckyId = "b0000001-0000-0000-0000-000000000026";
+  const luckyDays = getTeachingDays(luckyId);
+  assert.ok(luckyDays.length > 0, "Lucky Aditya Putra harus memiliki jadwal mengajar terdaftar di aSc");
 }
 
 console.log("✅ SELURUH SMOKE TEST ATURAN BISNIS DOMAIN LULUS 100%!");

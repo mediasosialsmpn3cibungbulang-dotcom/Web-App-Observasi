@@ -1,5 +1,6 @@
 import { Schedule, ScheduleSchema, Teacher } from "@/contracts/schemas";
 import { isScheduleMissed } from "@/domain/scoring";
+import { validateObservationDateAgainstSchedule } from "@/contracts/teaching-schedules";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "../teachers/teacher-service";
 import { PreObservationService } from "../pre-observation/pre-observation-service";
@@ -17,17 +18,21 @@ export interface ScheduleWithDetails extends Schedule {
   realisasiCoaching: boolean;
 }
 
-// Data awal contoh jadwal realistis
+// Data awal contoh jadwal realistis selaras aSc Timetables SMPN 3 Cibungbulang
 const SEED_SCHEDULES: Schedule[] = [
   {
     id: "s1111111-1111-1111-1111-111111111111",
     teacher_id: "a1111111-1111-1111-1111-111111111111", // Aini Supiyah, S.Pd, MM (Wakasek Humas)
     semester: "2026/2027 Ganjil",
     gelombang: "2 Reguler",
-    rencana_pra_observasi: "2026-08-10",
-    rencana_observasi: "2026-08-15", // H-5 tepat
-    rencana_coaching: "2026-08-18",  // H+3 tepat
+    rencana_pra_observasi: "2026-08-05", // Rabu (H-5)
+    rencana_observasi: "2026-08-10",     // Senin (Jadwal mengajar kelas 8G)
+    rencana_coaching: "2026-08-12",      // Rabu (H+2)
     supervisor_id: "00000000-0000-0000-0000-000000000001",
+    jam_observasi: "Jam Ke 1-2 (08:00 - 09:10)",
+    kelas_observasi: "8G",
+    mapel_observasi: "Ilmu Pengetahuan Sosial",
+    hari_observasi: "Senin",
     created_at: new Date().toISOString(),
     version: 1,
   },
@@ -36,10 +41,14 @@ const SEED_SCHEDULES: Schedule[] = [
     teacher_id: "a2222222-2222-2222-2222-222222222222", // Lilis Yuliati, M.Pd (Wakasek Kesiswaan)
     semester: "2026/2027 Ganjil",
     gelombang: "1 Prioritas",
-    rencana_pra_observasi: "2026-09-02",
-    rencana_observasi: "2026-09-08",
-    rencana_coaching: "2026-09-10",
+    rencana_pra_observasi: "2026-09-01", // Selasa (H-7)
+    rencana_observasi: "2026-09-08",     // Selasa (Jadwal mengajar kelas 8F)
+    rencana_coaching: "2026-09-10",      // Kamis (H+2)
     supervisor_id: "00000000-0000-0000-0000-000000000001",
+    jam_observasi: "Jam Ke 5-6 (10:15 - 12:00)",
+    kelas_observasi: "8F",
+    mapel_observasi: "Ilmu Pengetahuan Alam",
+    hari_observasi: "Selasa",
     created_at: new Date().toISOString(),
     version: 1,
   },
@@ -48,10 +57,14 @@ const SEED_SCHEDULES: Schedule[] = [
     teacher_id: "a3333333-3333-3333-3333-333333333333", // Hj. Heny Susana, S.Pd (Wali Kelas 9C)
     semester: "2026/2027 Ganjil",
     gelombang: "2 Reguler",
-    rencana_pra_observasi: "2026-10-15",
-    rencana_observasi: "2026-10-22",
-    rencana_coaching: "2026-10-25",
+    rencana_pra_observasi: "2026-10-15", // Kamis (H-7)
+    rencana_observasi: "2026-10-22",     // Kamis (Jadwal mengajar kelas 7F)
+    rencana_coaching: "2026-10-23",      // Jumat (H+1)
     supervisor_id: "00000000-0000-0000-0000-000000000001",
+    jam_observasi: "Jam Ke 1-2 (07:30 - 08:40)",
+    kelas_observasi: "7F",
+    mapel_observasi: "Pendidikan Pancasila",
+    hari_observasi: "Kamis",
     created_at: new Date().toISOString(),
     version: 1,
   },
@@ -150,6 +163,17 @@ export const ScheduleService = {
   },
 
   createSchedule(payload: Omit<Schedule, "id" | "created_at" | "version">): Schedule {
+    // Validasi keselarasan jadwal mengajar riil guru (aSc Timetables)
+    if (payload.teacher_id && payload.rencana_observasi) {
+      const check = validateObservationDateAgainstSchedule(payload.teacher_id, payload.rencana_observasi);
+      if (!check.isValid) {
+        throw new Error(check.message || "Tanggal observasi tidak sesuai dengan jadwal mengajar guru.");
+      }
+      if (!payload.hari_observasi && check.dayName) {
+        payload.hari_observasi = check.dayName;
+      }
+    }
+
     const schedules = this.getSchedules();
     const newSchedule: Schedule = {
       ...payload,
@@ -184,6 +208,20 @@ export const ScheduleService = {
     }
 
     const prev = schedules[index];
+    const targetTeacherId = payload.teacher_id || prev.teacher_id;
+    const targetObsDate = payload.rencana_observasi || prev.rencana_observasi;
+
+    // Validasi keselarasan jadwal mengajar riil guru (aSc Timetables)
+    if (targetTeacherId && targetObsDate) {
+      const check = validateObservationDateAgainstSchedule(targetTeacherId, targetObsDate);
+      if (!check.isValid) {
+        throw new Error(check.message || "Tanggal observasi tidak sesuai dengan jadwal mengajar guru.");
+      }
+      if (!payload.hari_observasi && check.dayName) {
+        payload.hari_observasi = check.dayName;
+      }
+    }
+
     const updated: Schedule = {
       ...prev,
       ...payload,

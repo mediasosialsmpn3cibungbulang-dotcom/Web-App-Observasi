@@ -134,6 +134,10 @@ export const ScheduleSchema = z.object({
   rencana_observasi: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   rencana_coaching: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   supervisor_id: z.string().uuid(),
+  jam_observasi: z.string().nullable().optional(),
+  kelas_observasi: z.string().nullable().optional(),
+  mapel_observasi: z.string().nullable().optional(),
+  hari_observasi: z.string().nullable().optional(),
   created_at: z.string().datetime(),
   version: z.number().int().default(1),
 });

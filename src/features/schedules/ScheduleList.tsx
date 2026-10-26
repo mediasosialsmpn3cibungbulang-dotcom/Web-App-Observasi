@@ -86,7 +86,7 @@ export const ScheduleList: React.FC = () => {
             Jadwal Supervisi Guru
           </h1>
           <p className="text-sm text-muted mt-1 leading-relaxed">
-            Atur tanggal 3 sesi supervisi: Pra-observasi (minimal H-5), Observasi kelas, dan Coaching (maksimal H+3).
+            Atur siklus 3 sesi supervisi terpadu: Pra-observasi (H-5), Observasi kelas (terkunci sesuai jam & hari mengajar riil aSc Timetables), dan Coaching (maksimal H+3).
           </p>
         </div>
 
@@ -190,10 +190,28 @@ export const ScheduleList: React.FC = () => {
                     <td className="py-3.5 px-4 text-xs font-mono">
                       {formatTanggalIndonesia(s.rencana_pra_observasi)}
                     </td>
-                    <td className="py-3.5 px-4 text-xs font-mono font-semibold text-primary">
-                      {formatTanggalIndonesia(s.rencana_observasi)}
+                    <td className="py-3.5 px-4">
+                      <div className="font-mono text-xs font-semibold text-primary">
+                        {s.hari_observasi ? `${s.hari_observasi}, ` : ""}
+                        {formatTanggalIndonesia(s.rencana_observasi)}
+                      </div>
+                      {(s.jam_observasi || s.kelas_observasi) && (
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] font-sans">
+                          {s.jam_observasi && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-primary/10 text-primary font-medium">
+                              <Clock className="w-3 h-3" />
+                              {s.jam_observasi}
+                            </span>
+                          )}
+                          {s.kelas_observasi && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10 text-foreground font-semibold">
+                              Kelas {s.kelas_observasi}
+                            </span>
+                          )}
+                        </div>
+                      )}
                       {s.isMissed && (
-                        <span className="block text-[10px] text-rose-600 dark:text-rose-400 font-bold mt-0.5">
+                        <span className="block text-[10px] text-rose-600 dark:text-rose-400 font-bold mt-1">
                           TERLEWAT (BR-12)
                         </span>
                       )}
