@@ -1,5 +1,6 @@
 import { SchoolSettings, GradingSettings, AuditLog } from "@/contracts/schemas";
 import { SEED_SCHOOL_SETTINGS, SEED_GRADING_SETTINGS } from "@/contracts/seed-data";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_SCHOOL_SETTINGS = "smart_supervisi_school_settings";
 const STORAGE_KEY_GRADING_SETTINGS = "smart_supervisi_grading_settings";
@@ -46,6 +47,7 @@ export const SettingsService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_SCHOOL_SETTINGS, JSON.stringify(updated));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCHOOL_SETTINGS, updated);
       this.recordAuditLog({
         aksi: "UPDATE_PENGATURAN_SEKOLAH",
         entitas: "school_settings",
@@ -95,6 +97,7 @@ export const SettingsService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_GRADING_SETTINGS, JSON.stringify(updated));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.GRADING_SETTINGS, updated);
       this.recordAuditLog({
         aksi: "UPDATE_STANDAR_PENILAIAN",
         entitas: "grading_settings",

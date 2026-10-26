@@ -1,6 +1,7 @@
 import { PreObservation, PreObservationSchema, Teacher } from "@/contracts/schemas";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "../teachers/teacher-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_PRE_OBS = "smart_supervisi_pre_obs_db";
 
@@ -83,6 +84,7 @@ export const PreObservationService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_PRE_OBS, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.PRE_OBS, list);
 
       SettingsService.recordAuditLog({
         aksi: "SIMPAN_PRA_OBSERVASI",

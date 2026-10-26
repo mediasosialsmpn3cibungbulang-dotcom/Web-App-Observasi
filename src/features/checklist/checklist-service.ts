@@ -4,6 +4,7 @@ import { ChecklistItem, ChecklistItemSchema } from "@/contracts/schemas";
 import { SEED_CHECKLIST_TEMPLATES } from "@/contracts/seed-data";
 import { calculateChecklistProgress } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_CHECKLIST = "smart_supervisi_checklist_db";
 
@@ -60,6 +61,8 @@ export const ChecklistService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_CHECKLIST, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.CHECKLIST, list);
+
       SettingsService.recordAuditLog({
         aksi: "UPDATE_CHECKLIST",
         entitas: "checklist_items",

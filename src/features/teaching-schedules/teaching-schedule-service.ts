@@ -7,6 +7,7 @@ import {
 } from "@/contracts/teaching-schedules";
 import { TeacherService } from "../teachers/teacher-service";
 import { SettingsService } from "../settings/settings-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_TEACHING_SCHEDULES = "smart_supervisi_teaching_schedules_db";
 
@@ -166,6 +167,7 @@ export const TeachingScheduleService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_TEACHING_SCHEDULES, JSON.stringify(updated));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.TEACHING_SCHEDULES, updated);
 
       SettingsService.recordAuditLog({
         aksi: "UPDATE_JADWAL_GURU",
@@ -280,6 +282,7 @@ export const TeachingScheduleService = {
       inMemorySchedules = { ...TEACHER_SCHEDULES };
       if (typeof window !== "undefined") {
         localStorage.setItem(STORAGE_KEY_TEACHING_SCHEDULES, JSON.stringify(TEACHER_SCHEDULES));
+        CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.TEACHING_SCHEDULES, TEACHER_SCHEDULES);
 
         SettingsService.recordAuditLog({
           aksi: "RESET_JADWAL_GURU",

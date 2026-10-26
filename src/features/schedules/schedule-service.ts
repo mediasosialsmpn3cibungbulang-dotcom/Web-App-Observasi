@@ -6,6 +6,7 @@ import { TeacherService } from "../teachers/teacher-service";
 import { PreObservationService } from "../pre-observation/pre-observation-service";
 import { ObservationService } from "../observation/observation-service";
 import { CoachingService } from "../coaching/coaching-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_SCHEDULES = "smart_supervisi_schedules_db";
 
@@ -187,6 +188,7 @@ export const ScheduleService = {
     if (typeof window !== "undefined") {
       const updatedList = [validated, ...schedules];
       localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(updatedList));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCHEDULES, updatedList);
 
       SettingsService.recordAuditLog({
         aksi: "TAMBAH_JADWAL",
@@ -233,6 +235,7 @@ export const ScheduleService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(schedules));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCHEDULES, schedules);
 
       SettingsService.recordAuditLog({
         aksi: "UPDATE_JADWAL",
@@ -253,6 +256,7 @@ export const ScheduleService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_SCHEDULES, JSON.stringify(filtered));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCHEDULES, filtered);
 
       SettingsService.recordAuditLog({
         aksi: "HAPUS_JADWAL",

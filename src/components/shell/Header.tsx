@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Moon, Sun, UserCheck } from "lucide-react";
 import { SemesterBadge } from "./SemesterBadge";
+import { CloudSyncIndicator } from "./CloudSyncIndicator";
 
 export const Header: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -45,6 +46,9 @@ export const Header: React.FC = () => {
 
         {/* Badge Semester Aktif */}
         <SemesterBadge semester="2026/2027 Ganjil" />
+
+        {/* Indikator Status Cloud Sync Multi-Device */}
+        <CloudSyncIndicator />
       </div>
 
       {/* Kanan: Sakelar Tema & Profil Ringkas */}

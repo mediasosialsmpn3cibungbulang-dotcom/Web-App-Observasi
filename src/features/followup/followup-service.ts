@@ -7,6 +7,7 @@ import {
 import { isFollowupOverdue } from "@/domain/scoring";
 import { SettingsService } from "../settings/settings-service";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_FOLLOWUPS = "smart_supervisi_followups_db";
 const STORAGE_KEY_CHECKS = "smart_supervisi_followup_checks_db";
@@ -99,6 +100,8 @@ export const FollowupService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_FOLLOWUPS, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.FOLLOWUPS, list);
+
       SettingsService.recordAuditLog({
         aksi: "SIMPAN_TINDAK_LANJUT",
         entitas: "followup_items",
@@ -126,6 +129,8 @@ export const FollowupService = {
     _cachedFollowups = list;
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_FOLLOWUPS, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.FOLLOWUPS, list);
+
       SettingsService.recordAuditLog({
         aksi: "HAPUS_TINDAK_LANJUT",
         entitas: "followup_items",
@@ -199,6 +204,7 @@ export const FollowupService = {
       all.push(validated);
       _cachedChecks = all;
       localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(all));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.CHECKS, all);
 
       // Sinkronisasi asinkron cek-in ke Supabase Cloud
       if (supabase && isSupabaseConfigured()) {

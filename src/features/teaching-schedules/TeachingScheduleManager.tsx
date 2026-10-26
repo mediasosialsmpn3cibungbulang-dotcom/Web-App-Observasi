@@ -57,6 +57,15 @@ export const TeachingScheduleManager: React.FC = () => {
 
   useEffect(() => {
     loadData();
+    const handleRefresh = () => loadData();
+    window.addEventListener("storage", handleRefresh);
+    window.addEventListener("smart-supervisi-data-synced", handleRefresh);
+    window.addEventListener("focus", handleRefresh);
+    return () => {
+      window.removeEventListener("storage", handleRefresh);
+      window.removeEventListener("smart-supervisi-data-synced", handleRefresh);
+      window.removeEventListener("focus", handleRefresh);
+    };
   }, []);
 
   // Notifikasi otomatis hilang setelah 4 detik

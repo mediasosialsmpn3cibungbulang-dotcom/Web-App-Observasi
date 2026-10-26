@@ -9,6 +9,7 @@ import { SEED_COACHING_QUESTIONS } from "@/contracts/seed-data";
 import { SettingsService } from "../settings/settings-service";
 import { ObservationService } from "../observation/observation-service";
 import { FollowupService } from "../followup/followup-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_COACHING_SESSIONS = "smart_supervisi_coaching_sessions_db";
 const STORAGE_KEY_SESSION_QUESTIONS = "smart_supervisi_coaching_session_questions_db";
@@ -126,6 +127,7 @@ export const CoachingService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_COACHING_SESSIONS, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.COACHING_SESSIONS, list);
 
       SettingsService.recordAuditLog({
         aksi: "SIMPAN_SESI_COACHING",
@@ -147,6 +149,7 @@ export const CoachingService = {
       all = all.filter((q) => q.session_id !== sessionId);
       all.push(...questions);
       localStorage.setItem(STORAGE_KEY_SESSION_QUESTIONS, JSON.stringify(all));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SESSION_QUESTIONS, all);
     } catch (e) {
       console.warn("Gagal menyimpan session questions:", e);
     }

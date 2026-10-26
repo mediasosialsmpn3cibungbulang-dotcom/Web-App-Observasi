@@ -18,6 +18,7 @@ import {
 import { AspectCode } from "@/contracts/enums";
 import { SettingsService } from "../settings/settings-service";
 import { TeacherService } from "../teachers/teacher-service";
+import { CloudSyncService, SYNC_STORAGE_KEYS } from "@/services/cloud-sync-service";
 
 const STORAGE_KEY_OBSERVATIONS = "smart_supervisi_observations_db";
 const STORAGE_KEY_SCORES = "smart_supervisi_observation_scores_db";
@@ -277,6 +278,8 @@ export const ObservationService = {
 
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_OBSERVATIONS, JSON.stringify(list));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.OBSERVATIONS, list);
+
       SettingsService.recordAuditLog({
         aksi: "SIMPAN_OBSERVASI",
         entitas: "observations",
@@ -310,6 +313,7 @@ export const ObservationService = {
       _cachedScores = all;
 
       localStorage.setItem(STORAGE_KEY_SCORES, JSON.stringify(all));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCORES, all);
     } catch (e) {
       console.warn("Gagal menyimpan skor indikator:", e);
     }
@@ -329,6 +333,7 @@ export const ObservationService = {
       const all: FactNote[] = data ? JSON.parse(data) : [...SEED_FACT_NOTES_1];
       all.unshift(validated);
       localStorage.setItem(STORAGE_KEY_FACT_NOTES, JSON.stringify(all));
+      CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.FACT_NOTES, all);
     }
 
     return validated;
@@ -342,6 +347,7 @@ export const ObservationService = {
         const all: FactNote[] = JSON.parse(data);
         const filtered = all.filter((n) => n.id !== id);
         localStorage.setItem(STORAGE_KEY_FACT_NOTES, JSON.stringify(filtered));
+        CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.FACT_NOTES, filtered);
       }
     } catch (e) {
       console.warn("Gagal menghapus fact note:", e);
