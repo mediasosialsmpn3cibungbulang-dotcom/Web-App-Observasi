@@ -51,7 +51,7 @@ export const BottomBar: React.FC = () => {
             scroll={false}
             className={cn(
               "flex flex-col items-center justify-center min-w-[56px] min-h-[48px] py-1 rounded-control transition-all duration-200 active:scale-95 text-xs",
-              pathname.startsWith("/jadwal")
+              pathname === "/jadwal" || pathname.startsWith("/jadwal/")
                 ? "text-primary font-semibold"
                 : "text-muted hover:text-foreground"
             )}

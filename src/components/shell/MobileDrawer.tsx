@@ -77,7 +77,9 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose }) =
         <div className="grid grid-cols-2 gap-2.5">
           {DRAWER_ITEMS.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname.startsWith(item.href);
+            const isActive =
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href + "/"));
             return (
               <Link
                 key={item.href}

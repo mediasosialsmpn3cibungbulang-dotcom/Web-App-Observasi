@@ -100,7 +100,9 @@ export const Sidebar: React.FC = () => {
             <ul className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = pathname.startsWith(item.href);
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname.startsWith(item.href + "/"));
                 return (
                   <li key={item.href}>
                     <Link
