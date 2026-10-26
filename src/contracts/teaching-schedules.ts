@@ -597,6 +597,26 @@ export function getDayNameFromDate(dateStr: string): DayName | null {
  * Dapatkan jadwal mengajar guru berdasarkan teacher_id atau nama
  */
 export function getTeacherSchedule(teacherId: string, teacherName?: string): TeacherSchedule | null {
+  // Cek penyimpanan dinamis di browser terlebih dahulu
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("smart_supervisi_teaching_schedules_db");
+      if (stored) {
+        const parsed = JSON.parse(stored) as Record<string, TeacherSchedule>;
+        if (parsed[teacherId]) return parsed[teacherId];
+        if (teacherName) {
+          const found = Object.values(parsed).find((ts) =>
+            ts.nama_lengkap.toLowerCase().includes(teacherName.toLowerCase()) ||
+            teacherName.toLowerCase().includes(ts.nama_lengkap.toLowerCase())
+          );
+          if (found) return found;
+        }
+      }
+    } catch {
+      // Fallback ke data bawaan
+    }
+  }
+
   if (TEACHER_SCHEDULES[teacherId]) {
     return TEACHER_SCHEDULES[teacherId];
   }

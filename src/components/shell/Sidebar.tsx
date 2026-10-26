@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Users,
   CalendarDays,
+  CalendarClock,
   ClipboardList,
   GraduationCap,
   MessageSquare,
@@ -36,6 +37,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Beranda", href: "/beranda", icon: LayoutDashboard },
       { label: "Database Guru", href: "/guru", icon: Users },
+      { label: "Jadwal Guru", href: "/jadwal-guru", icon: CalendarClock },
       { label: "Jadwal Supervisi", href: "/jadwal", icon: CalendarDays },
     ],
   },

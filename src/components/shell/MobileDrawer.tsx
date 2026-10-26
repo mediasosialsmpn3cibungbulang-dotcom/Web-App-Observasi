@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   X,
   Users,
+  CalendarClock,
   MessageSquare,
   FileBarChart,
   CheckSquare,
@@ -23,6 +24,7 @@ interface MobileDrawerProps {
 
 const DRAWER_ITEMS = [
   { label: "Database Guru", href: "/guru", icon: Users },
+  { label: "Jadwal Guru", href: "/jadwal-guru", icon: CalendarClock },
   { label: "Pra-Observasi", href: "/pra-observasi", icon: ClipboardList },
   { label: "Sesi Coaching", href: "/coaching", icon: MessageSquare },
   { label: "Rekap & Laporan", href: "/laporan", icon: FileBarChart },

@@ -19,6 +19,7 @@ import {
   validateObservationDateAgainstSchedule,
   getTeachingDays,
 } from "../contracts/teaching-schedules";
+import { TeachingScheduleService } from "../features/teaching-schedules/teaching-schedule-service";
 
 console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)...");
 
@@ -271,6 +272,54 @@ console.log("🧪 Menjalankan Smoke Test Aturan Bisnis Domain (BR-01 s.d. BR-18)
   const luckyId = "b0000001-0000-0000-0000-000000000026";
   const luckyDays = getTeachingDays(luckyId);
   assert.ok(luckyDays.length > 0, "Lucky Aditya Putra harus memiliki jadwal mengajar terdaftar di aSc");
+}
+
+// 12. Uji Service Manajemen Jadwal Mengajar Guru Dinamis (TeachingScheduleService)
+{
+  const testTeacherId = "test-teacher-uuid-001";
+  const testTeacherName = "Guru Uji Coba, S.Pd";
+
+  // Tambah slot baru di hari Rabu
+  const newSlot = TeachingScheduleService.addSlot(
+    testTeacherId,
+    {
+      hari: "Rabu",
+      jam_ke: "Jam Ke 1-2",
+      waktu: "07:30 - 08:40",
+      kelas: "7A",
+      mata_pelajaran: "Matematika",
+    },
+    testTeacherName
+  );
+
+  assert.ok(newSlot.id.startsWith("slot-"), "Slot harus memiliki ID ter-generate");
+  assert.strictEqual(newSlot.hari, "Rabu");
+  assert.strictEqual(newSlot.kelas, "7A");
+
+  // Dapatkan hari mengajar
+  const days = TeachingScheduleService.getTeachingDays(testTeacherId);
+  assert.deepStrictEqual(days, ["Rabu"], "Hari mengajar guru uji coba harus [Rabu]");
+
+  // Validasi observasi di hari Rabu (2026-10-28 adalah Rabu)
+  const checkWed = TeachingScheduleService.validateObservationDateAgainstSchedule(testTeacherId, "2026-10-28");
+  assert.strictEqual(checkWed.isValid, true, "Rabu 2026-10-28 harus valid untuk guru uji coba");
+  assert.strictEqual(checkWed.slots.length, 1);
+
+  // Validasi observasi di hari Senin (2026-10-26 adalah Senin) -> harus ditolak karena guru hanya mengajar Rabu
+  const checkMon = TeachingScheduleService.validateObservationDateAgainstSchedule(testTeacherId, "2026-10-26");
+  assert.strictEqual(checkMon.isValid, false, "Senin harus ditolak untuk guru yang hanya mengajar hari Rabu");
+
+  // Perbarui slot
+  TeachingScheduleService.updateSlot(testTeacherId, newSlot.id, {
+    kelas: "7B",
+  });
+  const updatedSch = TeachingScheduleService.getTeacherSchedule(testTeacherId);
+  assert.strictEqual(updatedSch?.slots[0].kelas, "7B", "Kelas harus terupdate menjadi 7B");
+
+  // Hapus slot
+  TeachingScheduleService.deleteSlot(testTeacherId, newSlot.id);
+  const deletedSch = TeachingScheduleService.getTeacherSchedule(testTeacherId);
+  assert.strictEqual(deletedSch?.slots.length, 0, "Slot harus kosong setelah dihapus");
 }
 
 console.log("✅ SELURUH SMOKE TEST ATURAN BISNIS DOMAIN LULUS 100%!");

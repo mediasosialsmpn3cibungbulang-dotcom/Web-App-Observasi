@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Users, UserPlus, Upload, Search, Filter, ShieldAlert, Award, Trash2, Edit } from "lucide-react";
+import Link from "next/link";
+import { Users, UserPlus, Upload, Search, Filter, ShieldAlert, Award, Trash2, Edit, CalendarClock } from "lucide-react";
 import { Teacher } from "@/contracts/schemas";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -157,6 +158,12 @@ export const TeacherList: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
+          <Link href="/jadwal-guru">
+            <Button variant="secondary" size="md">
+              <CalendarClock className="w-4 h-4 mr-2" />
+              Jadwal Mengajar
+            </Button>
+          </Link>
           <ExportDropdown
             label="Ekspor Data"
             onExportExcel={handleExportExcel}
@@ -297,6 +304,15 @@ export const TeacherList: React.FC = () => {
                           >
                             Profil
                           </Button>
+                          <Link href="/jadwal-guru">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              title="Kelola Jadwal Mengajar KBM Guru"
+                            >
+                              <CalendarClock className="w-3.5 h-3.5 text-primary hover:text-primary/80" />
+                            </Button>
+                          </Link>
                           <Button
                             variant="ghost"
                             size="sm"

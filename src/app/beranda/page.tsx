@@ -439,7 +439,13 @@ export default function BerandaPage() {
         title="Daftar Kemajuan Supervisi Tiap Guru"
         subtitle={`Menampilkan ${filteredSummaries.length} dari ${totalGuru} guru terdaftar`}
         action={
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/jadwal-guru"
+              className="text-xs font-bold text-pine-700 dark:text-pine-300 hover:underline flex items-center"
+            >
+              Jadwal Mengajar Guru <ArrowRight className="w-3.5 h-3.5 ml-1" />
+            </Link>
             <Link
               href="/guru"
               className="text-xs font-bold text-pine-700 dark:text-pine-300 hover:underline flex items-center"
