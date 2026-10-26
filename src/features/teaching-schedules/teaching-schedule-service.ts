@@ -4,6 +4,8 @@ import {
   TeacherSchedule,
   TEACHER_SCHEDULES,
   getDayNameFromDate,
+  calculateSlotJP,
+  getTeacherTotalJP,
 } from "@/contracts/teaching-schedules";
 import { TeacherService } from "../teachers/teacher-service";
 import { SettingsService } from "../settings/settings-service";
@@ -316,10 +318,12 @@ export const TeachingScheduleService = {
     };
 
     schedulesList.forEach((s) => {
-      totalJP += s.slots.length;
+      const teacherJP = getTeacherTotalJP(s.teacher_id, s);
+      totalJP += teacherJP;
       s.slots.forEach((slot) => {
+        const slotJp = calculateSlotJP(slot);
         if (distribusiHari[slot.hari] !== undefined) {
-          distribusiHari[slot.hari] += 1;
+          distribusiHari[slot.hari] += slotJp;
         }
       });
     });

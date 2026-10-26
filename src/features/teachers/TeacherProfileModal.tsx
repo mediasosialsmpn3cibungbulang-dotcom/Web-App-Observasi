@@ -5,6 +5,7 @@ import { X, User, BookOpen, Calendar, Phone, Mail, Award, CheckCircle } from "lu
 import { Teacher } from "@/contracts/schemas";
 import { Button } from "@/components/ui/Button";
 import { TeacherService } from "./teacher-service";
+import { OFFICIAL_TEACHER_JP } from "@/contracts/teaching-schedules";
 
 interface TeacherProfileModalProps {
   teacher: Teacher | null;
@@ -79,7 +80,7 @@ export const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
           </div>
 
           {/* Rincian Data Pokok */}
-          <div className="grid grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
             <div className="p-3 rounded-control border border-border bg-surface">
               <span className="text-[10px] uppercase font-semibold text-muted block">Mata Pelajaran</span>
               <p className="font-semibold text-foreground mt-0.5">{teacher.mata_pelajaran}</p>
@@ -87,6 +88,12 @@ export const TeacherProfileModal: React.FC<TeacherProfileModalProps> = ({
             <div className="p-3 rounded-control border border-border bg-surface">
               <span className="text-[10px] uppercase font-semibold text-muted block">Kelas Diampu</span>
               <p className="font-semibold text-foreground mt-0.5">{teacher.kelas_diampu}</p>
+            </div>
+            <div className="p-3 rounded-control border border-border bg-surface">
+              <span className="text-[10px] uppercase font-semibold text-muted block">Beban Mengajar</span>
+              <p className="font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5 font-mono">
+                {OFFICIAL_TEACHER_JP[teacher.id] ? `${OFFICIAL_TEACHER_JP[teacher.id]} JP / Minggu` : "-"}
+              </p>
             </div>
             <div className="p-3 rounded-control border border-border bg-surface">
               <span className="text-[10px] uppercase font-semibold text-muted block">Status Kepegawaian</span>

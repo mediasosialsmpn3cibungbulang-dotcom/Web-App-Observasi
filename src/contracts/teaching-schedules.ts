@@ -12,7 +12,66 @@ export interface TeachingSlot {
 export interface TeacherSchedule {
   teacher_id: string;
   nama_lengkap: string;
+  total_jp?: number;
   slots: TeachingSlot[];
+}
+
+/**
+ * Peta resmi beban mengajar JP per guru berdasarkan SK pembagian tugas mengajar SMPN 3 Cibungbulang
+ */
+export const OFFICIAL_TEACHER_JP: Record<string, number> = {
+  "a1111111-1111-1111-1111-111111111111": 32, // Aini Supiyah, S.Pd, MM
+  "a2222222-2222-2222-2222-222222222222": 30, // Lilis Yuliati, M.Pd
+  "a3333333-3333-3333-3333-333333333333": 33, // Hj. Heny Susana, S.Pd
+  "a4444444-4444-4444-4444-444444444444": 28, // Dewi Nurhandayani, S.Pd
+  "a5555555-5555-5555-5555-555555555555": 33, // Mohamad Reza Septiyani, S.Pd
+  "b0000001-0000-0000-0000-000000000006": 30, // Wilda Fajaratu Rahmi A, S.Pd
+  "b0000001-0000-0000-0000-000000000007": 22, // Nika Musrifah, S.Pd
+  "b0000001-0000-0000-0000-000000000008": 35, // Wiwin Djueriah, S.Pd, M.Han
+  "b0000001-0000-0000-0000-000000000009": 35, // Reza Kusnendar, S.Pd
+  "b0000001-0000-0000-0000-000000000010": 33, // Acip Sulaeman, S.Pd I
+  "b0000001-0000-0000-0000-000000000011": 30, // Awaliyatussa'dah M, S.Pd.I
+  "b0000001-0000-0000-0000-000000000012": 32, // Saherudin, S.Pd
+  "b0000001-0000-0000-0000-000000000013": 30, // Anwar Sanusi, M.Pd
+  "b0000001-0000-0000-0000-000000000014": 36, // Siti Mariam Ulfah, S.Pd
+  "b0000001-0000-0000-0000-000000000015": 33, // Iip Latifah, S.Pd.I
+  "b0000001-0000-0000-0000-000000000016": 33, // Adam Yahya, S.Pd
+  "b0000001-0000-0000-0000-000000000017": 36, // Siti Maesaroh, S.Pd
+  "b0000001-0000-0000-0000-000000000018": 33, // Taufik Zulkarnaen, S.Pd
+  "b0000001-0000-0000-0000-000000000019": 28, // Imas Masitoh, S.Pd
+  "b0000001-0000-0000-0000-000000000020": 35, // Nia Kurniawati, S.Pd
+  "b0000001-0000-0000-0000-000000000021": 35, // Dian Permatasari, S.Pd
+  "b0000001-0000-0000-0000-000000000022": 35, // Aisyah Nurul Amini, S.Pd
+  "b0000001-0000-0000-0000-000000000023": 33, // Ainun Fitri, S.Pd
+  "b0000001-0000-0000-0000-000000000024": 33, // Sofiyah, S.Sos
+  "b0000001-0000-0000-0000-000000000025": 37, // Fingkan Ellita, S.Pd
+  "b0000001-0000-0000-0000-000000000026": 32, // Lucky Aditya Putra, S.Kom
+};
+
+/**
+ * Menghitung bobot JP dari slot mengajar (contoh: "Jam Ke 1-3" = 3 JP, "Jam Ke 1-2" = 2 JP, "Jam Ke 6" = 1 JP)
+ */
+export function calculateSlotJP(slot: TeachingSlot): number {
+  if (!slot.jam_ke) return 2;
+  const match = slot.jam_ke.match(/(\d+)\s*-\s*(\d+)/);
+  if (match) {
+    const start = parseInt(match[1], 10);
+    const end = parseInt(match[2], 10);
+    return Math.max(1, end - start + 1);
+  }
+  return 1;
+}
+
+/**
+ * Dapatkan total JP resmi guru dari SK sekolah atau hasil hitung slot
+ */
+export function getTeacherTotalJP(teacherId: string, schedule?: TeacherSchedule | null): number {
+  if (schedule?.total_jp && schedule.total_jp > 0) return schedule.total_jp;
+  if (OFFICIAL_TEACHER_JP[teacherId]) return OFFICIAL_TEACHER_JP[teacherId];
+  if (schedule?.slots && schedule.slots.length > 0) {
+    return schedule.slots.reduce((acc, s) => acc + calculateSlotJP(s), 0);
+  }
+  return 0;
 }
 
 export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
@@ -20,6 +79,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "a2222222-2222-2222-2222-222222222222": {
     teacher_id: "a2222222-2222-2222-2222-222222222222",
     nama_lengkap: "Lilis Yuliati, M.Pd",
+    total_jp: 30,
     slots: [
       { id: "ly-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "8D", mata_pelajaran: "Ilmu Pengetahuan Alam" },
       { id: "ly-2", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "8E", mata_pelajaran: "Ilmu Pengetahuan Alam" },
@@ -40,6 +100,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "a1111111-1111-1111-1111-111111111111": {
     teacher_id: "a1111111-1111-1111-1111-111111111111",
     nama_lengkap: "Aini Supiyah, S.Pd, MM",
+    total_jp: 32,
     slots: [
       { id: "as-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "8G", mata_pelajaran: "Ilmu Pengetahuan Sosial" },
       { id: "as-2", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "9F", mata_pelajaran: "Ilmu Pengetahuan Sosial" },
@@ -64,6 +125,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "a3333333-3333-3333-3333-333333333333": {
     teacher_id: "a3333333-3333-3333-3333-333333333333",
     nama_lengkap: "Hj. Heny Susana, S.Pd",
+    total_jp: 33,
     slots: [
       { id: "hs-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "7H", mata_pelajaran: "Pendidikan Pancasila" },
       { id: "hs-2", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "7C", mata_pelajaran: "Pendidikan Pancasila" },
@@ -83,6 +145,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "a4444444-4444-4444-4444-444444444444": {
     teacher_id: "a4444444-4444-4444-4444-444444444444",
     nama_lengkap: "Dewi Nurhandayani, S.Pd",
+    total_jp: 28,
     slots: [
       { id: "dn-1", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "8A", mata_pelajaran: "Bahasa Inggris" },
       { id: "dn-2", hari: "Senin", jam_ke: "Jam Ke 6-7", waktu: "11:20 - 13:20", kelas: "8G", mata_pelajaran: "Bahasa Inggris" },
@@ -105,6 +168,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "a5555555-5555-5555-5555-555555555555": {
     teacher_id: "a5555555-5555-5555-5555-555555555555",
     nama_lengkap: "Mohamad Reza Septiyani, S.Pd",
+    total_jp: 33,
     slots: [
       { id: "mr-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "9F", mata_pelajaran: "PJOK" },
       { id: "mr-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "9E", mata_pelajaran: "PJOK" },
@@ -124,6 +188,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000006": {
     teacher_id: "b0000001-0000-0000-0000-000000000006",
     nama_lengkap: "Wilda Fajaratu Rahmi A, S.Pd",
+    total_jp: 30,
     slots: [
       { id: "wf-1", hari: "Senin", jam_ke: "Jam Ke 7-9", waktu: "12:45 - 14:30", kelas: "7E", mata_pelajaran: "Bahasa Indonesia" },
       { id: "wf-2", hari: "Selasa", jam_ke: "Jam Ke 1-3", waktu: "07:30 - 09:15", kelas: "7D", mata_pelajaran: "Bahasa Indonesia" },
@@ -142,6 +207,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000007": {
     teacher_id: "b0000001-0000-0000-0000-000000000007",
     nama_lengkap: "Nika Musrifah, S.Pd",
+    total_jp: 22,
     slots: [
       { id: "nm-1", hari: "Senin", jam_ke: "Jam Ke 3", waktu: "09:10 - 09:45", kelas: "9A", mata_pelajaran: "Bimbingan & Konseling" },
       { id: "nm-2", hari: "Senin", jam_ke: "Jam Ke 5", waktu: "10:45 - 11:20", kelas: "7G", mata_pelajaran: "Bimbingan & Konseling" },
@@ -172,6 +238,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000008": {
     teacher_id: "b0000001-0000-0000-0000-000000000008",
     nama_lengkap: "Wiwin Djueriah, S.Pd, M.Han",
+    total_jp: 35,
     slots: [
       { id: "wd-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "9C", mata_pelajaran: "Matematika" },
       { id: "wd-2", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "9B", mata_pelajaran: "Matematika" },
@@ -194,6 +261,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000009": {
     teacher_id: "b0000001-0000-0000-0000-000000000009",
     nama_lengkap: "Reza Kusnendar, S.Pd",
+    total_jp: 35,
     slots: [
       { id: "rk-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "7B", mata_pelajaran: "Matematika" },
       { id: "rk-2", hari: "Senin", jam_ke: "Jam Ke 8-9", waktu: "13:20 - 14:30", kelas: "7G", mata_pelajaran: "Matematika" },
@@ -216,6 +284,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000010": {
     teacher_id: "b0000001-0000-0000-0000-000000000010",
     nama_lengkap: "Acip Sulaeman, S.Pd I",
+    total_jp: 33,
     slots: [
       { id: "ac-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "9B", mata_pelajaran: "PAIBP" },
       { id: "ac-2", hari: "Senin", jam_ke: "Jam Ke 6-7", waktu: "11:20 - 13:20", kelas: "7B", mata_pelajaran: "Ilmu Pengetahuan Sosial" },
@@ -237,6 +306,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000011": {
     teacher_id: "b0000001-0000-0000-0000-000000000011",
     nama_lengkap: "Awaliyatussa'dah M, S.Pd.I",
+    total_jp: 30,
     slots: [
       { id: "aw-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "7F", mata_pelajaran: "PAIBP" },
       { id: "aw-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "7A", mata_pelajaran: "PAIBP" },
@@ -256,6 +326,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000012": {
     teacher_id: "b0000001-0000-0000-0000-000000000012",
     nama_lengkap: "Saherudin, S.Pd",
+    total_jp: 32,
     slots: [
       { id: "sh-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "7G", mata_pelajaran: "Ilmu Pengetahuan Sosial" },
       { id: "sh-2", hari: "Senin", jam_ke: "Jam Ke 3-4", waktu: "09:10 - 10:45", kelas: "8D", mata_pelajaran: "Ilmu Pengetahuan Sosial" },
@@ -280,6 +351,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000013": {
     teacher_id: "b0000001-0000-0000-0000-000000000013",
     nama_lengkap: "Anwar Sanusi, M.Pd",
+    total_jp: 30,
     slots: [
       { id: "as-b1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "9E", mata_pelajaran: "Bahasa Indonesia" },
       { id: "as-b2", hari: "Selasa", jam_ke: "Jam Ke 1-3", waktu: "07:30 - 09:15", kelas: "9E", mata_pelajaran: "Bahasa Indonesia" },
@@ -298,6 +370,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000014": {
     teacher_id: "b0000001-0000-0000-0000-000000000014",
     nama_lengkap: "Siti Mariam Ulfah, S.Pd",
+    total_jp: 36,
     slots: [
       { id: "sm-1", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "7H", mata_pelajaran: "Bahasa Indonesia" },
       { id: "sm-2", hari: "Senin", jam_ke: "Jam Ke 7-9", waktu: "12:45 - 14:30", kelas: "7F", mata_pelajaran: "Bahasa Indonesia" },
@@ -318,6 +391,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000015": {
     teacher_id: "b0000001-0000-0000-0000-000000000015",
     nama_lengkap: "Iip Latifah, S.Pd.I",
+    total_jp: 33,
     slots: [
       { id: "il-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "7E", mata_pelajaran: "Prakarya" },
       { id: "il-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "7F", mata_pelajaran: "Prakarya" },
@@ -337,6 +411,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000016": {
     teacher_id: "b0000001-0000-0000-0000-000000000016",
     nama_lengkap: "Adam Yahya, S.Pd",
+    total_jp: 33,
     slots: [
       { id: "ay-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "8C", mata_pelajaran: "PJOK" },
       { id: "ay-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "8B", mata_pelajaran: "PJOK" },
@@ -356,6 +431,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000017": {
     teacher_id: "b0000001-0000-0000-0000-000000000017",
     nama_lengkap: "Siti Maesaroh, S.Pd",
+    total_jp: 36,
     slots: [
       { id: "sm2-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "8A", mata_pelajaran: "Bahasa Indonesia" },
       { id: "sm2-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "8C", mata_pelajaran: "Bahasa Indonesia" },
@@ -376,6 +452,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000018": {
     teacher_id: "b0000001-0000-0000-0000-000000000018",
     nama_lengkap: "Taufik Zulkarnaen, S.Pd",
+    total_jp: 33,
     slots: [
       { id: "tz-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "9A", mata_pelajaran: "Bahasa Inggris" },
       { id: "tz-2", hari: "Senin", jam_ke: "Jam Ke 4", waktu: "10:10 - 10:45", kelas: "9G", mata_pelajaran: "Bahasa Inggris" },
@@ -400,6 +477,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000019": {
     teacher_id: "b0000001-0000-0000-0000-000000000019",
     nama_lengkap: "Imas Masitoh, S.Pd",
+    total_jp: 28,
     slots: [
       { id: "im-1", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "7B", mata_pelajaran: "Bahasa Inggris" },
       { id: "im-2", hari: "Senin", jam_ke: "Jam Ke 6-7", waktu: "11:20 - 13:20", kelas: "7G", mata_pelajaran: "Bahasa Inggris" },
@@ -422,6 +500,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000020": {
     teacher_id: "b0000001-0000-0000-0000-000000000020",
     nama_lengkap: "Nia Kurniawati, S.Pd",
+    total_jp: 35,
     slots: [
       { id: "nk-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "7D", mata_pelajaran: "Ilmu Pengetahuan Alam" },
       { id: "nk-2", hari: "Senin", jam_ke: "Jam Ke 4-5", waktu: "10:10 - 11:20", kelas: "7E", mata_pelajaran: "Ilmu Pengetahuan Alam" },
@@ -444,6 +523,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000021": {
     teacher_id: "b0000001-0000-0000-0000-000000000021",
     nama_lengkap: "Dian Permatasari, S.Pd",
+    total_jp: 35,
     slots: [
       { id: "dp-1", hari: "Senin", jam_ke: "Jam Ke 3-5", waktu: "09:10 - 11:20", kelas: "9D", mata_pelajaran: "Ilmu Pengetahuan Alam" },
       { id: "dp-2", hari: "Senin", jam_ke: "Jam Ke 6-7", waktu: "11:20 - 13:20", kelas: "9F", mata_pelajaran: "Ilmu Pengetahuan Alam" },
@@ -466,6 +546,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000022": {
     teacher_id: "b0000001-0000-0000-0000-000000000022",
     nama_lengkap: "Aisyah Nurul Amini, S.Pd",
+    total_jp: 35,
     slots: [
       { id: "an-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "8F", mata_pelajaran: "Matematika" },
       { id: "an-2", hari: "Senin", jam_ke: "Jam Ke 5-6", waktu: "10:45 - 11:55", kelas: "8D", mata_pelajaran: "Matematika" },
@@ -488,6 +569,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000023": {
     teacher_id: "b0000001-0000-0000-0000-000000000023",
     nama_lengkap: "Ainun Fitri, S.Pd",
+    total_jp: 33,
     slots: [
       { id: "af-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "7C", mata_pelajaran: "Prakarya" },
       { id: "af-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "9A", mata_pelajaran: "Prakarya" },
@@ -507,6 +589,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000024": {
     teacher_id: "b0000001-0000-0000-0000-000000000024",
     nama_lengkap: "Sofiyah, S.Sos",
+    total_jp: 33,
     slots: [
       { id: "sf-1", hari: "Senin", jam_ke: "Jam Ke 1-2", waktu: "08:00 - 09:10", kelas: "8E", mata_pelajaran: "Pendidikan Pancasila" },
       { id: "sf-2", hari: "Senin", jam_ke: "Jam Ke 7-9", waktu: "12:45 - 14:30", kelas: "8F", mata_pelajaran: "Pendidikan Pancasila" },
@@ -526,6 +609,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000025": {
     teacher_id: "b0000001-0000-0000-0000-000000000025",
     nama_lengkap: "Fingkan Ellita, S.Pd",
+    total_jp: 37,
     slots: [
       { id: "fe-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "8B", mata_pelajaran: "Prakarya" },
       { id: "fe-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "8F", mata_pelajaran: "Prakarya" },
@@ -549,6 +633,7 @@ export const TEACHER_SCHEDULES: Record<string, TeacherSchedule> = {
   "b0000001-0000-0000-0000-000000000026": {
     teacher_id: "b0000001-0000-0000-0000-000000000026",
     nama_lengkap: "Lucky Aditya Putra, S.Kom",
+    total_jp: 32,
     slots: [
       { id: "la-1", hari: "Senin", jam_ke: "Jam Ke 1-3", waktu: "08:00 - 09:45", kelas: "9G", mata_pelajaran: "Informatika" },
       { id: "la-2", hari: "Senin", jam_ke: "Jam Ke 4-6", waktu: "10:10 - 11:55", kelas: "9C", mata_pelajaran: "Informatika" },

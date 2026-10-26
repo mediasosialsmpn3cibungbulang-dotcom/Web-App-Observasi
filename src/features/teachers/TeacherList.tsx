@@ -13,6 +13,7 @@ import { TeacherService } from "./teacher-service";
 import { TeacherFormModal } from "./TeacherFormModal";
 import { TeacherImportModal } from "./TeacherImportModal";
 import { TeacherProfileModal } from "./TeacherProfileModal";
+import { OFFICIAL_TEACHER_JP } from "@/contracts/teaching-schedules";
 
 export const TeacherList: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -95,6 +96,7 @@ export const TeacherList: React.FC = () => {
     "NIP / NUPTK",
     "Status Kepegawaian",
     "Mata Pelajaran",
+    "Beban Mengajar (JP)",
     "Fase",
     "Kelas Diampu",
     "Tahun Masuk",
@@ -110,6 +112,7 @@ export const TeacherList: React.FC = () => {
       t.nip_nuptk || "-",
       t.status_kepegawaian,
       t.mata_pelajaran,
+      OFFICIAL_TEACHER_JP[t.id] ? `${OFFICIAL_TEACHER_JP[t.id]} JP` : "-",
       t.fase,
       t.kelas_diampu,
       t.tahun_masuk,
@@ -263,7 +266,14 @@ export const TeacherList: React.FC = () => {
                           {maskedNip}
                         </p>
                       </td>
-                      <td className="py-3.5 px-4 font-medium text-foreground">{teacher.mata_pelajaran}</td>
+                      <td className="py-3.5 px-4 font-medium text-foreground">
+                        <div>{teacher.mata_pelajaran}</div>
+                        {OFFICIAL_TEACHER_JP[teacher.id] && (
+                          <span className="inline-block mt-0.5 text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                            {OFFICIAL_TEACHER_JP[teacher.id]} JP / Minggu
+                          </span>
+                        )}
+                      </td>
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="px-2 py-0.5 rounded text-xs bg-black/5 dark:bg-white/5 border border-border">

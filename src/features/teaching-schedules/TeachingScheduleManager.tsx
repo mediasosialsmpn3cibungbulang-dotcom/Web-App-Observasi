@@ -21,7 +21,7 @@ import {
   ChevronDown,
   UserCheck,
 } from "lucide-react";
-import { DayName, TeachingSlot, TeacherSchedule } from "@/contracts/teaching-schedules";
+import { DayName, TeachingSlot, TeacherSchedule, calculateSlotJP, getTeacherTotalJP } from "@/contracts/teaching-schedules";
 import { Teacher } from "@/contracts/schemas";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -375,7 +375,7 @@ export const TeachingScheduleManager: React.FC = () => {
                 {filteredTeachers.map((t) => {
                   const isSelected = t.id === selectedTeacherId;
                   const teacherSch = allSchedules[t.id];
-                  const slotCount = teacherSch?.slots.length || 0;
+                  const totalJP = getTeacherTotalJP(t.id, teacherSch);
 
                   return (
                     <button
@@ -402,7 +402,7 @@ export const TeachingScheduleManager: React.FC = () => {
                         </div>
                       </div>
                       <span className="text-xs font-mono px-2 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex-shrink-0">
-                        {slotCount} JP
+                        {totalJP} JP
                       </span>
                     </button>
                   );
@@ -452,6 +452,9 @@ export const TeachingScheduleManager: React.FC = () => {
                     <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold border border-primary/20">
                       {currentTeacher.mata_pelajaran}
                     </span>
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-bold border border-emerald-500/30">
+                      Beban Mengajar: {getTeacherTotalJP(currentTeacher.id, currentSchedule)} JP / Minggu
+                    </span>
                     <span className="text-xs px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted font-medium border border-border">
                       {currentTeacher.status_kepegawaian}
                     </span>
@@ -492,6 +495,7 @@ export const TeachingScheduleManager: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
               {DAYS_LIST.map((day) => {
                 const daySlots = (currentSchedule?.slots || []).filter((s) => s.hari === day);
+                const dayJP = daySlots.reduce((acc, s) => acc + calculateSlotJP(s), 0);
 
                 return (
                   <div
@@ -504,7 +508,7 @@ export const TeachingScheduleManager: React.FC = () => {
                         {day}
                       </span>
                       <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-surface border border-border text-muted">
-                        {daySlots.length} JP
+                        {dayJP} JP
                       </span>
                     </div>
 
@@ -517,9 +521,14 @@ export const TeachingScheduleManager: React.FC = () => {
                             className="p-3 rounded-xl bg-surface border border-border shadow-2xs hover:shadow-sm transition-all space-y-1.5 group"
                           >
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-primary font-mono">
-                                {slot.jam_ke || "KBM"}
-                              </span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-primary font-mono">
+                                  {slot.jam_ke || "KBM"}
+                                </span>
+                                <span className="text-[10px] font-semibold text-muted bg-black/5 dark:bg-white/5 px-1 rounded">
+                                  {calculateSlotJP(slot)} JP
+                                </span>
+                              </div>
                               <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
                                 <button
                                   type="button"
