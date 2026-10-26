@@ -48,6 +48,7 @@ export const SettingsService = {
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY_SCHOOL_SETTINGS, JSON.stringify(updated));
       CloudSyncService.pushToCloud(SYNC_STORAGE_KEYS.SCHOOL_SETTINGS, updated);
+      window.dispatchEvent(new Event("smart-supervisi-data-synced"));
       this.recordAuditLog({
         aksi: "UPDATE_PENGATURAN_SEKOLAH",
         entitas: "school_settings",

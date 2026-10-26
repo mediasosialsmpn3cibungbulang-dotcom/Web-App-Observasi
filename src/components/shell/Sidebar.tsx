@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -19,6 +19,8 @@ import {
   BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SettingsService } from "@/features/settings/settings-service";
+import { SchoolSettings } from "@/contracts/schemas";
 
 interface NavItem {
   label: string;
@@ -69,6 +71,24 @@ const NAV_GROUPS: NavGroup[] = [
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
+  const [schoolSettings, setSchoolSettings] = useState<SchoolSettings | null>(null);
+
+  useEffect(() => {
+    const load = () => {
+      try {
+        setSchoolSettings(SettingsService.getSchoolSettings());
+      } catch (e) {
+        console.warn("Gagal memuat pengaturan sekolah di Sidebar:", e);
+      }
+    };
+    load();
+    window.addEventListener("smart-supervisi-data-synced", load);
+    window.addEventListener("storage", load);
+    return () => {
+      window.removeEventListener("smart-supervisi-data-synced", load);
+      window.removeEventListener("storage", load);
+    };
+  }, []);
 
   return (
     <aside
@@ -141,8 +161,10 @@ export const Sidebar: React.FC = () => {
       {/* Footer Info Instansi */}
       <div className="pt-3 border-t border-border px-2 flex-shrink-0">
         <div className="text-[11px] text-muted">
-          <p className="font-semibold text-foreground truncate">SMPN 3 Cibungbulang</p>
-          <p className="truncate">NPSN: 20200551</p>
+          <p className="font-semibold text-foreground truncate">
+            {schoolSettings?.nama_sekolah || "SMPN 3 Cibungbulang"}
+          </p>
+          <p className="truncate">NPSN: {schoolSettings?.npsn || "20200551"}</p>
         </div>
       </div>
     </aside>
