@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   CalendarDays,
   Plus,
@@ -16,7 +16,10 @@ import {
   Sparkles,
   Download,
   AlertCircle,
-  FileSpreadsheet,
+  User,
+  X,
+  ChevronDown,
+  UserCheck,
 } from "lucide-react";
 import { DayName, TeachingSlot, TeacherSchedule } from "@/contracts/teaching-schedules";
 import { Teacher } from "@/contracts/schemas";
@@ -31,8 +34,9 @@ const DAYS_LIST: DayName[] = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
 
 export const TeachingScheduleManager: React.FC = () => {
   const [teachers, setTeachers] = useState<Teacher[]>([]);
-  const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+  const [selectedTeacherId, setSelectedTeacherId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState<boolean>(false);
   const [allSchedules, setAllSchedules] = useState<Record<string, TeacherSchedule>>({});
 
   // Modal State
@@ -41,6 +45,8 @@ export const TeachingScheduleManager: React.FC = () => {
   const [activeDayForNewSlot, setActiveDayForNewSlot] = useState<DayName>("Senin");
   const [notification, setNotification] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
   // Muat data awal
   const loadData = () => {
     const teacherList = TeacherService.getTeachers().filter((t) => t.aktif);
@@ -48,11 +54,6 @@ export const TeachingScheduleManager: React.FC = () => {
 
     const schedules = TeachingScheduleService.getAllSchedules();
     setAllSchedules(schedules);
-
-    // Set guru default jika belum ada yang dipilih
-    if (teacherList.length > 0 && !selectedTeacherId) {
-      setSelectedTeacherId(teacherList[0].id);
-    }
   };
 
   useEffect(() => {
@@ -66,6 +67,17 @@ export const TeachingScheduleManager: React.FC = () => {
       window.removeEventListener("smart-supervisi-data-synced", handleRefresh);
       window.removeEventListener("focus", handleRefresh);
     };
+  }, []);
+
+  // Tutup dropdown pencarian saat klik di luar
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   // Notifikasi otomatis hilang setelah 4 detik
@@ -90,7 +102,8 @@ export const TeachingScheduleManager: React.FC = () => {
 
   // Guru yang sedang aktif dipilih
   const currentTeacher = useMemo(() => {
-    return teachers.find((t) => t.id === selectedTeacherId) || teachers[0] || null;
+    if (!selectedTeacherId) return null;
+    return teachers.find((t) => t.id === selectedTeacherId) || null;
   }, [teachers, selectedTeacherId]);
 
   // Jadwal guru aktif
@@ -109,6 +122,23 @@ export const TeachingScheduleManager: React.FC = () => {
   const stats = useMemo(() => {
     return TeachingScheduleService.getStatistics();
   }, [allSchedules]);
+
+  // Total guru terdaftar (penyebut akurat)
+  const totalGuruCount = Math.max(stats.totalGuruTerjadwal, teachers.length);
+
+  // Handler memilih guru dari pencarian
+  const handleSelectTeacher = (teacher: Teacher) => {
+    setSelectedTeacherId(teacher.id);
+    setSearchQuery(teacher.nama_lengkap);
+    setIsSearchDropdownOpen(false);
+  };
+
+  // Handler reset pencarian / ganti guru
+  const handleClearTeacher = () => {
+    setSelectedTeacherId(null);
+    setSearchQuery("");
+    setIsSearchDropdownOpen(true);
+  };
 
   // Handler simpan slot (tambah / ubah)
   const handleSaveSlot = (slotData: Omit<TeachingSlot, "id">, slotId?: string) => {
@@ -235,18 +265,6 @@ export const TeachingScheduleManager: React.FC = () => {
             <RotateCcw className="w-4 h-4 mr-1.5" />
             Reset Semua aSc
           </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => {
-              setEditingSlot(null);
-              setActiveDayForNewSlot("Senin");
-              setIsSlotModalOpen(true);
-            }}
-          >
-            <Plus className="w-4 h-4 mr-1.5" />
-            Tambah Slot Mengajar
-          </Button>
         </div>
       </div>
 
@@ -281,7 +299,7 @@ export const TeachingScheduleManager: React.FC = () => {
         <Panel className="p-4 border-l-4 border-l-primary">
           <div className="text-xs font-semibold uppercase text-muted">Guru Terjadwal</div>
           <div className="text-2xl font-bold font-mono text-foreground mt-1">
-            {stats.totalGuruTerjadwal} <span className="text-xs font-sans text-muted">/ {teachers.length} Guru</span>
+            {stats.totalGuruTerjadwal} <span className="text-xs font-sans text-muted">/ {totalGuruCount} Guru</span>
           </div>
           <div className="text-[11px] text-muted mt-1">Memiliki slot mengajar aktif</div>
         </Panel>
@@ -314,239 +332,286 @@ export const TeachingScheduleManager: React.FC = () => {
         </Panel>
       </div>
 
-      {/* Konten Utama: Kolom Kiri Pilihan Guru & Kolom Kanan Jadwal Mingguan */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Kolom Kiri: Navigasi Daftar Guru (4 Kolom) */}
-        <div className="lg:col-span-4 space-y-3">
-          <Panel className="p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted">
-                Pilih Guru Sasaran ({filteredTeachers.length})
-              </span>
-              <span className="text-[11px] text-muted">Klik nama guru</span>
-            </div>
-
-            {/* Input Pencarian Guru */}
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-2.5 text-muted" />
+      {/* CARD TUNGGAL UTAMA (SINGLE CARD FULL WIDTH) */}
+      <Panel className="p-4 md:p-6 space-y-6 shadow-sm">
+        {/* Bilah Pencarian Guru Terpadu (Search Bar Interaktif) */}
+        <div className="space-y-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-muted">
+            Cari Guru Sasaran
+          </label>
+          <div ref={searchContainerRef} className="relative max-w-2xl">
+            <div className="relative flex items-center">
+              <Search className="w-5 h-5 absolute left-3.5 text-muted pointer-events-none" />
               <input
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari nama guru atau mata pelajaran..."
-                className="w-full pl-9 pr-3 py-2 text-xs rounded-control border border-border bg-surface text-foreground focus:outline-none focus:ring-2 focus:ring-primary shadow-xs"
+                onFocus={() => setIsSearchDropdownOpen(true)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchDropdownOpen(true);
+                  // Jika teks dihapus manual, kosongkan pilihan guru
+                  if (!e.target.value.trim()) {
+                    setSelectedTeacherId(null);
+                  }
+                }}
+                placeholder="Ketik nama guru atau mata pelajaran (contoh: Lilis, Matematika, Acip)..."
+                className="w-full pl-11 pr-10 py-3 text-sm rounded-xl border border-border bg-surface text-foreground font-medium shadow-xs focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
               />
-            </div>
-
-            {/* List Guru */}
-            <div className="max-h-[550px] overflow-y-auto space-y-1.5 pr-1 divide-y divide-border/40">
-              {filteredTeachers.map((t) => {
-                const isSelected = t.id === selectedTeacherId;
-                const teacherSch = allSchedules[t.id];
-                const slotCount = teacherSch?.slots.length || 0;
-
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setSelectedTeacherId(t.id)}
-                    className={`w-full text-left p-2.5 rounded-control transition-all flex items-start justify-between gap-2 pt-2.5 ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                        : "hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
-                    }`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="text-xs font-bold truncate leading-tight">
-                        {t.nama_lengkap}
-                      </div>
-                      <div
-                        className={`text-[11px] truncate mt-0.5 ${
-                          isSelected ? "text-primary-foreground/90" : "text-muted"
-                        }`}
-                      >
-                        {t.mata_pelajaran} • {t.status_kepegawaian}
-                      </div>
-                    </div>
-                    <span
-                      className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold flex-shrink-0 ${
-                        isSelected
-                          ? "bg-primary-foreground/20 text-primary-foreground"
-                          : slotCount > 0
-                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                          : "bg-black/5 dark:bg-white/5 text-muted"
-                      }`}
-                    >
-                      {slotCount} JP
-                    </span>
-                  </button>
-                );
-              })}
-
-              {filteredTeachers.length === 0 && (
-                <div className="py-6 text-center text-xs text-muted">
-                  Tidak ada guru yang cocok dengan pencarian.
-                </div>
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={handleClearTeacher}
+                  className="absolute right-3 p-1 rounded-full text-muted hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+                  title="Bersihkan pencarian"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               )}
             </div>
-          </Panel>
+
+            {/* Dropdown Floating Hasil Pencarian */}
+            {isSearchDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1.5 z-30 max-h-72 overflow-y-auto rounded-xl bg-surface border border-border shadow-2xl divide-y divide-border/40 animate-fadeIn">
+                {filteredTeachers.map((t) => {
+                  const isSelected = t.id === selectedTeacherId;
+                  const teacherSch = allSchedules[t.id];
+                  const slotCount = teacherSch?.slots.length || 0;
+
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => handleSelectTeacher(t)}
+                      className={`w-full text-left p-3 transition-colors flex items-center justify-between gap-3 ${
+                        isSelected
+                          ? "bg-primary/10 text-primary font-semibold"
+                          : "hover:bg-black/5 dark:hover:bg-white/5 text-foreground"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs flex-shrink-0">
+                          {t.nama_lengkap.charAt(0)}
+                        </div>
+                        <div className="truncate">
+                          <div className="text-sm font-bold truncate leading-tight text-foreground">
+                            {t.nama_lengkap}
+                          </div>
+                          <div className="text-xs text-muted truncate mt-0.5">
+                            {t.mata_pelajaran} • {t.status_kepegawaian} • NIP: {t.nip_nuptk}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs font-mono px-2 py-0.5 rounded font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex-shrink-0">
+                        {slotCount} JP
+                      </span>
+                    </button>
+                  );
+                })}
+
+                {filteredTeachers.length === 0 && (
+                  <div className="p-6 text-center text-xs text-muted">
+                    Tidak ditemukan guru dengan kata kunci &quot;{searchQuery}&quot;.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Rekomendasi Pintas / Guru Cepat Saat Belum Memilih */}
+          {!currentTeacher && teachers.length > 0 && (
+            <div className="pt-2 flex items-center gap-1.5 flex-wrap text-xs text-muted">
+              <span className="text-[11px] font-semibold text-foreground">Pilihan cepat:</span>
+              {teachers.slice(0, 6).map((t) => (
+                <button
+                  type="button"
+                  key={t.id}
+                  onClick={() => handleSelectTeacher(t)}
+                  className="px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 border border-border hover:border-primary/50 hover:bg-primary/5 text-foreground text-[11px] transition-colors"
+                >
+                  {t.nama_lengkap}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Kolom Kanan: Jadwal Mingguan Guru Terpilih (8 Kolom) */}
-        <div className="lg:col-span-8 space-y-4">
-          {currentTeacher && (
-            <Panel className="p-4 md:p-6 space-y-5">
-              {/* Profil Singkat Guru Aktif */}
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pb-4 border-b border-border">
+        {/* KONTEN JADWAL (HANYA MUNCUL JIKA GURU SUDAH DIPILIH / DICARI) */}
+        {currentTeacher ? (
+          <div className="space-y-5 pt-4 border-t border-border animate-fadeIn">
+            {/* Header Informasi Guru Terpilih */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-900/40 border border-border">
+              <div className="flex items-start md:items-center gap-3.5">
+                <div className="w-12 h-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center font-extrabold text-lg shadow-sm flex-shrink-0">
+                  {currentTeacher.nama_lengkap.charAt(0)}
+                </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg md:text-xl font-bold font-serif text-foreground">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="text-xl md:text-2xl font-bold font-serif text-foreground">
                       {currentTeacher.nama_lengkap}
                     </h2>
-                    <span className="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold">
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold border border-primary/20">
                       {currentTeacher.mata_pelajaran}
+                    </span>
+                    <span className="text-xs px-2 py-0.5 rounded bg-black/5 dark:bg-white/5 text-muted font-medium border border-border">
+                      {currentTeacher.status_kepegawaian}
                     </span>
                   </div>
                   <p className="text-xs text-muted mt-1">
-                    NIP/NUPTK: {currentTeacher.nip_nuptk} • Status: {currentTeacher.status_kepegawaian} • Fase {currentTeacher.fase}
+                    NIP/NUPTK: <span className="font-mono text-foreground font-semibold">{currentTeacher.nip_nuptk}</span> • Kelas Diampu: {currentTeacher.kelas_diampu} • Fase {currentTeacher.fase}
                   </p>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleResetToDefault(true)}
-                    title="Kembalikan jadwal guru ini ke data aSc bawaan"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5 mr-1" />
-                    Reset Guru Ini
-                  </Button>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => {
-                      setEditingSlot(null);
-                      setActiveDayForNewSlot("Senin");
-                      setIsSlotModalOpen(true);
-                    }}
-                  >
-                    <Plus className="w-3.5 h-3.5 mr-1" />
-                    Tambah Slot
-                  </Button>
-                </div>
               </div>
 
-              {/* Tabel Jadwal Mingguan 5 Hari (Senin s.d. Jumat) */}
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-                {DAYS_LIST.map((day) => {
-                  const daySlots = (currentSchedule?.slots || []).filter((s) => s.hari === day);
+              {/* Aksi Guru */}
+              <div className="flex items-center gap-2 self-end md:self-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleResetToDefault(true)}
+                  title="Kembalikan jadwal guru ini ke data aSc bawaan"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 mr-1" />
+                  Reset Guru Ini
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setEditingSlot(null);
+                    setActiveDayForNewSlot("Senin");
+                    setIsSlotModalOpen(true);
+                  }}
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" />
+                  Tambah Slot Mengajar
+                </Button>
+              </div>
+            </div>
 
-                  return (
-                    <div
-                      key={day}
-                      className="flex flex-col rounded-control border border-border bg-slate-50/50 dark:bg-slate-900/30 overflow-hidden"
-                    >
-                      {/* Header Hari */}
-                      <div className="p-2.5 bg-black/5 dark:bg-white/5 border-b border-border flex items-center justify-between">
-                        <span className="text-xs font-bold text-foreground font-serif">
-                          {day}
-                        </span>
-                        <span className="text-[10px] font-mono font-semibold px-1.5 py-0.2 rounded bg-surface border border-border text-muted">
-                          {daySlots.length} JP
-                        </span>
-                      </div>
+            {/* TABEL JADWAL MINGGUAN 5 HARI (SENIN S.D. JUMAT) - LEBAR PENUH & LEGA */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
+              {DAYS_LIST.map((day) => {
+                const daySlots = (currentSchedule?.slots || []).filter((s) => s.hari === day);
 
-                      {/* Konten Slot Mengajar Hari Ini */}
-                      <div className="p-2 space-y-2 flex-1 min-h-[160px] flex flex-col justify-between">
-                        <div className="space-y-2">
-                          {daySlots.map((slot) => (
-                            <div
-                              key={slot.id}
-                              className="p-2 rounded-control bg-surface border border-border shadow-2xs hover:shadow-xs transition-shadow space-y-1 group"
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] font-bold text-primary font-mono">
-                                  {slot.jam_ke || "KBM"}
-                                </span>
-                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditingSlot(slot);
-                                      setIsSlotModalOpen(true);
-                                    }}
-                                    className="p-0.5 text-muted hover:text-foreground"
-                                    title="Ubah slot"
-                                  >
-                                    <Edit2 className="w-3 h-3" />
-                                  </button>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleDeleteSlot(slot)}
-                                    className="p-0.5 text-rose-500 hover:text-rose-700"
-                                    title="Hapus slot"
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </button>
-                                </div>
-                              </div>
-
-                              <div className="text-[11px] font-mono font-semibold text-foreground">
-                                {slot.waktu}
-                              </div>
-
-                              <div className="flex items-center justify-between pt-1 border-t border-border/50 text-[11px]">
-                                <span className="font-bold px-1.5 py-0.2 rounded bg-primary/10 text-primary">
-                                  Kelas {slot.kelas}
-                                </span>
-                                <span className="text-[10px] text-muted truncate max-w-[90px]" title={slot.mata_pelajaran}>
-                                  {slot.mata_pelajaran}
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-
-                          {daySlots.length === 0 && (
-                            <div className="py-8 text-center text-[11px] text-muted italic">
-                              Tidak ada jadwal mengajar
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Tombol Tambah Slot Cepat di Hari Ini */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingSlot(null);
-                            setActiveDayForNewSlot(day);
-                            setIsSlotModalOpen(true);
-                          }}
-                          className="w-full mt-2 py-1.5 px-2 text-[11px] font-medium text-muted hover:text-primary rounded border border-dashed border-border hover:border-primary/50 transition-colors flex items-center justify-center gap-1"
-                        >
-                          <Plus className="w-3 h-3" />
-                          Tambah {day}
-                        </button>
-                      </div>
+                return (
+                  <div
+                    key={day}
+                    className="flex flex-col rounded-xl border border-border bg-slate-50/60 dark:bg-slate-900/30 overflow-hidden shadow-2xs"
+                  >
+                    {/* Header Hari */}
+                    <div className="p-3 bg-black/5 dark:bg-white/5 border-b border-border flex items-center justify-between">
+                      <span className="text-sm font-bold text-foreground font-serif">
+                        {day}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-surface border border-border text-muted">
+                        {daySlots.length} JP
+                      </span>
                     </div>
-                  );
-                })}
-              </div>
 
-              {/* Catatan Keterangan Sistem */}
-              <div className="p-3.5 rounded-control bg-primary/5 border border-primary/20 text-xs text-muted space-y-1">
-                <div className="font-semibold text-foreground flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-primary" />
-                  Keterangan Sinkronisasi Otomatis:
-                </div>
-                <p className="text-[11px] leading-relaxed">
-                  Perubahan slot mengajar yang Anda simpan di halaman ini akan secara otomatis terhubung langsung ke formulir penetapan <strong>Jadwal Supervisi</strong>. Pilihan tanggal dan jam observasi hanya dapat diambil dari slot mengajar aktif yang tertera di atas.
-                </p>
+                    {/* Konten Slot Mengajar Hari Ini */}
+                    <div className="p-2.5 space-y-2.5 flex-1 min-h-[220px] flex flex-col justify-between">
+                      <div className="space-y-2.5">
+                        {daySlots.map((slot) => (
+                          <div
+                            key={slot.id}
+                            className="p-3 rounded-xl bg-surface border border-border shadow-2xs hover:shadow-sm transition-all space-y-1.5 group"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-bold text-primary font-mono">
+                                {slot.jam_ke || "KBM"}
+                              </span>
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingSlot(slot);
+                                    setIsSlotModalOpen(true);
+                                  }}
+                                  className="p-1 text-muted hover:text-foreground rounded hover:bg-black/5"
+                                  title="Ubah slot"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteSlot(slot)}
+                                  className="p-1 text-rose-500 hover:text-rose-700 rounded hover:bg-rose-50 dark:hover:bg-rose-950/40"
+                                  title="Hapus slot"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+
+                            <div className="text-xs font-mono font-semibold text-foreground">
+                              {slot.waktu}
+                            </div>
+
+                            <div className="flex items-center justify-between pt-1.5 border-t border-border/50 text-xs">
+                              <span className="font-bold px-2 py-0.5 rounded-md bg-primary/10 text-primary">
+                                Kelas {slot.kelas}
+                              </span>
+                              <span className="text-[11px] text-muted truncate max-w-[100px]" title={slot.mata_pelajaran}>
+                                {slot.mata_pelajaran}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+
+                        {daySlots.length === 0 && (
+                          <div className="py-12 text-center text-xs text-muted italic">
+                            Tidak ada jadwal mengajar
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Tombol Tambah Slot Cepat di Hari Ini */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingSlot(null);
+                          setActiveDayForNewSlot(day);
+                          setIsSlotModalOpen(true);
+                        }}
+                        className="w-full mt-2 py-2 px-2 text-xs font-semibold text-muted hover:text-primary rounded-lg border border-dashed border-border hover:border-primary/50 transition-colors flex items-center justify-center gap-1 bg-surface/50"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        Tambah {day}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Catatan Keterangan Sistem */}
+            <div className="p-3.5 rounded-xl bg-primary/5 border border-primary/20 text-xs text-muted space-y-1">
+              <div className="font-semibold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                Sinkronisasi Otomatis ke Jadwal Supervisi:
               </div>
-            </Panel>
-          )}
-        </div>
-      </div>
+              <p className="text-[11px] leading-relaxed">
+                Slot mengajar <strong>{currentTeacher.nama_lengkap}</strong> di atas secara otomatis terhubung langsung ke formulir penetapan <strong>Jadwal Supervisi</strong>. Pilihan tanggal dan jam observasi hanya dapat diambil dari hari dan jam mengajar yang tertera di atas.
+              </p>
+            </div>
+          </div>
+        ) : (
+          /* EMPTY STATE KETIKA BELUM ADA GURU YANG DICARI / DIPILIH */
+          <div className="py-16 text-center space-y-3.5 border-t border-border">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary mx-auto flex items-center justify-center shadow-xs">
+              <Search className="w-8 h-8" />
+            </div>
+            <div className="max-w-md mx-auto space-y-1">
+              <h3 className="text-base font-bold text-foreground font-serif">
+                Cari Guru untuk Menampilkan Jadwal Mengajar
+              </h3>
+              <p className="text-xs text-muted leading-relaxed">
+                Ketik nama guru atau mata pelajaran pada kolom pencarian di atas untuk melihat, menambah, atau mengubah jam pelajaran KBM mingguan guru tersebut.
+              </p>
+            </div>
+          </div>
+        )}
+      </Panel>
 
       {/* Modal Tambah / Ubah Slot */}
       {currentTeacher && (
