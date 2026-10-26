@@ -222,7 +222,7 @@ export const ScheduleList: React.FC = () => {
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-1.5 text-xs">
                         <Link
-                          href="/pra-observasi"
+                          href={`/pra-observasi?schedule_id=${s.id}&teacher_id=${s.teacher_id}`}
                           className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiPraObs
                               ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"
@@ -237,7 +237,7 @@ export const ScheduleList: React.FC = () => {
                           P
                         </Link>
                         <Link
-                          href="/observasi"
+                          href={`/observasi?schedule_id=${s.id}&teacher_id=${s.teacher_id}`}
                           className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiObs
                               ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"
@@ -252,7 +252,7 @@ export const ScheduleList: React.FC = () => {
                           O
                         </Link>
                         <Link
-                          href="/coaching"
+                          href={`/coaching?schedule_id=${s.id}&teacher_id=${s.teacher_id}`}
                           className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold transition-all hover:scale-110 ${
                             s.realisasiCoaching
                               ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 ring-1 ring-emerald-500/40"

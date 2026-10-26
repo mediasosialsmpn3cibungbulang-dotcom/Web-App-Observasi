@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ClipboardList,
   Printer,
@@ -164,9 +165,14 @@ const ASPECT_DESCRIPTIONS: Record<AspectCode, { nama: string; ringkasan: string 
 };
 
 export const PreObservationForm: React.FC = () => {
+  const searchParams = useSearchParams();
+  const paramScheduleId = searchParams.get("schedule_id");
+  const paramTeacherId = searchParams.get("teacher_id");
+
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(paramScheduleId);
   const [schoolSettings, setSchoolSettings] = useState<SchoolSettings | null>(null);
 
   const [formData, setFormData] = useState<PreObservation | null>(null);
@@ -183,22 +189,60 @@ export const PreObservationForm: React.FC = () => {
     const settings = SettingsService.getSchoolSettings();
     setSchoolSettings(settings);
 
-    if (list.length > 0) {
-      setSelectedTeacherId(list[0].id);
-      loadPreObs(list[0].id, settings.semester_aktif, scList);
-    }
-  }, []);
+    let activeTeacherId = list.length > 0 ? list[0].id : "";
+    let activeScheduleId = paramScheduleId;
 
-  const loadPreObs = (teacherId: string, semester: string, scList?: Schedule[]) => {
-    const existing = PreObservationService.getByTeacherId(teacherId);
+    if (paramScheduleId) {
+      const matchSc = scList.find((s) => s.id === paramScheduleId);
+      if (matchSc) {
+        activeTeacherId = matchSc.teacher_id;
+      }
+    } else if (paramTeacherId) {
+      activeTeacherId = paramTeacherId;
+    }
+
+    if (activeTeacherId) {
+      setSelectedTeacherId(activeTeacherId);
+      setSelectedScheduleId(activeScheduleId);
+      loadPreObs(activeTeacherId, settings.semester_aktif, scList, activeScheduleId);
+    }
+  }, [paramScheduleId, paramTeacherId]);
+
+  const loadPreObs = (
+    teacherId: string,
+    semester: string,
+    scList?: Schedule[],
+    targetScheduleId?: string | null
+  ) => {
+    const scheduleLookup = scList || schedules;
+
+    // Tentukan jadwal target secara presisi
+    let targetSchedule: Schedule | undefined;
+    if (targetScheduleId) {
+      targetSchedule = scheduleLookup.find((s) => s.id === targetScheduleId);
+    }
+    if (!targetSchedule) {
+      targetSchedule = scheduleLookup.find((s) => s.teacher_id === teacherId);
+    }
+
+    // Cari pra-observasi HANYA yang terikat ke targetSchedule.id (jika ada)
+    let existing: PreObservation | undefined;
+    if (targetSchedule) {
+      existing = PreObservationService.getByScheduleId(targetSchedule.id);
+    } else {
+      existing = PreObservationService.getByTeacherId(teacherId);
+    }
+
     if (existing) {
       setFormData(existing);
+      setSelectedScheduleId(existing.schedule_id);
     } else {
-      const scheduleLookup = scList || schedules;
-      const targetSchedule = scheduleLookup.find((s) => s.teacher_id === teacherId);
+      // Inisialisasi formulir baru bersih untuk jadwal ini (tidak mencaplok data lama guru)
+      const newScheduleId = targetSchedule ? targetSchedule.id : crypto.randomUUID();
+      setSelectedScheduleId(targetSchedule ? targetSchedule.id : null);
       setFormData({
         id: crypto.randomUUID(),
-        schedule_id: targetSchedule ? targetSchedule.id : crypto.randomUUID(),
+        schedule_id: newScheduleId,
         teacher_id: teacherId,
         supervisor_id: "00000000-0000-0000-0000-000000000001",
         semester,
@@ -237,8 +281,11 @@ export const PreObservationForm: React.FC = () => {
   const handleTeacherChange = (teacherId: string) => {
     setSelectedTeacherId(teacherId);
     setIsTemplateApplied(null);
+    const teacherSchedules = schedules.filter((s) => s.teacher_id === teacherId);
+    const defaultSc = teacherSchedules.length > 0 ? teacherSchedules[0] : null;
+    setSelectedScheduleId(defaultSc ? defaultSc.id : null);
     if (schoolSettings) {
-      loadPreObs(teacherId, schoolSettings.semester_aktif);
+      loadPreObs(teacherId, schoolSettings.semester_aktif, schedules, defaultSc ? defaultSc.id : null);
     }
   };
 

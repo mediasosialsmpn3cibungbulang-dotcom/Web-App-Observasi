@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   MessageSquare,
   Shield,
@@ -33,6 +34,7 @@ import {
   SchoolSettings,
   FollowupItem,
   Observation,
+  Schedule,
 } from "@/contracts/schemas";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
@@ -43,6 +45,7 @@ import { TeacherService } from "../teachers/teacher-service";
 import { SettingsService } from "../settings/settings-service";
 import { ObservationService } from "../observation/observation-service";
 import { FollowupService } from "../followup/followup-service";
+import { ScheduleService } from "../schedules/schedule-service";
 
 export const CoachingSessionView: React.FC = () => {
   // State data master dan pengaturan
@@ -72,6 +75,10 @@ export const CoachingSessionView: React.FC = () => {
 
   // Modals & notifikasi
   const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const paramScheduleId = searchParams.get("schedule_id");
+  const paramTeacherId = searchParams.get("teacher_id");
+
   const [successBanner, setSuccessBanner] = useState<string | null>(null);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
 
@@ -79,24 +86,53 @@ export const CoachingSessionView: React.FC = () => {
   useEffect(() => {
     const list = TeacherService.getTeachers().filter((t) => t.aktif);
     setTeachers(list);
+    const scList = ScheduleService.getSchedules();
     const school = SettingsService.getSchoolSettings();
     setSchoolSettings(school);
 
-    if (list.length > 0) {
-      setSelectedTeacherId(list[0].id);
-      loadSession(list[0].id, school.semester_aktif);
+    let activeTeacherId = list.length > 0 ? list[0].id : "";
+    let activeScheduleId = paramScheduleId;
+
+    if (paramScheduleId) {
+      const matchSc = scList.find((s) => s.id === paramScheduleId);
+      if (matchSc) {
+        activeTeacherId = matchSc.teacher_id;
+      }
+    } else if (paramTeacherId) {
+      activeTeacherId = paramTeacherId;
     }
-  }, []);
+
+    if (activeTeacherId) {
+      setSelectedTeacherId(activeTeacherId);
+      loadSession(activeTeacherId, school.semester_aktif, activeScheduleId);
+    }
+  }, [paramScheduleId, paramTeacherId]);
 
   /**
    * Memuat data sesi coaching berdasarkan guru dan semester aktif
    */
-  const loadSession = (teacherId: string, semester: string) => {
-    const obs = ObservationService.getObservationByTeacherAndSemester(teacherId, semester);
+  const loadSession = (
+    teacherId: string,
+    semester: string,
+    targetScheduleId?: string | null
+  ) => {
+    let obs: Observation | undefined;
+    if (targetScheduleId) {
+      obs = ObservationService.getObservationByScheduleId(targetScheduleId);
+    }
+    if (!obs) {
+      obs = ObservationService.getObservationByTeacherAndSemester(teacherId, semester);
+    }
     setObservation(obs || null);
 
     const sessions = CoachingService.getSessions();
-    const existing = sessions.find((s) => s.teacher_id === teacherId && s.semester === semester);
+    let existing: CoachingSession | undefined;
+    if (obs) {
+      existing = sessions.find((s) => s.observation_id === obs!.id);
+    }
+    if (!existing && !targetScheduleId) {
+      existing = sessions.find((s) => s.teacher_id === teacherId && s.semester === semester);
+    }
 
     if (existing) {
       setSession(existing);
@@ -111,13 +147,14 @@ export const CoachingSessionView: React.FC = () => {
         setRtlDeadline(flList[0].deadline || "");
       }
     } else {
+      const sc = targetScheduleId ? ScheduleService.getSchedules().find((s) => s.id === targetScheduleId) : undefined;
       const newSession: CoachingSession = {
         id: crypto.randomUUID(),
         observation_id: obs ? obs.id : crypto.randomUUID(),
         teacher_id: teacherId,
         supervisor_id: "00000000-0000-0000-0000-000000000001",
         semester,
-        tanggal_coaching: new Date().toISOString().split("T")[0],
+        tanggal_coaching: sc?.rencana_coaching || new Date().toISOString().split("T")[0],
         waktu_mulai: "10:00",
         tempat: "Ruang Konsultasi Akademik",
         nomor_dokumen: `NC/${new Date().getFullYear()}/${String(new Date().getMonth() + 1).padStart(2, "0")}/001`,
@@ -155,8 +192,9 @@ export const CoachingSessionView: React.FC = () => {
   const handleTeacherChange = (teacherId: string) => {
     setSelectedTeacherId(teacherId);
     setActiveStep(1);
+    const sc = ScheduleService.getSchedules().find((s) => s.teacher_id === teacherId);
     if (schoolSettings) {
-      loadSession(teacherId, schoolSettings.semester_aktif);
+      loadSession(teacherId, schoolSettings.semester_aktif, sc ? sc.id : null);
     }
   };
 

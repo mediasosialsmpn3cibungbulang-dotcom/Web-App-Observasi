@@ -119,34 +119,36 @@ export const ScheduleService = {
         }
 
         // Realisasi Pra-Observasi (P):
-        // Terlaksana jika data hasil diskusi pra-observasi guru/jadwal telah disimpan (status Final atau data terisi)
+        // Terlaksana HANYA jika data hasil diskusi pra-observasi untuk jadwal ini (schedule_id === s.id) telah disimpan
         const isPraRealized = preObservations.some(
           (p) =>
-            (p.schedule_id === s.id || p.teacher_id === s.teacher_id) &&
+            p.schedule_id === s.id &&
             (p.status === "Final" || Boolean(p.topik_pembelajaran && p.topik_pembelajaran.trim() !== ""))
         );
 
         // Realisasi Observasi (O):
-        // Terlaksana jika sesi observasi kelas telah difinalisasi, dikunci resmi, atau telah memiliki butir skor indikator
-        const teacherObs = observations.filter(
-          (o) => o.schedule_id === s.id || o.teacher_id === s.teacher_id
-        );
-        const isObsRealized = teacherObs.some((o) => {
+        // Terlaksana HANYA jika sesi observasi kelas untuk jadwal ini (schedule_id === s.id) telah difinalisasi, dikunci, atau telah memiliki butir skor
+        const scheduleObs = observations.filter((o) => o.schedule_id === s.id);
+        const isObsRealized = scheduleObs.some((o) => {
           if (o.status === "Final" || o.is_locked) return true;
           const scores = ObservationService.getAllScores(o.id);
           return scores.length > 0;
         });
 
         // Realisasi Coaching (C):
-        // Terlaksana jika sesi percakapan coaching telah difinalisasi atau dialog/refleksi/pertanyaan telah diisi & disimpan
-        const isCoachingRealized = coachingSessions.some(
-          (c) =>
-            c.teacher_id === s.teacher_id &&
-            (c.status === "Final" ||
-              Boolean(c.poin_kunci_dialog && c.poin_kunci_dialog.trim() !== "") ||
-              Boolean(c.refleksi_guru?.hal_sudah_baik) ||
-              CoachingService.getSessionQuestions(c.id).length > 0)
-        );
+        // Terlaksana HANYA jika sesi percakapan coaching untuk observasi jadwal ini telah difinalisasi atau dialog/refleksi telah disimpan
+        let isCoachingRealized = false;
+        if (scheduleObs.length > 0) {
+          const obsIds = new Set(scheduleObs.map((o) => o.id));
+          isCoachingRealized = coachingSessions.some(
+            (c) =>
+              obsIds.has(c.observation_id) &&
+              (c.status === "Final" ||
+                Boolean(c.poin_kunci_dialog && c.poin_kunci_dialog.trim() !== "") ||
+                Boolean(c.refleksi_guru?.hal_sudah_baik) ||
+                CoachingService.getSessionQuestions(c.id).length > 0)
+          );
+        }
 
         const isMissed = isScheduleMissed(s.rencana_observasi, isObsRealized, today);
 

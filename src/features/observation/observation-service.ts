@@ -120,6 +120,10 @@ export const ObservationService = {
     return this.getObservations().find((o) => o.id === id);
   },
 
+  getObservationByScheduleId(scheduleId: string): Observation | undefined {
+    return this.getObservations().find((o) => o.schedule_id === scheduleId);
+  },
+
   getObservationByTeacherAndSemester(teacherId: string, semester: string): Observation | undefined {
     return this.getObservations().find(
       (o) => o.teacher_id === teacherId && o.semester === semester
@@ -160,7 +164,7 @@ export const ObservationService = {
     const teacher = TeacherService.getTeacherById(teacherId);
     const newObs: Observation = {
       id: crypto.randomUUID(),
-      schedule_id: crypto.randomUUID(),
+      schedule_id: initialData?.schedule_id || crypto.randomUUID(),
       teacher_id: teacherId,
       supervisor_id: "00000000-0000-0000-0000-000000000001",
       semester,
@@ -258,7 +262,11 @@ export const ObservationService = {
 
   saveObservation(observation: Observation): Observation {
     const list = this.getObservations();
-    const index = list.findIndex((o) => o.id === observation.id);
+    const index = list.findIndex(
+      (o) =>
+        o.id === observation.id ||
+        (observation.schedule_id && o.schedule_id === observation.schedule_id)
+    );
 
     const updated: Observation = {
       ...observation,

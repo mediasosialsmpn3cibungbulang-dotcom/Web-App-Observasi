@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   GraduationCap,
   Save,
@@ -28,6 +29,7 @@ import {
   FactNote,
   Teacher,
   SchoolSettings,
+  Schedule,
 } from "@/contracts/schemas";
 import { AspectCode, ASPECT_NAMES } from "@/contracts/enums";
 import { SEED_INDICATORS } from "@/contracts/seed-data";
@@ -43,11 +45,17 @@ import { ObservationPrintModal } from "./ObservationPrintModal";
 import { ObservationUnlockModal } from "./ObservationUnlockModal";
 import { TeacherService } from "../teachers/teacher-service";
 import { SettingsService } from "../settings/settings-service";
+import { ScheduleService } from "../schedules/schedule-service";
 
 export const ObservationSession: React.FC = () => {
+  const searchParams = useSearchParams();
+  const paramScheduleId = searchParams.get("schedule_id");
+  const paramTeacherId = searchParams.get("teacher_id");
+
   // State data referensi dan pengaturan
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState<string>("");
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(paramScheduleId);
   const [selectedSesiKe, setSelectedSesiKe] = useState<number>(1);
   const [schoolSettings, setSchoolSettings] = useState<SchoolSettings | null>(null);
 
@@ -82,14 +90,28 @@ export const ObservationSession: React.FC = () => {
   useEffect(() => {
     const list = TeacherService.getTeachers().filter((t) => t.aktif);
     setTeachers(list);
+    const scList = ScheduleService.getSchedules();
     const school = SettingsService.getSchoolSettings();
     setSchoolSettings(school);
 
-    if (list.length > 0) {
-      setSelectedTeacherId(list[0].id);
-      loadObservation(list[0].id, school.semester_aktif, 1);
+    let activeTeacherId = list.length > 0 ? list[0].id : "";
+    let activeScheduleId = paramScheduleId;
+
+    if (paramScheduleId) {
+      const matchSc = scList.find((s) => s.id === paramScheduleId);
+      if (matchSc) {
+        activeTeacherId = matchSc.teacher_id;
+      }
+    } else if (paramTeacherId) {
+      activeTeacherId = paramTeacherId;
     }
-  }, []);
+
+    if (activeTeacherId) {
+      setSelectedTeacherId(activeTeacherId);
+      setSelectedScheduleId(activeScheduleId);
+      loadObservation(activeTeacherId, school.semester_aktif, 1, activeScheduleId);
+    }
+  }, [paramScheduleId, paramTeacherId]);
 
   // Interval timer waktu pengamatan kelas (berjalan presisi per detik)
   useEffect(() => {
@@ -125,22 +147,41 @@ export const ObservationSession: React.FC = () => {
    * Memuat data sesi observasi berdasarkan guru, semester, dan nomor sesi.
    * Jika sesi belum dibuat, draf baru otomatis diinisialisasi.
    */
-  const loadObservation = (teacherId: string, semester: string, sesiKe: number) => {
-    let existing = ObservationService.getObservationByTeacherSemesterAndSession(
-      teacherId,
-      semester,
-      sesiKe
-    );
+  const loadObservation = (
+    teacherId: string,
+    semester: string,
+    sesiKe: number,
+    targetScheduleId?: string | null
+  ) => {
+    let existing: Observation | undefined;
+    if (targetScheduleId) {
+      existing = ObservationService.getObservationByScheduleId(targetScheduleId);
+    }
+    if (!existing) {
+      existing = ObservationService.getObservationByTeacherSemesterAndSession(
+        teacherId,
+        semester,
+        sesiKe
+      );
+    }
 
     if (!existing) {
       const teacher = TeacherService.getTeacherById(teacherId);
+      const scList = ScheduleService.getSchedules();
+      const sc = targetScheduleId
+        ? scList.find((s) => s.id === targetScheduleId)
+        : scList.find((s) => s.teacher_id === teacherId);
+
       existing = ObservationService.createObservationSession(teacherId, semester, sesiKe, {
-        kelas: teacher ? teacher.kelas_diampu : "X-A",
+        schedule_id: targetScheduleId || sc?.id || undefined,
+        kelas: sc?.kelas_observasi || (teacher ? teacher.kelas_diampu : "X-A"),
+        tanggal_observasi: sc?.rencana_observasi || new Date().toISOString().split("T")[0],
         jumlah_siswa_hadir: 32,
       });
     }
 
     setObservation(existing);
+    setSelectedScheduleId(existing.schedule_id);
     setScoreItems(ObservationService.getAllScores(existing.id));
     setFactNotes(ObservationService.getAllFactNotes(existing.id));
   };
@@ -154,8 +195,11 @@ export const ObservationSession: React.FC = () => {
     setIsTimerRunning(false);
     setTimerSeconds(0);
     setTimerMinutes(0);
+    const scList = ScheduleService.getSchedules();
+    const sc = scList.find((s) => s.teacher_id === teacherId);
+    setSelectedScheduleId(sc ? sc.id : null);
     if (schoolSettings) {
-      loadObservation(teacherId, schoolSettings.semester_aktif, 1);
+      loadObservation(teacherId, schoolSettings.semester_aktif, 1, sc ? sc.id : null);
     }
   };
 

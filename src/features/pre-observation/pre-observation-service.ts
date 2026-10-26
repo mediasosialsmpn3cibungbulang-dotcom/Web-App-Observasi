@@ -62,10 +62,16 @@ export const PreObservationService = {
     return this.getPreObservations().find((p) => p.teacher_id === teacherId);
   },
 
+  getByScheduleId(scheduleId: string): PreObservation | undefined {
+    return this.getPreObservations().find((p) => p.schedule_id === scheduleId);
+  },
+
   savePreObservation(payload: PreObservation): PreObservation {
     const list = this.getPreObservations();
     const index = list.findIndex(
-      (p) => p.id === payload.id || (p.teacher_id === payload.teacher_id && p.semester === payload.semester)
+      (p) =>
+        p.id === payload.id ||
+        (payload.schedule_id && p.schedule_id === payload.schedule_id)
     );
 
     const updated: PreObservation = {

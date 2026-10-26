@@ -109,7 +109,11 @@ export const CoachingService = {
 
   saveSession(session: CoachingSession): CoachingSession {
     const list = this.getSessions();
-    const index = list.findIndex((s) => s.id === session.id);
+    const index = list.findIndex(
+      (s) =>
+        s.id === session.id ||
+        (session.observation_id && s.observation_id === session.observation_id)
+    );
 
     const updated: CoachingSession = {
       ...session,
